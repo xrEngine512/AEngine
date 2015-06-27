@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Заголовочные файлы">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ShaderSystem">
+      <UniqueIdentifier>{f4272169-74c8-4e8a-a2cc-0b069baf4ae6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\Shaders">
+      <UniqueIdentifier>{610431b3-ef0b-4e72-a84b-e4d999425328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\Shaders\AmbientLightShader">
+      <UniqueIdentifier>{935637a5-872a-4450-8d68-cce9358b32b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\Shaders\ColorShader">
+      <UniqueIdentifier>{55caff5f-01c5-412f-899d-dcacbdfa21b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\Shaders\TextureShader">
+      <UniqueIdentifier>{1a3bbbbf-57c7-4245-be13-86143fb03d14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\Shaders\SpecularShader">
+      <UniqueIdentifier>{d989eb0a-96bf-444b-a0d4-723430c69755}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\Interfaces">
+      <UniqueIdentifier>{0ceb05ef-683a-44ea-8513-e0c11024abb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\ShaderParams">
+      <UniqueIdentifier>{da357905-983a-41a0-9c10-8970287bf63c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{6ea13641-dc9c-4ad9-9b92-9e03d2ffc1d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\InternalInterfaces">
+      <UniqueIdentifier>{d4d451dd-2b28-4c4e-91bc-21e5a164271b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces\ExternalInterfaces">
+      <UniqueIdentifier>{ee10b8da-f135-4226-b8ce-ef68eece715c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CommonSystem">
+      <UniqueIdentifier>{9e15d78d-dde6-4d4f-b9bd-2f05547bf35e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\Shaders\MultitextureShader">
+      <UniqueIdentifier>{5536e707-295f-499b-932f-9f5a1eaaaca2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\Shaders\Wireframe">
+      <UniqueIdentifier>{c11bf3b1-4cf5-4709-97d3-f3b0858d1272}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\Shaders\AbstractShader">
+      <UniqueIdentifier>{adc45081-926e-47f3-aff7-ddba61c8d56a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\DynamicSystem">
+      <UniqueIdentifier>{0fa73900-775d-4b3c-914e-1e3be7211125}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="RendererSystem.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11System.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DTexture.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="IMeshLoader.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="IVertexType.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjMeshLoader.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderObject.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexTypes.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractShader.h">
+      <Filter>ShaderSystem\Shaders\AbstractShader</Filter>
+    </ClInclude>
+    <ClInclude Include="AmbientLightShader.h">
+      <Filter>ShaderSystem\Shaders\AmbientLightShader</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorShader.h">
+      <Filter>ShaderSystem\Shaders\ColorShader</Filter>
+    </ClInclude>
+    <ClInclude Include="SpecularShader.h">
+      <Filter>ShaderSystem\Shaders\SpecularShader</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureShader.h">
+      <Filter>ShaderSystem\Shaders\TextureShader</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderStructures.h">
+      <Filter>ShaderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="IShader.h">
+      <Filter>ShaderSystem\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IShaderParams.h">
+      <Filter>ShaderSystem\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderParams.h">
+      <Filter>ShaderSystem\ShaderParams</Filter>
+    </ClInclude>
+    <ClInclude Include="IInternalRenderer.h">
+      <Filter>Interfaces\InternalInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IExternalRenderer.h">
+      <Filter>Interfaces\ExternalInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IInternalRenderObject.h">
+      <Filter>Interfaces\InternalInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IExternalRenderObject.h">
+      <Filter>Interfaces\ExternalInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IExternalScene.h">
+      <Filter>Interfaces\ExternalInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderTypes.h">
+      <Filter>ShaderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="IExternalHUDElement.h">
+      <Filter>Interfaces\ExternalInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IInternalHUDElement.h">
+      <Filter>Interfaces\InternalInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="HUDElement.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Common.h">
+      <Filter>CommonSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Text2D.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD2D.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="StatisticsDisplay.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshBox.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="MultitextureShader.h">
+      <Filter>ShaderSystem\Shaders\MultitextureShader</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="IInternalMaterial.h">
+      <Filter>Interfaces\InternalInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IExternalMaterial.h">
+      <Filter>Interfaces\ExternalInterfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraphNode.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="WireframeShader.h">
+      <Filter>ShaderSystem\Shaders\Wireframe</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderPool.h">
+      <Filter>ShaderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="UnifiedShader.h">
+      <Filter>ShaderSystem\DynamicSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ACSReader.h">
+      <Filter>ShaderSystem\DynamicSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="RGS.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObject.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="AlignedObject.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialInterface.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialInterfaceManager.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="IMaterialVariable.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialVariable.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="RendererSystem.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11System.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DTexture.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjMeshLoader.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObject.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexTypes.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractShader.cpp">
+      <Filter>ShaderSystem\Shaders\AbstractShader</Filter>
+    </ClCompile>
+    <ClCompile Include="AmbientLightShader.cpp">
+      <Filter>ShaderSystem\Shaders\AmbientLightShader</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorShader.cpp">
+      <Filter>ShaderSystem\Shaders\ColorShader</Filter>
+    </ClCompile>
+    <ClCompile Include="SpecularShader.cpp">
+      <Filter>ShaderSystem\Shaders\SpecularShader</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureShader.cpp">
+      <Filter>ShaderSystem\Shaders\TextureShader</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderStructures.cpp">
+      <Filter>ShaderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="IShader.cpp">
+      <Filter>ShaderSystem\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderParams.cpp">
+      <Filter>ShaderSystem\ShaderParams</Filter>
+    </ClCompile>
+    <ClCompile Include="HUDElement.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Text2D.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="HUD2D.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="StatisticsDisplay.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="MultitextureShader.cpp">
+      <Filter>ShaderSystem\Shaders\MultitextureShader</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraphNode.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="WireframeShader.cpp">
+      <Filter>ShaderSystem\Shaders\Wireframe</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderPool.cpp">
+      <Filter>ShaderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="UnifiedShader.cpp">
+      <Filter>ShaderSystem\DynamicSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ACSReader.cpp">
+      <Filter>ShaderSystem\DynamicSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="RGS.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneObject.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialInterfaceManager.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\AmbientLightShader\PixelShader.hlsl" />
+    <None Include="Shaders\AmbientLightShader\VertexShader.hlsl" />
+    <None Include="Shaders\MultitextureShader\PixelShader.hlsl" />
+    <None Include="Shaders\MultitextureShader\VertexShader.hlsl" />
+    <None Include="Shaders\SpecularShader\PixelShader.hlsl" />
+    <None Include="Shaders\SpecularShader\VertexShader.hlsl" />
+    <None Include="Shaders\TextureShader\PixelShader.hlsl" />
+    <None Include="Shaders\TextureShader\VertexShader.hlsl" />
+    <None Include="Shaders\Wireframe\GeometryShader.hlsl" />
+    <None Include="Shaders\Wireframe\PixelShader.hlsl" />
+    <None Include="Shaders\Wireframe\VertexShader.hlsl" />
+    <None Include="Shaders\ColorShader\PixelShader.hlsl" />
+    <None Include="Shaders\ColorShader\VertexShader.hlsl" />
+  </ItemGroup>
+</Project>

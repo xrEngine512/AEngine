@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;cxx;c;def</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{5c19e0d5-e690-4c82-8561-a0c3ba05e602}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{a710236e-1e45-455d-b0c7-28fb1cffbdc2}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{fee9053d-0043-4f5f-a980-e74c944efe64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="View">
+      <UniqueIdentifier>{6f355292-b4f4-494c-b631-6e47c3217d8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Control">
+      <UniqueIdentifier>{bdcb7072-72a6-4b7e-a878-4c92fde36de6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GeneratedFiles\Debug\moc_shaderlabgui.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_shaderlabgui.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="shaderlabgui.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="shaderlabguielement.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Control</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_CodeEditor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_CodeEditor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_HLSLHighlighter.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_HLSLHighlighter.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeEditor.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="HLSLHighlighter.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ASLButton.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ASLButton.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ASLButton.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wnd.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wnd.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxLoadingElement.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ApproxLoadingElement.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ApproxLoadingElement.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxGUIMenuBar.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ApproxGUIMenuBar.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ApproxGUIMenuBar.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxGUIMenuButton.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ApproxGUIMenuButton.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ApproxGUIMenuButton.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxGraphicsView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ApproxGraphicsView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ApproxGraphicsView.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxShaderView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ApproxShaderView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ApproxShaderView.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="wnd.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxSceneVarsContainer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ApproxSceneVarsContainer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ApproxSceneVarsContainer.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxSceneVar.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ApproxSceneVar.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ApproxSceneVar.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_resources.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="HLSLCodeProcessing.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_GlobalSettingsForm.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_GlobalSettingsForm.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalSettingsForm.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ShaderPartSettings.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ShaderPartSettings.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderPartSettings.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MaterialVarPoint.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MaterialVarPoint.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialVarPoint.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="Link.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="approxshaderlab_global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_shaderlabgui.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderPackFile.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="IApproxShaderLabControl.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_wnd.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Enums.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="IApproxShaderLabExternalControl.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderPart.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLCodeProcessing.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ApproxViewSessionInfo.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenePropertyVisualInfo.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="IControllerSession.h">
+      <Filter>Control</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_GlobalSettingsForm.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Literals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ISyntaxHilighter.h">
+      <Filter>View</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="shaderlabgui.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaderlabgui.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaderlabguielement.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="HLSLHighlighter.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="CodeEditor.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ASLButton.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wnd.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ApproxLoadingElement.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ApproxGUIMenuBar.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ApproxGUIMenuButton.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ApproxGraphicsView.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wnd.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ApproxShaderView.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ApproxSceneVarsContainer.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ApproxSceneVar.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Resources\resources.qrc">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GlobalSettingsForm.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GlobalSettingsForm.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShaderPartSettings.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MaterialVarPoint.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Link.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ApproxShaderLab.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Icon_Eye_Closed.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Icon_Eye.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\flag_xmvector.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\flag_xmfloat2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\flag_xmfloat3.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\flag_xmfloat4.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\flag_xmmatrix.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\flag_float.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\background.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

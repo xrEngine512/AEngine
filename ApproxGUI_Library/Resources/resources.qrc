@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="ApproxWindow">
+  <file>Separator.png</file>
+  </qresource>
+</RCC>
