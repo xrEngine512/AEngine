@@ -9,7 +9,7 @@ namespace ApproxGUI
 	{
 	protected:
 		typedef AnimatedGraphicsWidget<Widget> BaseClass;
-		enum AnimationVariation{GO_RIGHT_AND_EXPAND, GO_LEFT_AND_EXPAND};
+		enum AnimationVariation{GO_RIGHT_AND_EXPAND, GO_LEFT_AND_EXPAND, GO_DOWN_AND_EXPAND};
 
 	public:
 		template<class T>
@@ -61,6 +61,7 @@ namespace ApproxGUI
 					anim->setEndValue(m_memoredSize);
 					break;
 				}
+				case GO_DOWN_AND_EXPAND:
 				case GO_LEFT_AND_EXPAND:
 				{
 					QPoint topRight(geometry().topRight().x() - m_memoredSize.width() + 1, geometry().topRight().y());
@@ -94,6 +95,7 @@ namespace ApproxGUI
 					anim->setEndValue(QSize(150, 150));
 					break;
 				}
+				case GO_DOWN_AND_EXPAND:
 				case GO_LEFT_AND_EXPAND:
 				{
 					QPoint topRight = geometry().topRight();
@@ -153,6 +155,13 @@ namespace ApproxGUI
 					anim->setKeyValueAt(1.0, QRect(iG.topLeft().x() - m_memoredSize.width(), iG.y(), m_memoredSize.width(), m_memoredSize.height()));
 					break;
 				}
+				case GO_DOWN_AND_EXPAND:
+				{
+					anim->setKeyValueAt(0.3, QRect(iG.bottomLeft().x(), iG.bottomLeft().y(), iG.width(), iG.height()));
+					anim->setKeyValueAt(0.6, QRect(iG.bottomLeft().x(), iG.bottomLeft().y(), iG.width(), iG.height()));
+					anim->setKeyValueAt(1.0, QRect(iG.bottomLeft().x() - m_memoredSize.width() + iG.width(), iG.bottomLeft().y(), m_memoredSize.width(), m_memoredSize.height()));
+					break;
+				}
 				}
 
 				anim1->setDuration(450);
@@ -205,6 +214,13 @@ namespace ApproxGUI
 				{
 					anim->setKeyValueAt(0.4, QRect(eG.topLeft().x() - eG.width(), eG.y(), eG.width(), eG.height()));
 					anim->setKeyValueAt(0.7, QRect(eG.topLeft().x() - eG.width(), eG.y(), eG.width(), eG.height()));
+					anim->setKeyValueAt(1.0, eG);
+					break;
+				}
+				case GO_DOWN_AND_EXPAND:
+				{
+					anim->setKeyValueAt(0.4, QRect(eG.bottomLeft().x(), eG.bottomLeft().y(), eG.width(), eG.height()));
+					anim->setKeyValueAt(0.7, QRect(eG.bottomLeft().x(), eG.bottomLeft().y(), eG.width(), eG.height()));
 					anim->setKeyValueAt(1.0, eG);
 					break;
 				}

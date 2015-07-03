@@ -1,23 +1,26 @@
 #include "GlobalSettingsForm.h"
 #include <qgraphicseffect.h>
 
-GlobalSettingsForm::GlobalSettingsForm(QWidget *parent)
-	: QWidget(parent)
+namespace ASL
 {
-	ui.setupUi(this);
-	m_background = new QFrame(this);
-	m_background->lower();
-	m_background->resize(size());
-	m_background->setStyleSheet("border : 1px solid rgb(0,200,255);");
-	m_background->setGraphicsEffect(new QGraphicsBlurEffect);
-}
+	GlobalSettingsForm::GlobalSettingsForm(QWidget *parent)
+		: QWidget(parent)
+	{
+		ui.setupUi(this);
+		m_background = new QFrame(this);
+		m_background->lower();
+		m_background->resize(size());
+		m_background->setStyleSheet("border : 1px solid rgb(0,200,255);");
+		m_background->setGraphicsEffect(new QGraphicsBlurEffect);
+	}
 
-GlobalSettingsForm::~GlobalSettingsForm()
-{
+	GlobalSettingsForm::~GlobalSettingsForm()
+	{
 
-}
+	}
 
-void GlobalSettingsForm::resizeEvent(QResizeEvent*)
-{
-	m_background->resize(size());
+	void GlobalSettingsForm::resizeEvent(QResizeEvent*)
+	{
+		m_background->resize(size());
+	}
 }

@@ -3,8 +3,12 @@
 
 class QString;
 
-__interface ISyntaxHilighter
+namespace ASL
 {
-	void SetApproxVars(const std::vector<std::string> &vars);
-	void SetApproxVars(const std::vector<QString> &vars);
-};
+	__interface ISyntaxHilighter
+	{
+		void AddApproxVar(const QString& var);
+		void SetApproxVars(const std::vector<QString> &vars);
+		void Update();
+	};
+}

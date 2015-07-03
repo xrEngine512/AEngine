@@ -328,8 +328,8 @@ bool Scene::Render()
 	return true;
 }
 
-void Scene::SetASLInterface(IApproxShaderLabExternalControl* ctrl)
+void Scene::SetASLInterface(ASL::IApproxShaderLabExternalControl* ctrl)
 {
     m_asl = ctrl;
-    m_asl->SetSceneProperties(g_materialInterfaceManager->GetMaterialVariables());
+	m_asl->SetMaterialVariables(g_materialInterfaceManager->GetMaterialVariables());
 }

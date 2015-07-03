@@ -1,15 +1,20 @@
 #pragma once
 #include "Enums.h"
-struct ApproxViewSessionInfo;
+
 class QString;
-__interface IControllerSession
+
+namespace ASL
 {
-	int OpenSession();
-	ASL::Errors Compile(const ApproxViewSessionInfo&);
-	void SaveShader(const ApproxViewSessionInfo&);
-	void SaveProject(const ApproxViewSessionInfo&);
-	void LoadProject(ApproxViewSessionInfo&);
-	bool CheckFileExists(QString& fileName);
-	void CloseSession(const ApproxViewSessionInfo&);
-	void CloseSession(const int ID);
-};
+	struct ViewSessionInfo;
+	__interface IControllerSession
+	{
+		int OpenSession();
+		ASL::Errors Compile(const ViewSessionInfo&);
+		void SaveShader(const ViewSessionInfo&);
+		void SaveProject(const ViewSessionInfo&);
+		void LoadProject(ViewSessionInfo&);
+		bool CheckFileExists(QString& fileName);
+		void CloseSession(const ViewSessionInfo&);
+		void CloseSession(const int ID);
+	};
+}

@@ -1,11 +1,14 @@
 #pragma once
 class QWidget;
 
-__interface IApproxShaderLabControl
+namespace ASL
 {
-    void Run();
-    void Shutdown();
-    void SetParentWidget(QWidget*);
-};
+	__interface IApproxShaderLabControl
+	{
+		void Run();
+		void Shutdown();
+		void SetParentWidget(QWidget*);
+	};
 
-extern __declspec(dllexport) IApproxShaderLabControl* GetASLControl();
+	extern __declspec(dllexport) IApproxShaderLabControl* GetASLControl();
+}

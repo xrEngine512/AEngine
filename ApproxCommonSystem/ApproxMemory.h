@@ -17,6 +17,12 @@ namespace ApproxCommon
 			return memset(&object, 0, sizeof(object));
 		}
 
+		template<class T, size_t N>
+		void* ZeroMemStatic(T (&object)[N])
+		{
+			return memset(object, 0, sizeof(T)*N);
+		}
+
 		class CopyDataOwnershipPolicy
 		{
 		protected:

@@ -2,28 +2,22 @@
 #define APPROXGRAPHICSVIEW_H
 
 #include <QGraphicsView>
-
+#include "Enums.h"
 
 namespace ASL{
-    enum Shader_Type;
-}
 
-
-namespace ApproxGUI
-{
-    class ApproxGraphicsView : public QGraphicsView
+    class GraphicsView : public QGraphicsView
     {
         Q_OBJECT
 
     public:
-        ApproxGraphicsView(QWidget *parent);
-        ~ApproxGraphicsView();
+        GraphicsView(QWidget *parent);
+        ~GraphicsView();
     
     signals:
-        void createShaderElem(ASL::Shader_Type);
+        void createShaderElem(Shader_Type);
 		void sceneMoved();
 		void viewChanged();
-    public slots:
 
     private slots:
         void onContextMenu(QAction*);

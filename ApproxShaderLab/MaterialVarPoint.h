@@ -3,26 +3,30 @@
 
 #include <QLabel>
 
-class MaterialVarPoint : public QLabel
+namespace ASL
 {
-	typedef QLabel BaseClass;
-	Q_OBJECT
+	//class MaterialVar;
 
-public:
-	MaterialVarPoint(QWidget *parent);
-	~MaterialVarPoint();
+	class MaterialVarPoint : public QLabel
+	{
+		typedef QLabel BaseClass;
+		Q_OBJECT
 
-signals:
-	void linkAttempt(QWidget* sender, const QPoint& mouseGlobalPos);
+	public:
+		MaterialVarPoint(QWidget *parent);
+		~MaterialVarPoint();
 
-private:
-	void enterEvent(QEvent*)override;
-	void leaveEvent(QEvent*)override;
-	void mousePressEvent(QMouseEvent*)override;
-	void mouseReleaseEvent(QMouseEvent*)override;
-	void mouseMoveEvent(QMouseEvent*)override;
+	signals:
+		void linkAttempt(const QPoint& mouseGlobalPos);
 
-	
-};
+	private:
+		void enterEvent(QEvent*)override;
+		void leaveEvent(QEvent*)override;
+		void mousePressEvent(QMouseEvent*)override;
+		void mouseReleaseEvent(QMouseEvent*)override;
+		void mouseMoveEvent(QMouseEvent*)override;
 
+		//MaterialVar* m_Var;
+	};
+}
 #endif // MATERIALVARPOINT_H

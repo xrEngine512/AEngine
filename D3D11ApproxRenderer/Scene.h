@@ -53,7 +53,7 @@ class Scene : public IExternalScene
     IInternalHUDElement *m_HUD;
     HUD2D *m_HUD2D;
     StatisticsDisplay *m_StatDisplay;
-    IApproxShaderLabExternalControl *m_asl;
+    ASL::IApproxShaderLabExternalControl *m_asl;
 
     bool LoadThread(IInternalRenderObject* newRenderObject, char *modelFileName, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ);
     bool Render();
@@ -70,5 +70,5 @@ public:
 	bool Frame();
     IExternalRenderObject* AddRenderObject(char *modelFileName, ShaderType type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)override;
     IExternalRenderObject* GetObjectByID(unsigned int ID)override;
-    void SetASLInterface(IApproxShaderLabExternalControl*)override;
+    void SetASLInterface(ASL::IApproxShaderLabExternalControl*)override;
 };

@@ -13,10 +13,10 @@ namespace MatInterface
 		MaterialVariable<XMFLOAT4> ambientColor;
 		MaterialVariable<XMFLOAT4> diffuseColor;
 		SceneConstants() : 
-			projectionMatrix(100, "Proj_Matrix", "this matrix handles calculations for perspective view"),
-			lightDirection(101, "Light_Dir", "direction of light ray"),
-			ambientColor(102, "Ambient_Color","Color of ambient light"),
-			diffuseColor(103, "Diffuse_Color","Color of light")
+			projectionMatrix(100, "Proj_Matrix",SCENE_CONSTANT, "this matrix handles calculations for perspective view"),
+			lightDirection(101, "Light_Dir", SCENE_CONSTANT, "direction of light ray"),
+			ambientColor(102, "Ambient_Color", SCENE_CONSTANT, "Color of ambient light"),
+			diffuseColor(103, "Diffuse_Color", SCENE_CONSTANT, "Color of light")
 		{
 		}
 	};
@@ -25,8 +25,8 @@ namespace MatInterface
 		MaterialVariable<XMMATRIX> viewMatrix;
 		MaterialVariable<XMFLOAT3> cameraPos;
 		PerFrame() : 
-			viewMatrix(104, "View_Matrix", "View matrix describes camera properties"),
-			cameraPos(105, "Camera_Pos")
+			viewMatrix(104, "View_Matrix",PER_FRAME, "View matrix describes camera properties"),
+			cameraPos(105, "Camera_Pos",PER_FRAME)
 		{			
 		}
 	};
@@ -35,8 +35,8 @@ namespace MatInterface
 		MaterialVariable<XMMATRIX> modelMatrix;
 		MaterialVariable<XMMATRIX> MVPMatrix;
 		PerObject() :
-			modelMatrix(106, "Model_Matrix", "Describes current object's transformation"),
-			MVPMatrix(108, "MVP_Matrix", "Model-View-Projection Matrix")
+			modelMatrix(106, "Model_Matrix", PER_OBJECT, "Describes current object's transformation"),
+			MVPMatrix(108, "MVP_Matrix", PER_OBJECT,"Model-View-Projection Matrix")
 		{			
 		}
 	};

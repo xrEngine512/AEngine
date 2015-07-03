@@ -7,15 +7,11 @@ void AsynchronicThread::Thread()
     while (!m_Shutdown.load())
     {
 		UpdateTasks();
-		for (auto task : m_Tasks)
-		{
-			task->Call();
-		}
-       /* UpdateTasks();
+		
+        UpdateTasks();
 
         LARGE_INTEGER frequency;
         LARGE_INTEGER t1, t2;
-        QueryPerformanceFrequency(&frequency);
         QueryPerformanceCounter(&t1);
         for (auto threadFunc = m_Tasks.begin(); threadFunc < m_Tasks.end();)
         {
@@ -30,7 +26,8 @@ void AsynchronicThread::Thread()
             }
         }
         QueryPerformanceCounter(&t2);
-        m_LoopTime.store((t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);*/
+		QueryPerformanceFrequency(&frequency);
+        m_LoopTime.store((t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart);
     }
 }
 

@@ -42,6 +42,9 @@
     <Filter Include="Control">
       <UniqueIdentifier>{bdcb7072-72a6-4b7e-a878-4c92fde36de6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Native">
+      <UniqueIdentifier>{38e80265-eb2e-41ba-99cb-070c1031d04a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\Debug\moc_shaderlabgui.cpp">
@@ -119,43 +122,7 @@
     <ClCompile Include="ApproxGUIMenuButton.cpp">
       <Filter>View</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxGraphicsView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ApproxGraphicsView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="ApproxGraphicsView.cpp">
-      <Filter>View</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxShaderView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ApproxShaderView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="ApproxShaderView.cpp">
-      <Filter>View</Filter>
-    </ClCompile>
     <ClCompile Include="wnd.cpp">
-      <Filter>View</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxSceneVarsContainer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ApproxSceneVarsContainer.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="ApproxSceneVarsContainer.cpp">
-      <Filter>View</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ApproxSceneVar.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ApproxSceneVar.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="ApproxSceneVar.cpp">
       <Filter>View</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_resources.cpp">
@@ -197,6 +164,60 @@
     <ClCompile Include="Link.cpp">
       <Filter>View</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_shaderlabguielement.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_shaderlabguielement.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MaterialVar.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MaterialVar.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialVar.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialVarsContainer.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MaterialVarsContainer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MaterialVarsContainer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ShaderEditor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ShaderEditor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderEditor.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_GraphicsView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_GraphicsView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsView.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ShaderBuffer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ShaderBuffer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderBuffer.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="NativeInterface.cpp">
+      <Filter>Native</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="approxshaderlab_global.h">
@@ -235,12 +256,6 @@
     <ClInclude Include="HLSLCodeProcessing.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="ApproxViewSessionInfo.h">
-      <Filter>View</Filter>
-    </ClInclude>
-    <ClInclude Include="ScenePropertyVisualInfo.h">
-      <Filter>View</Filter>
-    </ClInclude>
     <ClInclude Include="IControllerSession.h">
       <Filter>Control</Filter>
     </ClInclude>
@@ -252,6 +267,15 @@
     </ClInclude>
     <ClInclude Include="ISyntaxHilighter.h">
       <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewSessionInfo.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialVarInfo.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="NativeInterface.h">
+      <Filter>Native</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -285,19 +309,7 @@
     <CustomBuild Include="ApproxGUIMenuButton.h">
       <Filter>View</Filter>
     </CustomBuild>
-    <CustomBuild Include="ApproxGraphicsView.h">
-      <Filter>View</Filter>
-    </CustomBuild>
     <CustomBuild Include="wnd.h">
-      <Filter>View</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ApproxShaderView.h">
-      <Filter>View</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ApproxSceneVarsContainer.h">
-      <Filter>View</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ApproxSceneVar.h">
       <Filter>View</Filter>
     </CustomBuild>
     <CustomBuild Include="Resources\resources.qrc">
@@ -316,6 +328,21 @@
       <Filter>View</Filter>
     </CustomBuild>
     <CustomBuild Include="Link.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MaterialVar.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MaterialVarsContainer.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShaderEditor.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GraphicsView.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShaderBuffer.h">
       <Filter>View</Filter>
     </CustomBuild>
   </ItemGroup>

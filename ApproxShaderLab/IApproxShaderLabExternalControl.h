@@ -1,9 +1,13 @@
 #pragma once
 #include <vector>
-
-__interface IMaterialVariable;
-
-__interface IApproxShaderLabExternalControl
+namespace MatInterface
 {
-	void SetSceneProperties(std::vector<IMaterialVariable*>const& MI_Info);
-};
+	__interface IMaterialVariable;
+}
+namespace ASL
+{
+	__interface IApproxShaderLabExternalControl
+	{
+		void SetMaterialVariables(std::vector<MatInterface::IMaterialVariable*>const& MI_Info);
+	};
+}
