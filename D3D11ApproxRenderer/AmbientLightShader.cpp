@@ -100,7 +100,7 @@ bool AmbientLightShader::CreateSamplerState(ID3D11Device* device)
 	return true;
 }
 
-ShaderType AmbientLightShader::GetType()
+ShaderDesc AmbientLightShader::GetType()
 {
 	return AMBIENT_LIGHT_SHADER;
 }

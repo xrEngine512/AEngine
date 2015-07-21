@@ -7,7 +7,7 @@ class ObjMeshLoader :
     struct VertexType
 	{
 		XMFLOAT3 position;
-        XMFLOAT4 color;
+        //XMFLOAT4 color;
 		XMFLOAT2 texture;
 		XMFLOAT3 normal;
 	};

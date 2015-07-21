@@ -9,7 +9,7 @@ public:
 
     WireframeShader();
     void Initialize(ID3D11Device* device)override;
-    ShaderType GetType()override;
+    ShaderDesc GetType()override;
     void Shutdown()override;
     ~WireframeShader();
 };

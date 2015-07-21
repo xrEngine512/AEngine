@@ -1,5 +1,6 @@
 #pragma once
 #include "Enums.h"
+#include "ShaderBuffer.h"
 
 namespace ASL
 {
@@ -13,5 +14,6 @@ namespace ASL
 		void PosInc(){ pos++; }
 		int pos = 0;
 		bool PosInRange() const{ return pos < Str_code.size(); }
+		std::vector<RuntimeBufferInfo> BuffersInfo;
 	};
 }

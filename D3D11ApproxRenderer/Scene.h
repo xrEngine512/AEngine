@@ -68,7 +68,7 @@ public:
 	bool Initialize(HWND, int, int, bool);
 	void Shutdown();
 	bool Frame();
-    IExternalRenderObject* AddRenderObject(char *modelFileName, ShaderType type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)override;
+    IExternalRenderObject* AddRenderObject(char *modelFileName, const ShaderDesc &type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)override;
     IExternalRenderObject* GetObjectByID(unsigned int ID)override;
     void SetASLInterface(ASL::IApproxShaderLabExternalControl*)override;
 };

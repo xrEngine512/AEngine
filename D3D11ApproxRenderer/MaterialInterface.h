@@ -2,8 +2,11 @@
 #include "MaterialVariable.h"
 #include "AlignedObject.h"
 #include <DirectXMath.h>
+#include "IShader.h"
+#include <unordered_set>
 
 using namespace DirectX;
+
 namespace MatInterface
 {
 	struct SceneConstants : AlignedObject
@@ -12,6 +15,7 @@ namespace MatInterface
 		MaterialVariable<XMFLOAT3> lightDirection;
 		MaterialVariable<XMFLOAT4> ambientColor;
 		MaterialVariable<XMFLOAT4> diffuseColor;
+
 		SceneConstants() : 
 			projectionMatrix(100, "Proj_Matrix",SCENE_CONSTANT, "this matrix handles calculations for perspective view"),
 			lightDirection(101, "Light_Dir", SCENE_CONSTANT, "direction of light ray"),
@@ -29,6 +33,15 @@ namespace MatInterface
 			cameraPos(105, "Camera_Pos",PER_FRAME)
 		{			
 		}
+		void NotifyAll(ID3D11DeviceContext* c)
+		{
+			for (auto shader : m_Subscribers)
+			{
+				shader->UpdateSceneConstantsBuffers(c);
+			}
+		}
+	private:
+		unordered_set<IShader*> m_Subscribers;
 	};
 	struct PerObject : AlignedObject
 	{
@@ -46,5 +59,13 @@ namespace MatInterface
 		SceneConstants	sceneConstants;
 		PerFrame		perFrameData;
 		PerObject		perObjectData;
+		void CalculateMVPAfterTranspose()
+		{
+			perObjectData.MVPMatrix = Multiply(sceneConstants.projectionMatrix, perFrameData.viewMatrix, perObjectData.modelMatrix);
+		}
+		void CalculateMVPBeforeTranspose()
+		{
+			perObjectData.MVPMatrix = Multiply(perObjectData.modelMatrix, perFrameData.viewMatrix, sceneConstants.projectionMatrix);
+		}
 	};
 }

@@ -1,14 +1,18 @@
 #pragma once
 #include "IShader.h"
-#include <map>
+#include <unordered_map>
 class ShaderPool
 {
-    std::map<ShaderType, IShader*> m_IndexTable;
+	std::vector<const ShaderDesc*> m_shaderDescs;
+    std::unordered_map<int, IShader*> m_ShaderCache;
     ID3D11Device* m_device;
-    HWND m_hwnd;
 public:
-    explicit ShaderPool(ID3D11Device*, HWND);
-    IShader* GetShader(ShaderType);
+    ShaderPool(ID3D11Device*, const std::wstring& shadersDir, HWND);
+    IShader* GetShader(const ShaderDesc&);
+	IShader* GetShader(int ID);
+	void UpdatePerFrameBuffersForAll(ID3D11DeviceContext*);
+	void UpdateSceneConstantsBuffersForAll(ID3D11DeviceContext*);
+	const std::vector<const ShaderDesc*>& LoadedShadersDescs()const;
     void Shutdown();
     ~ShaderPool();
 };

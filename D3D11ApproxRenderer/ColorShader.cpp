@@ -55,7 +55,7 @@ bool ColorShader::CreateInputLayout(ID3D11Device* device, ID3DBlob* vertexShader
 	return true;
 }
 
-ShaderType ColorShader::GetType()
+ShaderDesc ColorShader::GetType()
 {
 	return COLOR_SHADER;
 }

@@ -42,28 +42,31 @@ bool Scene::Initialize(HWND hwnd, int screenWidth, int screenHeight, bool FullSc
 {
 	bool result;
 	m_hwnd = hwnd;
-		
+
 	// Create the Direct3D object.
 	m_D3D = new D3D11;
-	if(!m_D3D)
+	if (!m_D3D)
 	{
 		return false;
 	}
 
-    
-   
-    m_SceneGraphRoot = new SceneGraphNode(-SCREEN_DEPTH, SCREEN_DEPTH, -SCREEN_DEPTH, SCREEN_DEPTH, -SCREEN_DEPTH, SCREEN_DEPTH);
-    m_SceneGraphRoot->Subdivide(4);
-   
-    // Initialize the Direct3D object.
-    result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FullScreen, SCREEN_DEPTH, SCREEN_NEAR);
-	if(!result)
+
+
+	m_SceneGraphRoot = new SceneGraphNode(-SCREEN_DEPTH, SCREEN_DEPTH, -SCREEN_DEPTH, SCREEN_DEPTH, -SCREEN_DEPTH, SCREEN_DEPTH);
+	m_SceneGraphRoot->Subdivide(4);
+
+	// Initialize the Direct3D object.
+	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FullScreen, SCREEN_DEPTH, SCREEN_NEAR);
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D", L"Error", MB_OK);
 		return false;
 	}
 
-    g_ShaderPool = new ShaderPool(m_D3D->GetDevice(),m_hwnd);
+	
+	g_ShaderPool = new ShaderPool(m_D3D->GetDevice(),L"../",m_hwnd);
+	
+
 #ifdef RENDER_OCTREE
     m_SceneGraphRoot->PrepareToRender(m_D3D->GetDevice());
 #endif
@@ -119,7 +122,7 @@ bool Scene::Initialize(HWND hwnd, int screenWidth, int screenHeight, bool FullSc
 	return true;
 }
 
-IExternalRenderObject* Scene::AddRenderObject(char *modelFileName, ShaderType type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)
+IExternalRenderObject* Scene::AddRenderObject(char *modelFileName, const ShaderDesc& type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)
 {
     if (m_ModelLoadingThread)
     {
@@ -185,7 +188,7 @@ bool Scene::SetupEnvironment()
 	m_light->SetDirection(1, 0, 1);
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_Camera->SetPosition(1.0f, 0.0f, 0.0f);
 	m_Camera->SetRotation(0, 0, 0);
 
 	m_D3D->GetProjectionMatrix(projectionMatrix);
@@ -194,6 +197,8 @@ bool Scene::SetupEnvironment()
 	m_materialInterface.sceneConstants.diffuseColor = m_light->GetDiffuseColor();
 	m_materialInterface.sceneConstants.ambientColor = m_light->GetAmbientColor();
 	m_materialInterface.sceneConstants.lightDirection = m_light->GetDirection();
+
+	g_ShaderPool->UpdateSceneConstantsBuffersForAll(m_D3D->GetDeviceContext());
 
     return true;
 }
@@ -311,6 +316,8 @@ bool Scene::Render()
 	m_materialInterface.perFrameData.viewMatrix = XMMatrixTranspose(viewMatrix);
 	m_materialInterface.perFrameData.cameraPos = m_Camera->GetPosition();
 
+	g_ShaderPool->UpdatePerFrameBuffersForAll(m_D3D->GetDeviceContext());
+
     m_SceneGraphRoot->Render(m_D3D->GetDeviceContext(), m_materialInterface);
 	
     m_D3D->TurnZBufferOff();
@@ -331,5 +338,5 @@ bool Scene::Render()
 void Scene::SetASLInterface(ASL::IApproxShaderLabExternalControl* ctrl)
 {
     m_asl = ctrl;
-	m_asl->SetMaterialVariables(g_materialInterfaceManager->GetMaterialVariables());
+	m_asl->SetMaterialInterfaceInfo(g_materialInterfaceManager->GetMaterialInterfaceInfo());
 }

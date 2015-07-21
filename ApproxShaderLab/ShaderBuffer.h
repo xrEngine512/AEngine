@@ -1,12 +1,13 @@
 #ifndef SHADERBUFFER_H
 #define SHADERBUFFER_H
 
-#include <QObject>
+#include <qobject.h>
 #include "Enums.h"
-
+#include "RuntimeBufferInfo.h"
 namespace ASL
 {
 	struct MaterialVarInfo;
+	struct ShaderParamInfo;
 
 	class ShaderBuffer : public QObject
 	{
@@ -17,15 +18,26 @@ namespace ASL
 		ShaderBuffer(QObject *parent, const QString& name);
 		void AddVariable(int ID, const QString& type, const QString& name);
 		void AddVariable(const MaterialVarInfo& var);
-		QString ToCode();
+		void AddVariable(const ShaderParamInfo& var);
+		void DeleteVariable(const MaterialVarInfo& var);
+		QString ToCode()const;
 		int CodeSize()const;
+		const RuntimeBufferInfo& Info();
 		static inline QString NormalizeType(const QString& type);
 		~ShaderBuffer();
-
 	private:
-		QString m_code;
-		VarGroup m_group;
-		std::vector<int> m_IDs;
+		inline QString VarToCode(const MaterialVarInfo& var)const;
+		inline QString VarToCode(const ShaderParamInfo& var)const;
+		static int SizeOf(const QString& type);
+
+		QString m_bufferName;
+		RuntimeBufferInfo m_info;
+
+		std::vector<const MaterialVarInfo*> m_vars;
+		std::vector<const ShaderParamInfo*> m_params;
+
+		int m_bufSize;
+		
 	};
 }
 #endif // SHADERBUFFER_H

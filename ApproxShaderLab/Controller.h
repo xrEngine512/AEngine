@@ -26,7 +26,7 @@ namespace ASL
 		void CloseSession(const int ID)override final;
 		void Run()override final;
 		void Shutdown()override final;
-		void SetMaterialVariables(std::vector <MatInterface::IMaterialVariable*>const&)override final;
+		void SetMaterialInterfaceInfo(MatInterface::MaterialInterfaceInfo const& MI_Info)override final;
 		Controller();
 		virtual ~Controller();
 	};

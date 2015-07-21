@@ -6,13 +6,13 @@ struct __declspec(align(16)) AbstractShaderParams : public IShaderParams
 {
 	bool ContainsLight();
 	bool ContainsSpecularity();
-	ShaderType GetShaderType();
+	//ShaderDesc GetShaderDesc();
 	XMMATRIX worldMatrix;
 	XMMATRIX viewMatrix;
 	XMMATRIX projectionMatrix;
 	int indexCount;    
 protected:
-	ShaderType type = WIREFRAME_SHADER;
+	ShaderDesc type;
 };
 
 struct __declspec(align(16)) ColorShaderParams : public AbstractShaderParams
@@ -39,7 +39,7 @@ struct __declspec(align(16)) SpecularShaderParams : public AmbientLightShaderPar
 };
 
 //#pragma pack(pop)
-IShaderParams* ShaderParamsFactory(ShaderType);
+IShaderParams* ShaderParamsFactory(ShaderDesc);
 
 typedef std::atomic <AmbientLightShaderParams> TS_AmbientLightShaderParams;
 typedef std::atomic < SpecularShaderParams > TS_SpecularShaderParams;

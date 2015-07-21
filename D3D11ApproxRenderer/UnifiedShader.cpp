@@ -4,13 +4,15 @@
 #include <ApproxStatistics.h>
 #include <ApproxSystemTools.h>
 #include "MaterialInterface.h"
+#include "MaterialInterfaceManager.h"
 #include "RGS.h"
+#include <RuntimeBufferInfo.h>
 
 using namespace MatInterface;
 
-UnifiedShader::UnifiedShader(wchar_t *acs_filename) :m_computeShader(nullptr), m_NumberOfTextureSlots(0),
-m_vertexShader(nullptr), m_pixelShader(nullptr), m_geometryShader(nullptr), m_hullShader(nullptr), m_domainShader(nullptr), m_layout(nullptr), m_perObjectBuffer(nullptr),
-m_sampleState(nullptr), m_textures(nullptr)
+UnifiedShader::UnifiedShader(const wchar_t *acs_filename, const ShaderDesc& desc) :m_desc(desc), m_vertexShader(nullptr), m_pixelShader(nullptr),
+m_geometryShader(nullptr), m_computeShader(nullptr), m_hullShader(nullptr), m_domainShader(nullptr), m_layout(nullptr), m_sampleState(nullptr),
+m_textures(nullptr), m_NumberOfTextureSlots(0), PS_buffers(), VS_buffers()
 {
     m_reader = new ACSReader(acs_filename);
 }
@@ -19,8 +21,10 @@ void UnifiedShader::Initialize(ID3D11Device* device)
 {
 	char* sm;
 	bool end_of_file(false);
-	bool t(false);
 	ShaderElement VS_Element;
+
+	vector<D3D11_INPUT_ELEMENT_DESC> inputLayout;
+
 	while (!end_of_file)
 	{
 		ShaderElement current_element = m_reader->NextElement();
@@ -28,17 +32,35 @@ void UnifiedShader::Initialize(ID3D11Device* device)
 		switch (current_element.m_MetaData.ID)
 		{
 		case SHADER_NAME:
-			m_ShaderName.assign((char*)current_element.Data);
+			m_desc.name.assign((char*)current_element.Data);
 			break;
 		case COMPILED_VS:
+		{
 			VS_Element = current_element;
+			short num = 0;
+			for (auto buffer : current_element.FindMany(RUNTIME_BUFFER_INFO))
+			{
+				ASL::RuntimeBufferInfo info;
+				info.Deserialize(buffer->Data, buffer->m_MetaData.size);
+				InitializeBuffer(device, info, VS_buffers, num);
+				num++;
+			}
 			device->CreateVertexShader(current_element.Data, current_element.m_MetaData.size, NULL, &m_vertexShader);
 			break;
+		}
 		case COMPILED_PS:
-			if (!t)		//# Костыль начинается
-				device->CreatePixelShader(current_element.Data, current_element.m_MetaData.size, NULL, &m_pixelShader);
-			t = true;	//Костыль кончается
+		{
+			short num = 0;
+			for (auto buffer : current_element.FindMany(RUNTIME_BUFFER_INFO))
+			{
+				ASL::RuntimeBufferInfo info;
+				info.Deserialize(buffer->Data, buffer->m_MetaData.size);
+				InitializeBuffer(device, info, PS_buffers, num);
+				num++;
+			}
+			device->CreatePixelShader(current_element.Data, current_element.m_MetaData.size, NULL, &m_pixelShader);
 			break;
+		}
 		case COMPILED_GS:
 			device->CreateGeometryShader(current_element.Data, current_element.m_MetaData.size, NULL, &m_geometryShader);
 			break;
@@ -51,29 +73,14 @@ void UnifiedShader::Initialize(ID3D11Device* device)
 		case COMPILED_DS:
 			device->CreateDomainShader(current_element.Data, current_element.m_MetaData.size, NULL, &m_domainShader);
 			break;
-		case IL_SEMANTIC_NAME:
-			sm = new char[current_element.m_MetaData.size];
-			memcpy(sm, current_element.Data, current_element.m_MetaData.size);
-			m_semanticNames.push_back(sm);
-			break;
-		case INPUT_LAYOUT:
-		{
-			HRESULT result;
-			int numOfElems = current_element.m_MetaData.size / sizeof(D3D11_INPUT_ELEMENT_DESC);
-			D3D11_INPUT_ELEMENT_DESC* inputLayout = new D3D11_INPUT_ELEMENT_DESC[numOfElems];
-
-			D3D11_INPUT_LAYOUT_ELEMENT* pElement = static_cast<D3D11_INPUT_LAYOUT_ELEMENT*>(current_element.Data);
-			for (int i = 0; i < numOfElems; i++)
-			{
-				inputLayout[i] = pElement[i].ToElemDesc();
-			}
-			int i(0);
-			for (auto semName : m_semanticNames)
-			{
-				inputLayout[i++].SemanticName = semName;
-			}
-			result = device->CreateInputLayout(inputLayout, m_semanticNames.size(), VS_Element.Data, VS_Element.m_MetaData.size, &m_layout);
-
+		case INPUT_LAYOUT_ELEMENT:
+		{			
+			D3D11_INPUT_ELEMENT_DESC elementDesc;
+			D3D11_INPUT_LAYOUT_ELEMENT element;
+			current_element.Get(element);
+			elementDesc = element.ToElemDesc();
+			current_element.Find(IL_SEMANTIC_NAME)->Get(elementDesc.SemanticName);
+			inputLayout.push_back(elementDesc);
 			break;
 		}
 		case ID_NONE:
@@ -83,25 +90,20 @@ void UnifiedShader::Initialize(ID3D11Device* device)
 		}
 		}
 	}
-	D3D11_BUFFER_DESC matrixBufferDesc;
-	HRESULT result;
-
-	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
-	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	//result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
-
-	m_textures = new ID3D11ShaderResourceView*[m_NumberOfTextureSlots];
+	delete m_reader;
+	m_reader = nullptr;
+	auto result = device->CreateInputLayout(inputLayout.data(), inputLayout.size(), VS_Element.Data, VS_Element.m_MetaData.size, &m_layout);
+	m_textures = new ID3D11ShaderResourceView*[m_NumberOfTextureSlots];		
 }
 
 void UnifiedShader::Shutdown()
 {
-	DELETE_D3D11_OBJECT(m_perObjectBuffer);
+	DELETE_D3D11_OBJECT(VS_buffers.m_perObjectBuffer.m_Buffer);
+	DELETE_D3D11_OBJECT(VS_buffers.m_perFrameBuffer.m_Buffer);
+	DELETE_D3D11_OBJECT(VS_buffers.m_sceneConstants.m_Buffer);
+
+	//Delete RGS
+
     DELETE_D3D11_OBJECT(m_layout);
     DELETE_D3D11_OBJECT(m_sampleState);
     DELETE_D3D11_OBJECT(m_pixelShader);
@@ -116,9 +118,9 @@ void UnifiedShader::Shutdown()
     }
 }
 
-ShaderType UnifiedShader::GetType()
+const ShaderDesc& UnifiedShader::GetDesc()
 {
-    return UNIFIED_SHADER;
+    return m_desc;
 }
 
 unsigned short UnifiedShader::GetNumberOfTextureSlots()
@@ -136,6 +138,51 @@ bool UnifiedShader::SetTexture(ID3D11ShaderResourceView* texture, unsigned slot)
     return false;
 }
 
+void UnifiedShader::InitializeBuffer(ID3D11Device* device, const ASL::RuntimeBufferInfo& info, BufferPack& pack, short BufferNum)
+{
+	auto vars = g_materialInterfaceManager->GetMaterialVariablesPtr(info.IDs);
+	
+	D3D11_BUFFER_DESC desc;
+
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = 0;
+
+	HRESULT res;
+	
+	switch (info.group)
+	{
+	case SCENE_CONSTANT:
+	{		
+		pack.m_sceneConstantsData = new RGS(vars);
+		pack.m_sceneConstants.num = BufferNum;
+		desc.ByteWidth = pack.m_sceneConstantsData->Size();
+		res = device->CreateBuffer(&desc, nullptr, &pack.m_sceneConstants.m_Buffer);
+		break;
+	}
+	case PER_FRAME:
+	{
+		pack.m_perFrameData = new RGS(vars);
+		pack.m_perFrameBuffer.num = BufferNum;
+		desc.ByteWidth = pack.m_perFrameData->Size();
+		res = device->CreateBuffer(&desc, nullptr, &pack.m_perFrameBuffer.m_Buffer);
+		break;
+	}
+	case PER_OBJECT:
+	{
+		pack.m_perObjectData = new RGS(vars);
+		pack.m_perObjectBuffer.num = BufferNum;
+		desc.ByteWidth = pack.m_perObjectData->Size();
+		res = device->CreateBuffer(&desc, nullptr, &pack.m_perObjectBuffer.m_Buffer);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
 bool UnifiedShader::UpdateBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, RGS *data)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -147,80 +194,75 @@ bool UnifiedShader::UpdateBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buf
 	*data = mappedResource.pData;
 	data->Update();
 	context->Unmap(buffer, 0);
+
 	return true;
 }
 
-bool UnifiedShader::UpdateSceneConstants(ID3D11DeviceContext* context)
+bool UnifiedShader::UpdateSceneConstantsBuffers(ID3D11DeviceContext* context)
 {
-	if (m_sceneConstants)
-	{
-		if (!UpdateBuffer(context, m_sceneConstants, m_sceneConstantsData))
+	if (VS_buffers.m_sceneConstants.m_Buffer)
+		if (!UpdateBuffer(context, VS_buffers.m_sceneConstants.m_Buffer, VS_buffers.m_sceneConstantsData))
 			return false;
-	}
+	if (PS_buffers.m_sceneConstants.m_Buffer)
+		if (!UpdateBuffer(context, PS_buffers.m_sceneConstants.m_Buffer, PS_buffers.m_sceneConstantsData))
+			return false;
 	return true;
 }
 
-bool UnifiedShader::UpdatePerFrameBuffer(ID3D11DeviceContext* context)
+bool UnifiedShader::UpdatePerFrameBuffers(ID3D11DeviceContext* context)
 {
-	if (m_perFrameBuffer)
-	{
-		if (!UpdateBuffer(context, m_perFrameBuffer, m_perFrameData))
+	if (VS_buffers.m_perFrameBuffer.m_Buffer)
+		if (!UpdateBuffer(context, VS_buffers.m_perFrameBuffer.m_Buffer, VS_buffers.m_perFrameData))
 			return false;
-	}
+	if (PS_buffers.m_perFrameBuffer.m_Buffer)
+		if (!UpdateBuffer(context, PS_buffers.m_perFrameBuffer.m_Buffer, PS_buffers.m_perFrameData))
+			return false;
 	return true;
 }
 
-bool UnifiedShader::UpdatePerObjectBuffer(ID3D11DeviceContext* context)
+bool UnifiedShader::UpdatePerObjectBuffers(ID3D11DeviceContext* context)
 {
-	if (m_perObjectBuffer)
-	{
-		if (!UpdateBuffer(context, m_perObjectBuffer, m_perObjectData))
+	if (VS_buffers.m_perObjectBuffer.m_Buffer)
+		if (!UpdateBuffer(context, VS_buffers.m_perObjectBuffer.m_Buffer, VS_buffers.m_perObjectData))
 			return false;
-	}
+	if (PS_buffers.m_perObjectBuffer.m_Buffer)
+		if (!UpdateBuffer(context, PS_buffers.m_perObjectBuffer.m_Buffer, PS_buffers.m_perObjectData))
+			return false;
 	return true;
 }
 
 bool UnifiedShader::Render(ID3D11DeviceContext* context, unsigned int indexCount)
 {
-    HRESULT result;
-    
-    MatrixBufferType* dataPtr;
+    HRESULT result;    
+   
     unsigned int bufferNumber;
-    // Transpose the matrices to prepare them for the shader.
-   /* m_basicParams->worldMatrix = XMMatrixTranspose(m_basicParams->worldMatrix);
-    m_basicParams->viewMatrix = XMMatrixTranspose(m_basicParams->viewMatrix);
-    m_basicParams->projectionMatrix = XMMatrixTranspose(m_basicParams->projectionMatrix);*/
-    // Lock the constant buffer so it can be written to.
-	if (!UpdatePerObjectBuffer(context))
-		return false;
-    // Set the position of the constant buffer in the vertex shader.
-    bufferNumber = 0;
 
-    // Finanly set the constant buffer in the vertex shader with the updated values.
-	if (m_perObjectBuffer)
-	{
-		context->VSSetConstantBuffers(bufferNumber, 1, &m_perObjectBuffer);
-		bufferNumber++;
-	}
-	if (m_perFrameBuffer)
-	{
-		context->VSSetConstantBuffers(bufferNumber, 1, &m_perFrameBuffer);
-		bufferNumber++;
-	}
-	if (m_sceneConstants)
-	{
-		context->VSSetConstantBuffers(bufferNumber, 1, &m_sceneConstants);
-	}
+	if (!UpdatePerObjectBuffers(context))
+		return false;	
+
+	if (VS_buffers.m_sceneConstants.m_Buffer)
+		context->VSSetConstantBuffers(VS_buffers.m_sceneConstants.num, 1, &VS_buffers.m_sceneConstants.m_Buffer);
+	if (PS_buffers.m_sceneConstants.m_Buffer)
+		context->PSSetConstantBuffers(PS_buffers.m_sceneConstants.num, 1, &PS_buffers.m_sceneConstants.m_Buffer);
+	if (VS_buffers.m_perFrameBuffer.m_Buffer)
+		context->VSSetConstantBuffers(VS_buffers.m_perFrameBuffer.num, 1, &VS_buffers.m_perFrameBuffer.m_Buffer);
+	if (PS_buffers.m_perFrameBuffer.m_Buffer)
+		context->PSSetConstantBuffers(PS_buffers.m_perFrameBuffer.num, 1, &PS_buffers.m_perFrameBuffer.m_Buffer);
+	if (VS_buffers.m_perObjectBuffer.m_Buffer)
+		context->VSSetConstantBuffers(VS_buffers.m_perObjectBuffer.num, 1, &VS_buffers.m_perObjectBuffer.m_Buffer);
+	if (PS_buffers.m_perObjectBuffer.m_Buffer)
+		context->PSSetConstantBuffers(PS_buffers.m_perObjectBuffer.num, 1, &PS_buffers.m_perObjectBuffer.m_Buffer);
 
     if (m_NumberOfTextureSlots)
         context->PSSetShaderResources(0, m_NumberOfTextureSlots, m_textures);
     // Set the vertex input layout.
-    context->IASetInputLayout(m_layout);
+	context->IASetInputLayout(m_layout);
 
     // Set the vertex and pixel shaders that will be used to render this triangle.
     context->VSSetShader(m_vertexShader, NULL, 0);
 
-    context->GSSetShader(m_geometryShader, NULL, 0);
+	if (m_geometryShader)
+		context->GSSetShader(m_geometryShader, NULL, 0);
 
     context->PSSetShader(m_pixelShader, NULL, 0);
     if (m_sampleState)

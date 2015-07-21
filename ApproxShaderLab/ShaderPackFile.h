@@ -5,13 +5,13 @@
 #include <vector>
 #include <ApproxMemory.h>
 #include <ApproxSystemErrors.h>
+#include <unordered_set>
 #include "Literals.h"
 
 enum ShaderPackElementID : unsigned __int16
 {
     ID_NONE, COMPILED_VS, COMPILED_PS, COMPILED_GS, COMPILED_CS, COMPILED_DS, COMPILED_HS,
-	SAMPLER_DESC, INPUT_LAYOUT, IL_SEMANTIC_NAME, SHADER_NAME, CONSTANT_DATA_BUFFER, 
-	PER_FRAME_DATA_BUFFER, PER_OBJECT_DATA_BUFFER, SHADER_PARAMS
+	SAMPLER_DESC, INPUT_LAYOUT_ELEMENT, IL_SEMANTIC_NAME, SHADER_NAME, RUNTIME_BUFFER_INFO
 };
 
 enum class ProjectPackElementID : unsigned __int16
@@ -50,9 +50,9 @@ struct PackElement : DataOwnershipPolicy
 		ID_Type ID;
 		__int64 size = 0;
 		__int8  numOfChildren = 0;
-		MetaData() = default;
+		MetaData() :ID(static_cast<ID_Type>(0)) {};
 	}m_MetaData;
-
+	
 	void* Data = nullptr;
 	
 
@@ -135,11 +135,33 @@ struct PackElement : DataOwnershipPolicy
 		return;
 	}
 	template <class T>
-	void Get(T*& ptr)
+	size_t Get(T*& ptr)
 	{
 		ptr = static_cast<T*>(malloc(m_MetaData.size));
-		memcpy(ptr, Data, m_MetaData.size);
-		return;
+		memcpy((void*)ptr, Data, m_MetaData.size);
+		return m_MetaData.size;
+	}
+	void AllowDuplicatesFor(ID_Type ID, bool affectAllHierarchy = false)
+	{
+		m_allowedDuplicates.insert(ID);
+		if (affectAllHierarchy)
+		{
+			for (auto child : m_children)
+			{
+				child->AllowDuplicatesFor(ID, affectAllHierarchy);
+			}
+		}
+	}
+	void AllowDuplicatesFor(const std::unordered_set<ID_Type>& IDs, bool affectAllHierarchy = false)
+	{
+		m_allowedDuplicates = IDs;
+		if (affectAllHierarchy)
+		{
+			for (auto child : m_children)
+			{
+				child->AllowDuplicatesFor(IDs, affectAllHierarchy);
+			}
+		}
 	}
 	PackElement* Find(ID_Type ID)
 	{
@@ -151,6 +173,18 @@ struct PackElement : DataOwnershipPolicy
 			}
 		}
 		return nullptr;
+	}
+	std::vector<PackElement*> FindMany(ID_Type ID)
+	{
+		std::vector<PackElement*> res;
+		for (auto child : m_children)
+		{
+			if (child->m_MetaData.ID == ID)
+			{
+				res.push_back(child);
+			}
+		}
+		return res;
 	}
 	void operator>>(FILE* file)
 	{
@@ -166,15 +200,20 @@ struct PackElement : DataOwnershipPolicy
 	}
 	void operator<<(PackElement* _child)
 	{
-		for (auto child : m_children)
-		{
-			if (child->m_MetaData.ID == _child->m_MetaData.ID)
+		if (m_allowedDuplicates.find(_child->m_MetaData.ID) == m_allowedDuplicates.end())
+			for (auto child : m_children)
 			{
-				delete child;
-				child = _child;
-				return;
+				if (child->m_MetaData.ID == _child->m_MetaData.ID)
+				{
+					delete child;
+					child = _child;
+					child->m_MetaData.ID = _child->m_MetaData.ID;
+					return;
+				}
 			}
-		}
+		if (affectHierarchy)
+			_child->AllowDuplicatesFor(m_allowedDuplicates, true);
+
 		m_children.push_back(_child);
 		m_MetaData.numOfChildren++;
 	}
@@ -196,6 +235,8 @@ struct PackElement : DataOwnershipPolicy
 	}
 private:
 	std::vector<PackElement*> m_children;
+	bool affectHierarchy = false;
+	std::unordered_set<ID_Type> m_allowedDuplicates;
 };
 
 template<class DataOwnershipPolicy, class ID_Type>
@@ -205,7 +246,9 @@ public:
 	typedef PackElement<DataOwnershipPolicy, ID_Type> LocalElement;
 protected:
 	const char * m_fileExtention;
+	bool affectHierarchy = false;
 	FILE* m_file;
+	std::unordered_set<ID_Type> m_allowedDuplicates;
 	std::vector<LocalElement*> m_Elements;
 
 public:
@@ -238,6 +281,18 @@ public:
 			*element >> m_file;
 		}
 	}
+	void AllowDuplicatesFor(ID_Type ID, bool affectAllHierarchy = false)
+	{
+		affectHierarchy = affectAllHierarchy;
+		m_allowedDuplicates.insert(ID);
+		if (affectAllHierarchy)
+		{
+			for (auto element : m_Elements)
+			{
+				element->AllowDuplicatesFor(ID, affectAllHierarchy);
+			}
+		}
+	}
 	virtual void FromDisk()
 	{
 		ClearElements();
@@ -260,16 +315,19 @@ public:
 	}
 	void operator<<(LocalElement *elem)
 	{
-		for (int i = 0; i < m_Elements.size(); i++)
-		{
-			auto& element = m_Elements[i];
-			if (element->m_MetaData.ID == elem->m_MetaData.ID)
+		if (m_allowedDuplicates.find(elem->m_MetaData.ID) == m_allowedDuplicates.end())
+			for (int i = 0; i < m_Elements.size(); i++)
 			{
-				delete element;
-				element = elem;
-				return;
+				auto& element = m_Elements[i];
+				if (element->m_MetaData.ID == elem->m_MetaData.ID)
+				{
+					delete element;
+					element = elem;
+					return;
+				}
 			}
-		}
+		if (affectHierarchy)
+			elem->AllowDuplicatesFor(m_allowedDuplicates, affectHierarchy);
 		m_Elements.push_back(elem);
 	}
 	bool operator>>(LocalElement*& OutElem)
@@ -348,7 +406,7 @@ class ShaderPackFile : public PackFile<DataOwnershipPolicy, ShaderPackElementID>
 {
 public:
 	ShaderPackFile(){ m_fileExtention = ".acs"; }
-	void ToDisk()override final
+	/*void ToDisk()override final
     {
 		for (auto element : m_Elements)
         {
@@ -365,7 +423,7 @@ public:
             }
 			*element >> m_file;
         }
-    }
+    }*/
 };
 
 template<class DataOwnershipPolicy>

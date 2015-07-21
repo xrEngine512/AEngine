@@ -7,7 +7,7 @@ namespace ASL
 {
 	Session::Session() :m_SM(SM_NONE)
 	{
-		
+		m_file.AllowDuplicatesFor(INPUT_LAYOUT_ELEMENT);
 	}
 
 	inline ProjectPackElementID toID(Shader_Type type)
@@ -75,7 +75,15 @@ namespace ASL
 		for (auto part : m_ShaderParts)
 		{
 			ProjectElement* newElem = new ProjectElement(toID(part.Shader_Type), part.Str_code);
+			newElem->AllowDuplicatesFor(ProjectPackElementID::APPROX_VAR_BUFFER_INFO);
 			*newElem << new ProjectElement(ProjectPackElementID::ENTRY_POINT, part.EntryPoint);
+			for (auto bufferInfo : part.BuffersInfo)
+			{
+				int size;
+				auto buf = bufferInfo.Serialize(size);
+				*newElem << new ProjectElement(ProjectPackElementID::APPROX_VAR_BUFFER_INFO,size ,buf);
+				bufferInfo.CleanSerializedBuffer();
+			}
 			m_project << newElem;
 		}
 
@@ -134,7 +142,17 @@ namespace ASL
 			if (ST != ST_NONE)
 			{
 				ShaderPart newPart;
+				
 				element->Find(ProjectPackElementID::ENTRY_POINT)->Get(newPart.EntryPoint);
+				for (auto subElement : element->FindMany(ProjectPackElementID::APPROX_VAR_BUFFER_INFO))
+				{
+					void * pData;
+					RuntimeBufferInfo bufInfo;
+					auto size = subElement->Get(pData);
+					bufInfo.Deserialize(pData, size);
+					newPart.BuffersInfo.push_back(bufInfo);
+					free(pData);
+				}
 				element->Get(newPart.Str_code);
 				newPart.Shader_Type = ST;
 				m_ShaderParts.push_back(newPart);

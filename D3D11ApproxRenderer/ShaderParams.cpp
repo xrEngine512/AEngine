@@ -3,10 +3,10 @@
 #include <map>
 #include <memory>
 bool ff[2] = { false, false }, tf[2] = { true, false }, tt[2] = {true, true};
-std::map<ShaderType, bool*> shaderDesc = { { COLOR_SHADER, ff }, { TEXTURE_SHADER, ff }, 
+std::map<ShaderDesc, bool*> shaderDesc = { { COLOR_SHADER, ff }, { TEXTURE_SHADER, ff }, 
 {AMBIENT_LIGHT_SHADER, tf}, {SPECULAR_SHADER, tt} };	//Заполнять из XML
 
-ShaderType AbstractShaderParams::GetShaderType()
+ShaderDesc AbstractShaderParams::GetShaderDesc()
 {
 	return type;
 }
@@ -61,7 +61,7 @@ inline void* aligned_alloc(size_t size, size_t alignment = 16)
     return aligned;
 }
 
-IShaderParams* ShaderParamsFactory(ShaderType type)
+IShaderParams* ShaderParamsFactory(ShaderDesc type)
 {
    /* IShaderParams* param;
     size_t size;*/

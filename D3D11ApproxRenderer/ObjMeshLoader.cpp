@@ -12,7 +12,7 @@ ObjMeshLoader::ObjMeshLoader(void):buffer(nullptr)
 
 DWORD ObjMeshLoader::AddVertex(int vertexI, VertexType vertex)
 {
-	vertex.color = XMFLOAT4(0.5, 0.5, 0.5, 1);
+	//vertex.color = XMFLOAT4(0.5, 0.5, 0.5, 1);
 	int res=-1;
     DWORD ind;
 	//Поиск существующей вершины

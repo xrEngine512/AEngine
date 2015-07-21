@@ -1,7 +1,7 @@
 #include "MaterialVar.h"
 #include <ApproxGuiResManager.h>
 #include <qlabel.h>
-#include "MaterialVarPoint.h"
+#include "LinkingPoint.h"
 #include "MaterialVarInfo.h"
 
 QPixmap* GetPicFromType(const QString& type)
@@ -35,21 +35,22 @@ QPixmap* GetPicFromType(const QString& type)
 
 namespace ASL
 {
+
 	MaterialVar::MaterialVar(QWidget *parent, const MaterialVarInfo& info)
 		: QWidget(parent), m_flag(nullptr), m_info(info)
 	{
 		resize(140, 20);
 		m_flag = new QLabel(this);
 		m_name = new QLabel(this);
-		m_point = new MaterialVarPoint(this);
+		m_point = new LinkingPoint(this);
 
-		connect(m_point, &MaterialVarPoint::linkAttempt, [&](const QPoint& mouseGlobalPos){emit linkAttempt(this, mouseGlobalPos); });
+		connect(m_point, &LinkingPoint::linkAttempt, [&](const QPoint& mouseGlobalPos){emit linkAttempt(this, mouseGlobalPos); });
 
 		m_flag->setGeometry(100, 0, 20, 20);
 		m_flag->setPixmap(GetPicFromType(info.type)->scaled(m_flag->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
 		m_point->setGeometry(125, 0, 20, 20);
-		m_point->setPixmap(g_ResManager->GetPic(":/ShaderEditor/flag_point.png")->scaled(m_point->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+		m_point->setNotInUse();
 
 		m_name->setGeometry(0, 0, 100, 20);
 		m_name->setText(info.name);
@@ -58,9 +59,9 @@ namespace ASL
 		m_flag->setToolTip(info.type);
 	}
 
-	const MaterialVarPoint* MaterialVar::Point() const
+	LinkingPoint& MaterialVar::Point() const
 	{
-		return m_point;
+		return *m_point;
 	}
 
 	const MaterialVarInfo& MaterialVar::VarInfo()const

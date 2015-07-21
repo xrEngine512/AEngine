@@ -36,7 +36,7 @@ const wchar_t * ApproxException::Message()
 	return _msg.c_str();
 }
 
-ApproxException ApproxException::becauseOf(ApproxException& reason)
+ApproxException ApproxException::becauseOf(const ApproxException& reason)
 {
     ApproxException res(_msg + L" because " + reason._msg);
     return res;

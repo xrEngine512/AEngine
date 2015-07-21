@@ -46,7 +46,7 @@ bool TextureShader::CreateInputLayout(ID3D11Device* device, ID3DBlob* vertexShad
 	return true;
 }
 
-ShaderType TextureShader::GetType()
+ShaderDesc TextureShader::GetType()
 {
 	return TEXTURE_SHADER;
 }

@@ -5,7 +5,6 @@
 #include "ApproxGUIMenuButton.h"
 #include "ApproxGUIMenuBar.h"
 
-char* QStringToChar(QString qstr);
 using namespace ApproxGUI;
 
 namespace ASL
@@ -15,7 +14,7 @@ namespace ASL
 	{
 		ui.setupUi(client);
 		InitUI();
-
+		
 		m_Menu = new ApproxGUIMenuBar(client);
 		m_btnSettings = new ApproxGUIMenuButton;
 		m_btnAddView = new ApproxGUIMenuButton;
@@ -72,7 +71,7 @@ namespace ASL
 	{
 		ShaderEditor* newView = new ShaderEditor(m_ctrl, client);
 		m_Views.insert(std::pair<QString, ShaderEditor*>(generateViewName(), newView));
-		newView->SetMaterialVariables(m_varInfo);
+		newView->SetMaterialVariables(m_varInfo,m_mi_version);
 		newView->RendererOnline(m_rendererOnline);
 		newView->show();
 	}
@@ -82,13 +81,14 @@ namespace ASL
 
 	}
 
-	void ShaderLabGUI::SetMaterialVariables(std::vector<MaterialVarInfo>& info)
+	void ShaderLabGUI::SetMaterialInterfaceInfo(std::vector<MaterialVarInfo>& info, const QString& ver)
 	{
 		m_rendererOnline = true;
 		m_varInfo = info;
+		m_mi_version =  ver;
 		for (auto view : m_Views)
 		{
-			view.second->SetMaterialVariables(info);
+			view.second->SetMaterialVariables(m_varInfo, m_mi_version);
 			view.second->RendererOnline(true);
 		}
 	}

@@ -30,11 +30,12 @@ namespace ASL
 		ShaderLabGUI(IControllerSession*);
 		~ShaderLabGUI();
 
-		void SetMaterialVariables(std::vector<MaterialVarInfo>&);
+		void SetMaterialInterfaceInfo(std::vector<MaterialVarInfo>&, const QString&);
 
 	private:
 		std::map<QString, ShaderEditor*> m_Views;
 		std::vector<MaterialVarInfo> m_varInfo;
+		QString m_mi_version;
 
 		ApproxGUI::ApproxGUIMenuBar* m_Menu;
 		ApproxGUI::ApproxGUIMenuButton *m_btnSettings, *m_btnAddView;

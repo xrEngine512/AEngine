@@ -82,7 +82,7 @@ void WireframeShader::Initialize(ID3D11Device* device)
     InitializeShader(device, L"../../Core/D3D11ApproxRenderer/Shaders/Wireframe/VertexShader.hlsl", L"../../Core/D3D11ApproxRenderer/Shaders/Wireframe/PixelShader.hlsl", 0, L"../../Core/D3D11ApproxRenderer/Shaders/Wireframe/GeometryShader.hlsl");
 }
 
-ShaderType WireframeShader::GetType()
+ShaderDesc WireframeShader::GetType()
 {
     return WIREFRAME_SHADER;
 }

@@ -1,9 +1,10 @@
 #include "Controller.h"
-#include <IMaterialVariable.h>
+#include <MaterialInterfaceManager.h>
 #include "HLSLCodeProcessing.h"
 #include "Session.h"
 #include "ShaderPart.h"
 #include "ViewSessionInfo.h"
+#include <qvector.h>
 
 using namespace MatInterface;
 
@@ -23,6 +24,7 @@ namespace ASL
 			ShaderPart& lpart = session->partByType(part.Shader_Type);
 			lpart.EntryPoint = part.entryPoint.toStdString();
 			lpart.Str_code = part.qStr_code.toStdString();
+			lpart.BuffersInfo = part.buffersInfo.toStdVector();
 		}
 		return session;
 	}
@@ -38,6 +40,7 @@ namespace ASL
 			partInfo.entryPoint = QString(part.EntryPoint.c_str());
 			partInfo.qStr_code = QString(part.Str_code.c_str());
 			partInfo.Shader_Type = part.Shader_Type;
+			partInfo.buffersInfo = partInfo.buffersInfo.fromStdVector(part.BuffersInfo);	//WTF is This?
 			Out.m_ShaderParts.push_back(partInfo);
 		}
 	}
@@ -125,11 +128,11 @@ namespace ASL
 		m_Sessions.clear();
 	}
 
-	void Controller::SetMaterialVariables(std::vector<IMaterialVariable*>const& properties)
+	void Controller::SetMaterialInterfaceInfo(MatInterface::MaterialInterfaceInfo const& MI_Info)
 	{
-		auto propertyInfo = new std::vector < MaterialVarInfo > ;
-		propertyInfo->reserve(properties.size());
-		for (auto property : properties)
+		std::vector < MaterialVarInfo > propertyInfo;
+		propertyInfo.reserve(MI_Info.Vars.size());
+		for (auto property : MI_Info.Vars)
 		{
 			MaterialVarInfo info;
 			info.type = QString(property->Type());
@@ -137,9 +140,9 @@ namespace ASL
 			info.description = QString(property->Description());
 			info.ID = property->ID();
 			info.group = static_cast<ASL::VarGroup>(property->Group());
-			propertyInfo->push_back(info);
+			propertyInfo.push_back(info);
 		}
-		m_view->SetMaterialVariables(*propertyInfo);
+		m_view->SetMaterialInterfaceInfo(propertyInfo, QString::fromStdString(MI_Info.Ver));
 	}
 
 	Controller::Controller()

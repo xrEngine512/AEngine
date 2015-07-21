@@ -5,34 +5,19 @@
 #include <ApproxSystemErrors.h>
 #include "ShaderPool.h"
 
-Material::Material() :m_Shader(nullptr), m_NumberOFTextureSlots(0), m_ShaderParams(nullptr), m_State(NOT_INITIALIZED)
+Material::Material() :m_Shader(nullptr), m_NumberOFTextureSlots(0), m_State(NOT_INITIALIZED)
 {
 }
 
-bool Material::Initialize(ID3D11Device* device, ShaderType type)
+bool Material::Initialize(ID3D11Device* device, ShaderDesc type)
 {
     m_Shader = g_ShaderPool->GetShader(type);
-    m_ShaderParams = ShaderParamsFactory(type);
     m_device = device;
 
     if (!m_Shader)
     {
         throw ApproxException(L"Could not create the shader object.", L"Material");
     }
-    if (!m_ShaderParams)
-    {
-        throw ApproxException(L"Could not create the shader parameters object.", L"Material");
-    }
-
-	try
-	{
-		m_Shader->Initialize(m_device);
-	}
-	catch (ApproxException reason)
-	{
-		ApproxException(std::wstring(L"Could not initialize the shader object."), L"Material").becauseOf(reason)(m_hwnd);
-		return false;
-	}
 
     m_NumberOFTextureSlots = m_Shader->GetNumberOfTextureSlots();
     m_Textures.resize(m_NumberOFTextureSlots);
@@ -93,19 +78,13 @@ bool Material::Render(ID3D11DeviceContext* deviceContext, int indexCount)
     return m_Shader->Render(deviceContext,indexCount);
 }
 
-void Material::ChangeShaderAndSaveTextures(ShaderType type)
+void Material::ChangeShaderAndSaveTextures(const ShaderDesc& type)
 {
-    if (m_Shader->GetType() != type)
+    if (m_Shader->GetDesc().ID != type.ID)
     {
         DELETE_SYS_OBJECT(m_Shader)
 
         m_Shader = g_ShaderPool->GetShader(type);
-        if (m_ShaderParams)
-        {
-            delete m_ShaderParams;
-            m_ShaderParams = nullptr;
-        }
-        m_ShaderParams = ShaderParamsFactory(type);
         
         if (!m_Textures.empty())
         {
@@ -139,24 +118,8 @@ void Material::ChangeShaderAndSaveTextures(ShaderType type)
     }
 }
 
-void Material::SetSpecularity(float R, float G, float B, float Power)
-{
-    SpecularFXData* sData;
-    if (m_ShaderParams->ContainsSpecularity())
-    {
-        sData = &dynamic_cast<SpecularShaderParams*>(m_ShaderParams)->specular;
-        sData->specularColor = XMFLOAT4(R, G, B, 1);
-        sData->specularPower = Power;
-    }
-}
-
 void Material::Shutdown()
 {
-    if (m_ShaderParams)
-    {
-        delete m_ShaderParams;
-        m_ShaderParams = nullptr;
-    }
     for (auto Texture:m_Textures)
     {
         DELETE_SYS_OBJECT(Texture)

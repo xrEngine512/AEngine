@@ -9,7 +9,7 @@ public:
 	ColorShader(void);
 	~ColorShader(void);
 	void Initialize(ID3D11Device*)override;
-	ShaderType GetType()override;
+	ShaderDesc GetType()override;
 	void Shutdown()override;
 };
 

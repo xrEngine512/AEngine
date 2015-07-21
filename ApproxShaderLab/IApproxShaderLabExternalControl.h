@@ -2,12 +2,12 @@
 #include <vector>
 namespace MatInterface
 {
-	__interface IMaterialVariable;
+	struct MaterialInterfaceInfo;
 }
 namespace ASL
 {
 	__interface IApproxShaderLabExternalControl
 	{
-		void SetMaterialVariables(std::vector<MatInterface::IMaterialVariable*>const& MI_Info);
+		void SetMaterialInterfaceInfo(MatInterface::MaterialInterfaceInfo const& MI_Info);
 	};
 }

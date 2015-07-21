@@ -1,7 +1,7 @@
 #include "RGS.h"
 #include <DirectXMath.h>
 
-inline int GetSize(string type)
+inline int GetSize(const string& type)
 {
     if (type.compare("float") == 0)
     {
@@ -27,63 +27,90 @@ inline int GetSize(string type)
     {
         return sizeof(DirectX::XMVECTOR);
     }
+	return 0;
 }
 
 void RGS::operator = (void* pData)
 {
-	if (m_Data)
-	{
-		free(m_Data);
-	}
 	m_Data = static_cast<byte*>(pData);
 }
 
-RGS::RGS(vector<string> types, vector<void*> ptrs) :m_ptrsToCopy(ptrs)
-{
-    m_ptrs.reserve(types.size());
-    m_sizes.reserve(types.size());
-    for (auto type : types)
-    {
-        int size = GetSize(type);
-        m_sizes.push_back(size);
-        m_size += size;
-    }
-    int aligned_size = 16;
-    while (m_size > aligned_size)
-    {
-        aligned_size *= 2;
-    }
-    m_size = aligned_size;
-    m_Data = static_cast<byte*>(malloc(aligned_size));
 
-    int shift = 0;
-    m_ptrs.push_back(m_Data);
+RGS::RGS(const pair<vector<void*>, vector<string>>& data) :RGS(data.first, data.second)
+{
+}
+
+RGS::RGS(const vector<void*>& ptrs, const vector<string>& types) : m_ptrsToCopy(ptrs), m_Data(nullptr)
+{
+	vector<int> aligned_sizes;
+	aligned_sizes.reserve(types.size());
+	m_shifts.reserve(types.size());
+	m_sizes.reserve(types.size());
+	for (auto type : types)
+	{
+		int size = GetSize(type);
+		int aligned_size = struct_alignment;
+		if (!size)
+			throw std::exception("Unsupported type passed to RGS");
+		//m_sizes.push_back(size);
+		if (size % struct_alignment != 0)
+		{
+			while (aligned_size < size)
+			{
+				aligned_size += struct_alignment;
+			}
+		}
+		else
+		{
+			aligned_size = size;
+		}
+		m_size += aligned_size;
+		m_sizes.push_back(aligned_size);
+		aligned_sizes.push_back(aligned_size);
+	}
+
+	int aligned_size = memory_alignment;
+	if (m_size % memory_alignment != 0)
+	{
+		while (aligned_size < m_size)
+		{
+			aligned_size += 16;
+		}
+		m_size = aligned_size;
+	}
+	
+
+	int shift = 0;
 	m_shifts.push_back(shift);
+
 	for (int i = 0; i < m_sizes.size() - 1; i++)
-    {
-		shift += m_sizes[i];
-        m_ptrs.push_back(m_Data + shift); 
+	{
+		shift += aligned_sizes[i];
 		m_shifts.push_back(shift);
-    }
-    Update();
+	}
+
+	Update();
 }
 
-void RGS::Update()
+void RGS::Update()const
 {
-	int i = 0;
-	for (auto ptr : m_ptrsToCopy)
-    {
-        memcpy(m_Data + m_shifts[i], ptr, m_sizes[i]);   
-		i++;
-    }
+	if (m_Data)
+	{
+		int i = 0;
+		for (auto ptr : m_ptrsToCopy)
+		{
+			memcpy(m_Data + m_shifts[i], ptr, m_sizes[i]);
+			i++;
+		}
+	}
 }
 
-int RGS::Size()
+int RGS::Size()const
 {
     return m_size;
 }
 
-byte* RGS::Data()
+byte* RGS::Data()const
 {
     return m_Data;
 }

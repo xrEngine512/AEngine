@@ -28,7 +28,7 @@ public:
 	~SpecularShader();
 	void Initialize(ID3D11Device*)override;
     ShaderErrors SetParams(IShaderParams* params)override;
-    ShaderType GetType()override;
+    ShaderDesc GetType()override;
     bool UpdateLight(ID3D11DeviceContext* context)override;
     bool UpdateCamera(ID3D11DeviceContext* context)override;
     void Shutdown()override;

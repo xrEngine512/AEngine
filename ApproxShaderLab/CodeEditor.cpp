@@ -123,6 +123,7 @@ namespace ASL
 	void CodeEditor::setCode(QString& code)
 	{
 		setPlainText(code);
+		m_controlItem->UpdateGeneratedCode();
 	}
 
 	int CodeEditor::GetTabWidth() const
@@ -187,7 +188,7 @@ namespace ASL
 			m_chkHoldSize->setChecked(!m_chkHoldSize->isChecked());
 		}
 		bool intersects_with_selection = intersects(m_readOnlyStart, m_readOnlyEnd, textCursor().selectionStart(), textCursor().selectionEnd());
-		if (e->key() == Qt::Key_Backspace && m_cursorPrevPos == m_readOnlyEnd || intersects_with_selection || m_cursorPrevPos == m_readOnlyStart)
+		if (e->key() == Qt::Key_Backspace && m_cursorPrevPos == m_readOnlyEnd || intersects_with_selection || (m_cursorPrevPos == m_readOnlyStart && m_readOnlyEnd != m_readOnlyStart) )
 		{
 			e->accept();
 		}

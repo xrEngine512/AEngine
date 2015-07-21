@@ -23,13 +23,15 @@ namespace ASL
 		m_regExpComments("\s*//[^\n]*(?=\n|$)"),
 		m_regExpNumLiterals("(^|\\s+|=|\\+|\\-|\\*|/)([0-9]+)(\\s+|$|;)|(^|\\s+|=|\\+|\\-|\\*|/)(([0-9]+\\.[0-9]+)|([0-9]+\\.[0-9]+f))(\\s+|$|;)"),
 		m_regExpSkipSymbols("=|\\+|\\-|\\+|\\*|/|;"),
-		m_regExpApproxVars(nullptr)
+		m_regExpApproxVars(nullptr),
+		m_regExpShaderParams(nullptr)
 	{
-		m_colorScheme.comments = QColor(20, 200, 20);
-		m_colorScheme.keywords = QColor(60, 150, 255);
-		m_colorScheme.numLiterals = QColor(160, 100, 20);
-		m_colorScheme.defChars = QColor(180, 180, 180);
-		m_colorScheme.approxVar = QColor(228, 225, 0);
+		m_colorScheme.comments		=	QColor(20, 200, 20);
+		m_colorScheme.keywords		=	QColor(60, 150, 255);
+		m_colorScheme.numLiterals	=	QColor(160, 100, 20);
+		m_colorScheme.defChars		=	QColor(180, 180, 180);
+		m_colorScheme.approxVar		=	QColor(0, 213, 226);
+		m_colorScheme.shaderParams	=	QColor(225,132,0);
 	}
 
 	HLSLHighlighter::~HLSLHighlighter()
@@ -74,6 +76,25 @@ namespace ASL
 		}
 	}
 
+	void HLSLHighlighter::AddShaderParam(const QString& var)
+	{
+		if (m_regExpShaderParams)
+		{
+			auto pattern = m_regExpShaderParams->pattern();
+			pattern.chop(3);
+			pattern += '|' + var;
+			pattern += ")\\b";
+			m_regExpShaderParams->setPattern(pattern);
+		}
+		else
+		{
+			QString pattern("\\b(");
+			pattern += var;
+			pattern += ")\\b";
+			m_regExpShaderParams = new QRegExp(pattern);
+		}
+	}
+
 	void HLSLHighlighter::Update()
 	{
 		rehighlight();
@@ -91,6 +112,10 @@ namespace ASL
 		if (m_regExpApproxVars)
 		{
 			Highlight(*m_regExpApproxVars, text, m_colorScheme.approxVar);
+		}
+		if (m_regExpShaderParams)
+		{
+			Highlight(*m_regExpShaderParams, text, m_colorScheme.shaderParams);
 		}
 	}
 

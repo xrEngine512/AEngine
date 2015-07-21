@@ -8,7 +8,7 @@ class TextureShader :
 public:
     void Initialize(ID3D11Device* device)override;
     void Shutdown()override;
-    ShaderType GetType()override;
+    ShaderDesc GetType()override;
 	TextureShader(void);
 	~TextureShader(void);
 };

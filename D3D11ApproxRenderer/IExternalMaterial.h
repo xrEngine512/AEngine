@@ -1,9 +1,9 @@
 #pragma once
-#include "ShaderTypes.h"
+
+struct ShaderDesc;
 
 __interface IExternalMaterial
 {
-    void SetSpecularity(float R, float G, float B, float Power);
     bool LoadTexture(wchar_t* diffTexfilename, unsigned short slot);
-    void ChangeShaderAndSaveTextures(ShaderType type);
+    void ChangeShaderAndSaveTextures(const ShaderDesc& type);
 };

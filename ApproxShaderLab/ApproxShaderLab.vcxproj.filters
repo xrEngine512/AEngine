@@ -152,15 +152,6 @@
     <ClCompile Include="ShaderPartSettings.cpp">
       <Filter>View</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MaterialVarPoint.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MaterialVarPoint.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialVarPoint.cpp">
-      <Filter>View</Filter>
-    </ClCompile>
     <ClCompile Include="Link.cpp">
       <Filter>View</Filter>
     </ClCompile>
@@ -217,6 +208,33 @@
     </ClCompile>
     <ClCompile Include="NativeInterface.cpp">
       <Filter>Native</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ShaderSettings.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ShaderSettings.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderSettings.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ShaderSettingsElement.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ShaderSettingsElement.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderSettingsElement.cpp">
+      <Filter>View</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_LinkingPoint.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_LinkingPoint.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="LinkingPoint.cpp">
+      <Filter>View</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,6 +295,18 @@
     <ClInclude Include="NativeInterface.h">
       <Filter>Native</Filter>
     </ClInclude>
+    <ClInclude Include="RuntimeBufferInfo.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureInfo.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderParamInfo.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ISaveData.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="shaderlabgui.ui">
@@ -324,9 +354,6 @@
     <CustomBuild Include="ShaderPartSettings.h">
       <Filter>View</Filter>
     </CustomBuild>
-    <CustomBuild Include="MaterialVarPoint.h">
-      <Filter>View</Filter>
-    </CustomBuild>
     <CustomBuild Include="Link.h">
       <Filter>View</Filter>
     </CustomBuild>
@@ -343,6 +370,15 @@
       <Filter>View</Filter>
     </CustomBuild>
     <CustomBuild Include="ShaderBuffer.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShaderSettings.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ShaderSettingsElement.h">
+      <Filter>View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="LinkingPoint.h">
       <Filter>View</Filter>
     </CustomBuild>
   </ItemGroup>

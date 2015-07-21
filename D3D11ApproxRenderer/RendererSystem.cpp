@@ -2,6 +2,7 @@
 #include <IInternalInput.h>
 #include <FnPtr.h>
 #include "Scene.h"
+#include "ShaderPool.h"
 
 RendererSystem::RendererSystem() :m_Scene(nullptr), m_SoundSys(nullptr)
 {
@@ -21,6 +22,16 @@ void RendererSystem::SetInputFocus()
 
 RendererSystem::~RendererSystem()
 {
+}
+
+const vector<const ShaderDesc*>& RendererSystem::AvailableShadersDesc() const
+{
+	if (g_ShaderPool)
+	{
+		return g_ShaderPool->LoadedShadersDescs();
+	}
+	else
+		return vector<const ShaderDesc*>();
 }
 
 IFnPtr* RendererSystem::GetThreadFunc()
@@ -98,7 +109,7 @@ void RendererSystem::InitializeWindows(HWND parent_hwnd, int posX, int posY)
     return;
 }
 
-void RendererSystem::GetWndSize(int& screenWidth, int& screenHeight)
+void RendererSystem::GetWndSize(int& screenWidth, int& screenHeight)const
 {
     screenWidth = m_screenWidth;
     screenHeight = m_screenHeight;
@@ -187,7 +198,7 @@ void RendererSystem::BindSoundSystem(IInternalSound* s_sys)
     m_SoundSys = s_sys;
 }
 
-IExternalScene* RendererSystem::GetScene()
+IExternalScene* RendererSystem::GetScene()const
 {
     return m_Scene;
 }

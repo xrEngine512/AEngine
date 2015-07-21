@@ -75,7 +75,7 @@ void MultitextureShader::Shutdown()
     ShutdownShader();
 }
 
-ShaderType MultitextureShader::GetType()
+ShaderDesc MultitextureShader::GetType()
 {
     return MULTITEXTURE_SHADER;
 }

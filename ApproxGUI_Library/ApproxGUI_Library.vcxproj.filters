@@ -73,6 +73,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ApproxSizeGrip.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_PopupDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_PopupDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Button.h">
@@ -85,6 +91,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="ApproxSizeGrip.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="PopupDialog.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

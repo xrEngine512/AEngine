@@ -4,7 +4,7 @@
 
 namespace MatInterface
 {
-	MaterialInterfaceManager::MaterialInterfaceManager()
+	MaterialInterfaceManager::MaterialInterfaceManager():m_ver("ver. 0.0.1")
 	{
 	}
 
@@ -20,37 +20,73 @@ namespace MatInterface
 		m_materialVariables.push_back(var);
 	}
 
-	const vector<IMaterialVariable*>& MaterialInterfaceManager::GetMaterialVariables()const
+	MaterialInterfaceInfo MaterialInterfaceManager::GetMaterialInterfaceInfo()const
 	{
-		return m_materialVariables;
+		MaterialInterfaceInfo info(m_materialVariables,m_ver);
+		return info;
 	}
 
-	const vector<void*> MaterialInterfaceManager::GetMaterialVariablesPtr()const
+	pair<vector <void*>, vector <string> > MaterialInterfaceManager::GetMaterialVariablesPtr()const
 	{
-		vector<void*> res;
-		res.reserve(m_materialVariables.size());
+		vector<void*> resPtrs;
+		vector<string> resTypes;
+		resPtrs.reserve(m_materialVariables.size());
+		resTypes.reserve(m_materialVariables.size());
 		for (auto prop : m_materialVariables)
 		{
-			res.push_back(prop->Ptr());
+			resPtrs.push_back(prop->Ptr());
+			resTypes.push_back(NormalizeType(prop->Type()));
 		}
-		return res;
+		return pair<vector <void*>, vector <string> >(resPtrs,resTypes);
 	}
 
-	const vector<void*> MaterialInterfaceManager::GetMaterialVariablesPtr(vector<int>& IDs) const
+	pair<vector <void*>, vector <string> > MaterialInterfaceManager::GetMaterialVariablesPtr(const vector<int>& IDs) const
 	{
-		vector<void*> res;
-		res.reserve(IDs.size());
-		for (auto prop : m_materialVariables)
+		vector<void*> resPtrs;
+		vector<string> resTypes;
+		resPtrs.reserve(IDs.size());
+		resTypes.reserve(IDs.size());
+		for (auto id : IDs)
 		{
-			for (auto id : IDs)
+			for (auto prop : m_materialVariables)
 			{
 				if (prop->ID() == id)
 				{
-					res.push_back(prop->Ptr());
+					resPtrs.push_back(prop->Ptr());
+					resTypes.push_back(NormalizeType(prop->Type()));
 				}
 			}
 		}
-		return res;
+		return pair<vector <void*>, vector <string> >(resPtrs, resTypes);
+	}
+
+	string MaterialInterfaceManager::NormalizeType(const string& type)
+	{
+		if (type.compare("float") == 0)
+		{
+			return "float";
+		}
+		if (type.compare("struct DirectX::XMFLOAT4") == 0)
+		{
+			return "XMFLOAT4";
+		}
+		if (type.compare("struct DirectX::XMFLOAT3") == 0)
+		{
+			return "XMFLOAT3";
+		}
+		if (type.compare("struct DirectX::XMFLOAT2") == 0)
+		{
+			return "XMFLOAT2";
+		}
+		if (type.compare("struct DirectX::XMMATRIX") == 0)
+		{
+			return "XMMATRIX";
+		}
+		if (type.compare("struct DirectX::XMVECTOR") == 0)
+		{
+			return "XMVECTOR";
+		}
+		return nullptr;
 	}
 
 	MaterialInterfaceManager* MaterialInterfaceManager::Instance()

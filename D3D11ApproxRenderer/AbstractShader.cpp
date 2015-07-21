@@ -34,11 +34,11 @@ void AbstractShader::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, W
 		if(errorMessage)
 		{
 			OutputShaderErrorMessage(errorMessage, vsFilename);
-            throw ApproxException(wstring(L"Failed to compile Vertex Shader of ")+wstring(GetShaderTypeWStr(GetType())),L"AbstractShader");
+            throw ApproxException(wstring(L"Failed to compile Vertex Shader of ")+wstring(GetShaderDescWStr(GetType())),L"AbstractShader");
 		}
 		// If there was nothing in the error message then it simply could not find the shader file itself.
 
-        throw ApproxException(wstring(L"Missing Vertex Shader File of ")+ wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+        throw ApproxException(wstring(L"Missing Vertex Shader File of ")+ wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
 	}
 
 	// Compile the pixel shader code.
@@ -49,11 +49,11 @@ void AbstractShader::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, W
 		if(errorMessage)
 		{
             OutputShaderErrorMessage(errorMessage, vsFilename);
-            throw ApproxException(wstring(L"Failed to compile Pixel Shader of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+            throw ApproxException(wstring(L"Failed to compile Pixel Shader of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
         }
         // If there was nothing in the error message then it simply could not find the shader file itself.
 
-        throw ApproxException(wstring(L"Missing Pixel Shader File of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+        throw ApproxException(wstring(L"Missing Pixel Shader File of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
 	}
     if (gsFileName)
     {
@@ -64,25 +64,25 @@ void AbstractShader::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, W
             if (errorMessage)
             {
                 OutputShaderErrorMessage(errorMessage, vsFilename);
-                throw ApproxException(wstring(L"Failed to compile Geometry Shader of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+                throw ApproxException(wstring(L"Failed to compile Geometry Shader of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
             }
             // If there was nothing in the error message then it simply could not find the shader file itself.
 
-            throw ApproxException(wstring(L"Missing Geometry Shader File of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+            throw ApproxException(wstring(L"Missing Geometry Shader File of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
         }        
     }
 	// Create the vertex shader from the buffer.
 	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
 	if(FAILED(result))
 	{
-        throw ApproxException(wstring(L"CreateVertexShader Failed of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+        throw ApproxException(wstring(L"CreateVertexShader Failed of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
 	}
 
 	// Create the pixel shader from the buffer.
 	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if(FAILED(result))
 	{
-        throw ApproxException(wstring(L"CreatePixelShader Failed of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+        throw ApproxException(wstring(L"CreatePixelShader Failed of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
 	}
 
     if (geometryShaderBuffer)
@@ -90,12 +90,12 @@ void AbstractShader::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, W
         result = device->CreateGeometryShader(geometryShaderBuffer->GetBufferPointer(), geometryShaderBuffer->GetBufferSize(),NULL, &m_geometryShader);
         if (FAILED(result))
         {
-            throw ApproxException(wstring(L"CreateGeometryShader Failed of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+            throw ApproxException(wstring(L"CreateGeometryShader Failed of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
         }
     }
 	if(!CreateInputLayout(device, vertexShaderBuffer))
 	{
-        throw ApproxException(wstring(L"Couldn't create Input layout of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+        throw ApproxException(wstring(L"Couldn't create Input layout of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
 	}
 
     m_NumberOfTextureSlots = NumberOfTextureSlots;
@@ -113,18 +113,18 @@ void AbstractShader::InitializeShader(ID3D11Device* device, WCHAR* vsFilename, W
 	// Create a texture sampler state description.
 	if(!CreateSamplerState(device))
 	{
-        throw ApproxException(wstring(L"Couldn't create Sampler state of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+        throw ApproxException(wstring(L"Couldn't create Sampler state of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
 	}
 	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
 	if(!SetupConstantBuffer(device))
 	{
-        throw ApproxException(wstring(L"Couldn't Setup Constant Buffer of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+        throw ApproxException(wstring(L"Couldn't Setup Constant Buffer of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
 	}
 
 	// Setup the description of the light dynamic constant buffer that is in the pixel shader.
 	if(!SetupBuffers(device))
 	{
-        throw ApproxException(wstring(L"Couldn't Setup Buffers of ") + wstring(GetShaderTypeWStr(GetType())), L"AbstractShader");
+        throw ApproxException(wstring(L"Couldn't Setup Buffers of ") + wstring(GetShaderDescWStr(GetType())), L"AbstractShader");
 	}
 
 }

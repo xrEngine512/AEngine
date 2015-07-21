@@ -65,9 +65,31 @@ namespace MatInterface
 			return typeid(T).name();
 		}
 
-		void operator=(MaterialVariable<T> const& arg)
+		template<class M>
+		static M __vectorcall Multiply(const M& arg)
+		{
+			return arg;
+		}
+
+		template<class M, class... Ms>
+		static T __vectorcall Multiply(const M& arg, const Ms&... args)
+		{
+			return arg * Multiply<Ms...>(args...);
+		}	
+		
+		void operator=(MaterialVariable const& arg)
 		{
 			value = arg.value;
+		}			
+
+		T __vectorcall operator*(MaterialVariable const& arg) const
+		{
+			return value * arg.value;
+		}
+
+		T __vectorcall operator*(T const& val) const
+		{
+			return value * val;
 		}
 
 		void operator=(T const& val)
@@ -75,7 +97,7 @@ namespace MatInterface
 			value = val;
 		}
 
-		T Value()const
+		T __vectorcall Value()const
 		{
 			return value;
 		}
@@ -85,4 +107,15 @@ namespace MatInterface
 
 		}
 	};
+	template<class M>
+	inline M Multiply(const M& arg)
+	{
+		return arg;
+	}
+
+	template<class M, class... Ms>
+	inline auto __vectorcall Multiply(const M& arg, const Ms&... args) -> decltype(arg * arg)
+	{
+		return arg * Multiply<Ms...>(args...);
+	}
 }

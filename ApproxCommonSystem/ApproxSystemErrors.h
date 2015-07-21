@@ -17,7 +17,7 @@ public:
 	ApproxException(wchar_t* msg, wchar_t* className, Parameter param = DEFAULT_MSG_DISPLAY);
 	ApproxException(std::wstring msg, std::wstring className, Parameter param = DEFAULT_MSG_DISPLAY);
     void operator()(void* hwnd);
-	ApproxException becauseOf(ApproxException& reason);
+	ApproxException becauseOf(const ApproxException& reason);
 	void operator+=(ApproxException& reason);
 	const wchar_t * Message();
 };

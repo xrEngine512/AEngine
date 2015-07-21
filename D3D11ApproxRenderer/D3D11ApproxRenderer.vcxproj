@@ -230,7 +230,6 @@
     <ClInclude Include="IMeshLoader.h" />
     <ClInclude Include="IInternalRenderer.h" />
     <ClInclude Include="IShader.h" />
-    <ClInclude Include="IShaderParams.h" />
     <ClInclude Include="IVertexType.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
@@ -252,10 +251,8 @@
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="MaterialVariable.h" />
     <ClInclude Include="MaterialInterfaceManager.h" />
-    <ClInclude Include="ShaderParams.h" />
     <ClInclude Include="ShaderPool.h" />
-    <ClInclude Include="ShaderStructures.h" />
-    <ClInclude Include="ShaderTypes.h" />
+    <ClInclude Include="ShaderDesc.h" />
     <ClInclude Include="SpecularShader.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -324,9 +321,7 @@
     <ClCompile Include="SceneGraphNode.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="MaterialInterfaceManager.cpp" />
-    <ClCompile Include="ShaderParams.cpp" />
     <ClCompile Include="ShaderPool.cpp" />
-    <ClCompile Include="ShaderStructures.cpp" />
     <ClCompile Include="SpecularShader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

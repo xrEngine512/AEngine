@@ -114,17 +114,8 @@
     <ClInclude Include="TextureShader.h">
       <Filter>ShaderSystem\Shaders\TextureShader</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderStructures.h">
-      <Filter>ShaderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="IShader.h">
       <Filter>ShaderSystem\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="IShaderParams.h">
-      <Filter>ShaderSystem\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderParams.h">
-      <Filter>ShaderSystem\ShaderParams</Filter>
     </ClInclude>
     <ClInclude Include="IInternalRenderer.h">
       <Filter>Interfaces\InternalInterfaces</Filter>
@@ -140,9 +131,6 @@
     </ClInclude>
     <ClInclude Include="IExternalScene.h">
       <Filter>Interfaces\ExternalInterfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderTypes.h">
-      <Filter>ShaderSystem</Filter>
     </ClInclude>
     <ClInclude Include="IExternalHUDElement.h">
       <Filter>Interfaces\ExternalInterfaces</Filter>
@@ -219,6 +207,9 @@
     <ClInclude Include="MaterialVariable.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderDesc.h">
+      <Filter>ShaderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RendererSystem.cpp">
@@ -266,14 +257,8 @@
     <ClCompile Include="TextureShader.cpp">
       <Filter>ShaderSystem\Shaders\TextureShader</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderStructures.cpp">
-      <Filter>ShaderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="IShader.cpp">
       <Filter>ShaderSystem\Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderParams.cpp">
-      <Filter>ShaderSystem\ShaderParams</Filter>
     </ClCompile>
     <ClCompile Include="HUDElement.cpp">
       <Filter>Файлы исходного кода</Filter>

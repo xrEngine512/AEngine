@@ -76,6 +76,7 @@ namespace ASL
             else
             {
                 part.PosInc();
+				cur_symbol = part.CurrentSymbol();
                 if (resStr.size() == 0 && part.PosInRange())
                     continue;
                 return const_cast<char*>(resStr.c_str());
@@ -83,6 +84,7 @@ namespace ASL
             part.PosInc();
 			if (!part.PosInRange())
 				break;
+			cur_symbol = part.CurrentSymbol();
         }
         return const_cast<char*>(resStr.c_str());
     }
@@ -169,10 +171,27 @@ namespace ASL
 
 			if (res == S_OK)
 			{
-				session->writeElement(new ShaderElement(toID(part->Shader_Type), shader->GetBufferSize(), shader->GetBufferPointer()));
+
+				auto elem = new ShaderElement(toID(part->Shader_Type), shader->GetBufferSize(), shader->GetBufferPointer());
+				elem->AllowDuplicatesFor(RUNTIME_BUFFER_INFO);
+				for (auto buffer : part->BuffersInfo)
+				{
+					int size;
+					auto pData = buffer.Serialize(size);
+					*elem << new ShaderElement(RUNTIME_BUFFER_INFO, size, pData);
+					buffer.CleanSerializedBuffer();
+				}
+
+				session->writeElement(elem);
+				
+
 				if (part->Shader_Type == Shader_Type::VS)
 				{
-					return GenerateInputLayout(session, *part);
+					auto ret = GenerateInputLayout(session, *part);
+					if(ret != ASL_NO_ERROR)
+					{
+						return ret;
+					}
 				}
 			}
 			else
@@ -220,7 +239,6 @@ namespace ASL
 			part.pos = old_pos;
 		}
 
-		vector<D3D11_INPUT_LAYOUT_ELEMENT> layout;
 		const char* curWord;
 		char *data_type;
 		while (part.PosInRange())
@@ -248,18 +266,17 @@ namespace ASL
 						D3D11_INPUT_LAYOUT_ELEMENT element;
 
 						char *tmp = new char[strlen(curWord) + 1];
+						
 						strcpy(tmp, curWord);						//store semantic name 
 
 						element.SemanticIndex = GetSemanticIndex(tmp);
-
 						if (strcmp(tmp, "POSITION") == 0)
 							element.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 						else
 							element.Format = GetFormat(data_type);
 
-						delete[] tmp;
 						delete[] data_type;
-						tmp = nullptr;
+
 						data_type = nullptr;
 
 						if (!t)
@@ -272,15 +289,21 @@ namespace ASL
 						element.InputSlot = 0;
 						element.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 						element.InstanceDataStepRate = 0;
-						layout.push_back(element);
+
+						auto ILE = new ShaderElement(INPUT_LAYOUT_ELEMENT, element);
+						*ILE << new ShaderElement(IL_SEMANTIC_NAME, tmp);
+						
+						delete[] tmp;
+						tmp = nullptr;
+
+						session->writeElement(ILE);
+
 						curWord = ShowNextWord(part);
 					} while (*curWord != '}');
 					break;
 				}
 			}
 		}
-		session->writeElement(new ShaderElement(INPUT_LAYOUT, sizeof(D3D11_INPUT_LAYOUT_ELEMENT)*layout.size(), layout.data()));
-
 		return ASL_NO_ERROR;
 	}
 

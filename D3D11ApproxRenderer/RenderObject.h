@@ -28,7 +28,7 @@ public:
     void SetID(unsigned int)override;
     IExternalMaterial* GetMaterial()override;
     void Shutdown()override;
-    RenderObject(ID3D11Device* device, ShaderType type);
+    RenderObject(ID3D11Device* device, ShaderDesc type);
     virtual ~RenderObject(void);
 };
 

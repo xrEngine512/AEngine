@@ -5,7 +5,7 @@
 class QLabel;
 namespace ASL
 {
-	class MaterialVarPoint;
+	class LinkingPoint;
 	struct MaterialVarInfo;
 
 	class MaterialVar : public QWidget
@@ -18,11 +18,13 @@ namespace ASL
 	public:
 		MaterialVar(QWidget *parent, const MaterialVarInfo& info);
 		~MaterialVar();
-		const MaterialVarPoint* Point()const;
+		LinkingPoint& Point()const;
 		const MaterialVarInfo& VarInfo()const;
 	private:
 		QLabel* m_flag, *m_name;
-		MaterialVarPoint *m_point;
+		LinkingPoint *m_point;
+
+		int m_refCount;
 	};
 }
 #endif // APPROXSCENEVAR_H

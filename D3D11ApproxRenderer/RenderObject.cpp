@@ -9,17 +9,17 @@ using namespace MatInterface;
 RenderObject::RenderObject(void) :m_Mesh(nullptr),m_Material(nullptr),  m_globalCoords(0, 0, 0), m_globalRotation(0,0,0)
 {
     m_Mesh = new Mesh;
-    m_MeshBoxRender = new Mesh;
+    //m_MeshBoxRender = new Mesh;
     m_Material = new Material;
-    m_MeshBoxMaterial = new Material;
+    //m_MeshBoxMaterial = new Material;
 }
 
-RenderObject::RenderObject(ID3D11Device* device, ShaderType type) : RenderObject()
+RenderObject::RenderObject(ID3D11Device* device, ShaderDesc type) : RenderObject()
 {
     try
     {
         m_Material->Initialize(device, type);
-        m_MeshBoxMaterial->Initialize(device, WIREFRAME_SHADER);
+        //m_MeshBoxMaterial->Initialize(device, WIREFRAME_SHADER);
     }
     catch (ApproxException &reason)
     {
@@ -32,7 +32,7 @@ bool RenderObject::Initialize(ID3D11Device *device, char *modelFileName, float P
     try
     {
         m_Mesh->Initialize(device, modelFileName, true);
-        m_MeshBoxRender->Initialize(device, &m_Mesh->GetMeshBox(), true);
+        //m_MeshBoxRender->Initialize(device, &m_Mesh->GetMeshBox(), true);
     }
     catch (ApproxException &reason)
     {
@@ -106,16 +106,17 @@ void RenderObject::SetRotation(float x, float y, float z)
 
 bool RenderObject::Render(ID3D11DeviceContext *deviceContext, MaterialInterface& mi)
 {
-    mi.perObjectData.modelMatrix = XMMatrixRotationX(m_globalRotation.x)*XMMatrixRotationY(m_globalRotation.y)*XMMatrixRotationZ(m_globalRotation.z)*XMMatrixTranslation(m_globalCoords.x, m_globalCoords.y, m_globalCoords.z);
-    if (m_MeshBoxRender)
+    mi.perObjectData.modelMatrix = XMMatrixTranspose(XMMatrixRotationX(m_globalRotation.x)*XMMatrixRotationY(m_globalRotation.y)*XMMatrixRotationZ(m_globalRotation.z)*XMMatrixTranslation(m_globalCoords.x, m_globalCoords.y, m_globalCoords.z));
+	mi.CalculateMVPAfterTranspose();
+	if (m_MeshBoxRender)
         m_MeshBoxRender->Render(deviceContext);
     if (m_MeshBoxMaterial)
-        m_MeshBoxMaterial->Render(deviceContext, m_Mesh->GetIndexCount());
+		m_MeshBoxMaterial->Render(deviceContext, m_MeshBoxRender->GetIndexCount());
 
     m_Mesh->Render(deviceContext);
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
     
-    return m_Material->Render(deviceContext, m_Mesh->GetIndexCount());
+	return m_Material->Render(deviceContext, m_Mesh->GetIndexCount());
 }
 
 void RenderObject::Shutdown()

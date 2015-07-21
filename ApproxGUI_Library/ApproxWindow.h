@@ -28,7 +28,7 @@ namespace ApproxGUI
 		ApproxWindow(Ts... args) :QWidget(nullptr), m_dragging(false), m_minimized(false)
 		{
 			setObjectName("ApproxWindow");
-			setWindowFlags(Qt::FramelessWindowHint);			
+			setWindowFlags(Qt::FramelessWindowHint);
 			m_clientWidget = new Widget(this, args...);
 			m_sizeGrip = new QSizeGrip(this);			
 			m_clientWidget->setWindowFlags(Qt::Widget);
@@ -41,7 +41,9 @@ namespace ApproxGUI
 			(
 			"QLabel{color: rgb(150,150,150);}\
 			QMenu::item{color:rgb(200,200,200)}\
+			QMenu::item:disabled{color:rgb(100,100,100)}\
 			QMenu::item:selected{background-color:rgb(100,100,100);color:rgb(255,255,255)}\
+			QMenu::item:selected:disabled{background-color:rgb(90,90,90);color:rgb(150,150,150)}\
 			QWidget{background-color:rgb(60,60,60)}\
 			#ApproxWindow{background-color:rgb(40,40,40)}\
 			QGraphicsView{background-color:rgb(40,40,40)}\
@@ -144,6 +146,8 @@ namespace ApproxGUI
 			m_btnMinimize->setAttribute(Qt::WA_TranslucentBackground);
 
 			m_title->move(3, 3);
+
+			setWindowIcon(*g_ResManager->GetPic(":/Editor/title.png"));
 
 			QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect();
 			effect->setBlurRadius(5);

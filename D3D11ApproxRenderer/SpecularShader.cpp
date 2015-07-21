@@ -199,7 +199,7 @@ void SpecularShader::Shutdown()
 	ShutdownShader();
 }
 
-ShaderType SpecularShader::GetType()
+ShaderDesc SpecularShader::GetType()
 {
 	return SPECULAR_SHADER;
 }

@@ -4,7 +4,6 @@
 #include "shaderlabguielement.h"
 #include <qpropertyanimation.h>
 #include "wnd.h"
-#include <QPropertyAnimation>
 #include "shaderlabgui.h"
 #include <qtimer.h>
 #include <ApproxSizeGrip.h>
@@ -22,6 +21,7 @@
 #include "CodeEditor.h"
 #include "HLSLHighlighter.h"
 #include "Link.h"
+#include "ShaderSettings.h"
 
 #define DEF_MENU_ITEM(menu,str,handler) connect(menu->addAction(str), SIGNAL(triggered()), SLOT(handler()))
 
@@ -40,20 +40,16 @@ namespace ASL
 {
 	ShaderEditor::ShaderEditor(IControllerSession* sessionInterface, QWidget *parent) : m_sessionInterface(sessionInterface),
 		BaseClass(parent), m_gView(this), m_gScene(this), m_wndSettings(nullptr), m_dragging(false), m_btnSave(nullptr)
-		, m_shrinkAnim(nullptr), m_propertyInfo(nullptr)
+		, m_shrinkAnim(nullptr), m_sceneVars(nullptr)
 	{
 		setObjectName("ViewWnd");
-		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		memset(m_SP, 0, sizeof(void*) * 6);
-		QPalette pal;
-		pal.setColor(QPalette::ColorRole::Text, QColor(150, 150, 150));
-		setPalette(pal);
+		
 		resize(800, 600);
 
 		info.m_SessionID = m_sessionInterface->OpenSession();
 
 		info.m_ShaderParts.reserve(6);
-		//info.m_ShaderParts.fill(ViewShaderPartInfo(), 6);
 
 		m_wndSettings = new wnd(this);
 		m_opacEffect = new QGraphicsOpacityEffect(this);
@@ -62,7 +58,6 @@ namespace ASL
 		m_fadeAnim = new QPropertyAnimation(m_opacEffect, "opacity", this);
 		m_sizeGrip = new SizeGrip(this);
 
-
 		m_btnCompile = new ApproxGUIMenuButton;
 		m_btnSettings = new ApproxGUIMenuButton;
 		m_btnSave = new ApproxGUIMenuButton;
@@ -70,6 +65,7 @@ namespace ASL
 		m_lblDesc = new QLabel(this);
 		m_timer = new QTimer(this);
 		m_Menu = new ApproxGUIMenuBar(this);
+		m_shaderSettings = new ShaderSettings(this);
 
 		m_statusBar = new QStatusBar(this);
 		m_lblStatus = new QLabel(QStringLiteral("Тестовое сообщение"));
@@ -81,9 +77,10 @@ namespace ASL
 		connect(m_btnSettings, SIGNAL(clicked()), SLOT(on_Settings()));
 		connect(m_btnLoad, SIGNAL(clicked()), SLOT(on_Load()));
 		connect(m_timer, SIGNAL(timeout()), SLOT(on_Frame()));
-		connect(&m_gView, SIGNAL(createShaderElem(Shader_Type)), SLOT(CreateShaderElem(Shader_Type)));
+		connect(&m_gView, SIGNAL(createShaderElem(Shader_Type)), SLOT(GetOrCreateShaderElem(Shader_Type)));
 		connect(&m_gView, SIGNAL(sceneMoved()), SLOT(UpdateLinks()));
 		connect(&m_gView, SIGNAL(viewChanged()), SLOT(UpdateLinks()));
+		connect(m_shaderSettings, &ShaderSettings::linkAttempt, this, &ShaderEditor::On_LinkAttemptSettings);
 
 		m_sizeGrip->snapTo(BOTTOM_RIGHT);
 		m_sizeGrip->raise();
@@ -122,6 +119,8 @@ namespace ASL
 		DEF_MENU_ITEM(menu, SUB_CTRL_SAVE_PROJECT_QT, on_SaveProject);
 		DEF_MENU_ITEM(menu, SUB_CTRL_SAVE_SHADER_QT, on_SaveShader);
 
+		menu->actions()[1]->setEnabled(false);
+
 		m_btnSave->setMenu(menu);
 
 		m_lblDesc->move(2, 2);
@@ -136,6 +135,8 @@ namespace ASL
 		m_gView.setGeometry(0, 32, width(), height() - 53);
 		m_gView.setScene(&m_gScene);
 		m_gView.setStyleSheet("QGraphicsView{border : 2px solid;}");
+
+		m_shaderSettings->move(m_gView.width() - m_shaderSettings->width(), 100);
 
 		m_lblRendererStatusIcon->setGeometry(500, -8, 50, 50);
 		m_lblRendererStatusIcon->setStyleSheet("background-color:rgba(0,0,0,0)");
@@ -157,6 +158,65 @@ namespace ASL
 				link->Update();
 			}
 		}
+	}
+	void ShaderEditor::handleLinkAttempts(MaterialVar* sender, const QPoint& mouseGlobalPos)
+	{
+		QPointF p2(m_gView.mapToScene(m_gView.mapFromGlobal(mouseGlobalPos)));
+		for (auto elem : m_SP)
+		{
+			if (elem)
+			{
+				if (elem->sceneBoundingRect().contains(p2))
+				{
+					std::pair<MaterialVar*, ShaderLabGUIElement*> req(sender, elem);
+
+					for (auto link : elem->BufferLinks())
+					{
+						if (link->GetLinkingObjects() == req)
+						{
+							delete link;
+							return;
+						}
+					}
+					new Link<MaterialVar, ShaderLabGUIElement>(&m_gView, req);
+					return;
+				}
+			}
+		}
+	}
+	void ShaderEditor::handleLinkAttempts(ShaderSettingsElement* sender, const QPoint& mouseGlobalPos)
+	{
+		QPointF p2(m_gView.mapToScene(m_gView.mapFromGlobal(mouseGlobalPos)));
+		for (auto elem : m_SP)
+		{
+			if (elem)
+			{
+				if (elem->sceneBoundingRect().contains(p2))
+				{
+					std::pair<ShaderSettingsElement*, ShaderLabGUIElement*> req(sender, elem);
+					for (auto link : elem->SettingsLinks())
+					{
+						if (link->GetLinkingObjects() == req)
+						{
+							delete link;
+							return;
+						}
+					}
+
+					new Link<ShaderSettingsElement, ShaderLabGUIElement>(&m_gView, req);
+					return;
+				}
+			}
+		}
+	}
+	void ShaderEditor::On_LinkAttemptSettings(ShaderSettingsElement* sender, const QPoint& mouseGlobalPos)
+	{
+		handleLinkAttempts(sender, mouseGlobalPos);
+	}
+
+	void ShaderEditor::On_LinkAttemptMatVars(MaterialVar* sender, const QPoint& mouseGlobalPos)
+	{
+		handleLinkAttempts(sender, mouseGlobalPos);
 	}
 
 	void ShaderEditor::Raise(ShaderLabGUIElement* elem)
@@ -188,7 +248,7 @@ namespace ASL
 		}
 	}
 
-	ShaderLabGUIElement* ShaderEditor::CreateShaderElem(Shader_Type type)
+	ShaderLabGUIElement* ShaderEditor::GetOrCreateShaderElem(Shader_Type type)
 	{
 		switch (type)
 		{
@@ -209,38 +269,11 @@ namespace ASL
 		}
 	}
 
-	void ShaderEditor::SetMaterialVariables(std::vector<MaterialVarInfo>& info)
+	void ShaderEditor::SetMaterialVariables(std::vector<MaterialVarInfo>& info, const QString& ver)
 	{
-		m_propertyInfo = &info;
-		m_sceneVars = new MaterialVarsContainer(&m_gView, info);
+		m_sceneVars = new MaterialVarsContainer(&m_gView, info, ver);
 
-		connect(m_sceneVars, &MaterialVarsContainer::linkAttempt, [&](MaterialVar* sender, const QPoint& mouseGlobalPos)
-		{
-			QPointF p2(m_gView.mapToScene(m_gView.mapFromGlobal(mouseGlobalPos)));
-			for (auto elem : m_SP)
-			{
-				if (elem)
-				{
-					if (elem->sceneBoundingRect().contains(p2))
-					{
-						pair<MaterialVar*, ShaderLabGUIElement*> req(sender, elem);
-						for (auto part : m_SP)
-						{
-							if (part)
-							{
-								for (auto link : part->Links())
-								{
-									if (link->GetLinkingObjects() == req)
-										return;
-								}
-							}
-						}
-						Link* lnk = new Link(&m_gView, req);
-						return;
-					}
-				}
-			}
-		});
+		connect(m_sceneVars, &MaterialVarsContainer::linkAttempt, this, &ShaderEditor::On_LinkAttemptMatVars);
 
 		m_sceneVars->move(2, 50);
 		if (!isHidden())
@@ -249,12 +282,12 @@ namespace ASL
 
 	void ShaderEditor::SetApproxVars()
 	{
-		if (m_propertyInfo)
+		if (m_sceneVars)
 		{
 			vector<QString> approxVars;
-			for (auto elem : *m_propertyInfo)
+			for (auto elem : m_sceneVars->Vars())
 			{
-				approxVars.push_back(elem.name);
+				approxVars.push_back(elem->VarInfo().name);
 			}
 			for (auto elem : m_SP)
 			{
@@ -266,12 +299,12 @@ namespace ASL
 
 	void ShaderEditor::SetApproxVars(ShaderLabGUIElement* elem)
 	{
-		if (m_propertyInfo)
+		if (m_sceneVars)
 		{
 			vector<QString> approxVars;
-			for (auto element : *m_propertyInfo)
+			for (auto element : m_sceneVars->Vars())
 			{
-				approxVars.push_back(element.name);
+				approxVars.push_back(element->VarInfo().name);
 			}
 			elem->codeEditor()->SyntaxHilighter()->SetApproxVars(approxVars);
 		}
@@ -304,15 +337,21 @@ namespace ASL
 				part_info.entryPoint = QString("main");
 				part_info.qStr_code = m_SP[i]->codeEditor()->getCode();
 				part_info.Shader_Type = m_SP[i]->getShader_Type();
-
+				part_info.buffersInfo = m_SP[i]->BuffersInfo();
 				info.m_ShaderParts.push_back(part_info);
 			}
 		}
 
 		if (m_sessionInterface->Compile(info) == ASL_NO_ERROR)
+		{
 			m_lblStatus->setText(COMPILATION_SUCCESS_QT);
+			m_btnSave->menu()->actions()[1]->setEnabled(true);
+		}
 		else
+		{
 			m_lblStatus->setText(COMPILATION_FAIL_QT);
+			m_btnSave->menu()->actions()[1]->setEnabled(false);
+		}
 	}
 
 	void ShaderEditor::on_Settings()
@@ -400,7 +439,7 @@ namespace ASL
 					part_info.entryPoint = m_SP[i]->EntryPoint();
 					part_info.qStr_code = m_SP[i]->codeEditor()->getCode();
 					part_info.Shader_Type = m_SP[i]->getShader_Type();
-
+					part_info.buffersInfo = m_SP[i]->BuffersInfo();
 					info.m_ShaderParts.push_back(part_info);
 				}
 			}
@@ -429,13 +468,31 @@ namespace ASL
 
 			ClearElements();
 
+			if (m_sceneVars)
+			{
+				for (auto part : info.m_ShaderParts)
+				{
+					for(auto info : part.buffersInfo)
+					{
+						for (auto var : m_sceneVars->Vars())
+						{
+							for (auto ID : info.IDs)
+							{
+								if (ID == var->VarInfo().ID)
+									new Link<MaterialVar, ShaderLabGUIElement>(&m_gView, var, GetOrCreateShaderElem(part.Shader_Type));
+							}
+						}
+					}
+				}
+			}
 			for (auto part : info.m_ShaderParts)
 			{
-				auto element = CreateShaderElem(part.Shader_Type);
+				auto element = GetOrCreateShaderElem(part.Shader_Type);
 				element->codeEditor()->setCode(part.qStr_code);
 				element->setShader_Type(part.Shader_Type);
 				element->setEntryPoint(part.entryPoint);
 			}
+
 		}
 	}
 
@@ -475,7 +532,6 @@ namespace ASL
 			m_gScene.addItem(m_SP[index]);
 			m_SP[index]->InitializeComponents();
 		}
-		//SetApproxVars(m_SP[index]);
 		connect(m_SP[index], SIGNAL(Clicked(ShaderLabGUIElement*)), SLOT(Raise(ShaderLabGUIElement*)));
 		return m_SP[index];
 	}
@@ -483,10 +539,10 @@ namespace ASL
 	void ShaderEditor::resizeEvent(QResizeEvent*)
 	{
 		m_lblDesc->resize(width() - 4, m_lblDesc->height());
-		QRect rc = m_gView.geometry();
 		m_gView.resize(width(), height() - 55);
 		m_statusBar->setGeometry(2, height() - 23, width() - 4, 21);
 		m_sizeGrip->snapTo(BOTTOM_RIGHT);
+		m_shaderSettings->move(m_gView.width() - m_shaderSettings->width(), 100);
 	}
 
 	void ShaderEditor::moveEvent(QMoveEvent* e)

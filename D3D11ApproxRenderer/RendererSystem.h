@@ -4,7 +4,11 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <atomic>
+#include <IInternalSound.h>
+#include <vector>
 
+__interface IFnPtr;
+enum ExitCode;
 using namespace std;
 class Scene;
 
@@ -27,15 +31,16 @@ class  RendererSystem : public IInternalRenderer, public IExternalRenderer
     RendererSystem();
     ~RendererSystem();
 public:
-    void SetInputFocus();
-    void BindSoundSystem(IInternalSound* s_sys);
+	const vector<const ShaderDesc*>& AvailableShadersDesc()const override final;
+	void SetInputFocus()override final;
+	void BindSoundSystem(IInternalSound* s_sys)override final;
     static _declspec(dllexport) RendererSystem& Instance();
-    bool Initialize(void* parentWindowID, bool FullScreenOn, int screenWidth, int screenHeight, int xPos, int yPos);
-    void Shutdown();
-    void SetPosition(int x, int y);
-    void GetWndSize(int& screenWidth, int& screenHeight);
-    IFnPtr* GetThreadFunc();
-    IExternalScene* GetScene();
+	bool Initialize(void* parentWindowID, bool FullScreenOn, int screenWidth, int screenHeight, int xPos, int yPos)override final;
+	void Shutdown()override final;
+	void SetPosition(int x, int y)override final;
+    void GetWndSize(int& screenWidth, int& screenHeight)const override final;
+	IFnPtr* GetThreadFunc()override final;
+	IExternalScene* GetScene()const override final;
 };
 
 IInternalRenderer* GetRenderer()

@@ -31,7 +31,7 @@ protected:
     template<class TO>
     inline TO shader_params_cast(IShaderParams* params)
     {
-        if (params->GetShaderType() == this->GetType())
+        if (params->GetShaderDesc() == this->GetType())
         {
             return dynamic_cast<TO>(params);
         }

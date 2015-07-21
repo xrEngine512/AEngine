@@ -34,7 +34,6 @@ namespace ASL
 
 		QLabel *m_lblDescEntryPoint, *m_lblTitle;
 		QLineEdit *m_txtEntryPoint;
-
 		Settings m_Settings;
 	};
 }

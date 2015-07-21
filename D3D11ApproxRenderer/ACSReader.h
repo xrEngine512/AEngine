@@ -8,7 +8,7 @@ class ACSReader
 {
     FILE* m_file;
 public:
-    explicit ACSReader(wchar_t* filename);
+    explicit ACSReader(const wchar_t* filename);
     ShaderElement NextElement();
     ~ACSReader();
 };

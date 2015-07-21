@@ -5,21 +5,26 @@
 #include <vector>
 #include "MaterialVarInfo.h"
 using namespace std;
+
+class QLabel;
+
 namespace ASL
 {
 	class MaterialVar;
-	class MaterialVarPoint;
+	class LinkingPoint;
 
 	class MaterialVarsContainer : public QFrame
 	{
 		Q_OBJECT
 
 	public:
-		MaterialVarsContainer(QWidget *parent, std::vector<MaterialVarInfo>const&);
+		MaterialVarsContainer(QWidget *parent, std::vector<MaterialVarInfo>const&, const QString& version);
+		const vector < MaterialVar* >& Vars()const;
 		~MaterialVarsContainer();
 	signals:
 		void linkAttempt(MaterialVar* sender, const QPoint& mouseGlobalPosEnd);
 	private:
+		QLabel *m_title;
 		vector < MaterialVar* >  m_vars;
 	};
 }

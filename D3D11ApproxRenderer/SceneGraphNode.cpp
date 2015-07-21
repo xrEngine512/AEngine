@@ -84,7 +84,7 @@ void SceneGraphNode::Render(ID3D11DeviceContext* context, MaterialInterface& mi)
 {
     if (m_isRoot)
     {        
-        m_frustum->ConstructFrustum(SCREEN_DEPTH, mi.sceneConstants.projectionMatrix.Value(), mi.perFrameData.viewMatrix.Value());
+		m_frustum->ConstructFrustum(SCREEN_DEPTH, XMMatrixTranspose(mi.sceneConstants.projectionMatrix.Value()), XMMatrixTranspose(mi.perFrameData.viewMatrix.Value()));
         SetFrustum(m_frustum);
         for (auto child : m_children)
         {

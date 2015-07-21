@@ -2,6 +2,7 @@
 #include <QString>
 #include "Enums.h"
 #include <qvector.h>
+#include "ShaderBuffer.h"
 
 namespace ASL
 {
@@ -10,6 +11,7 @@ namespace ASL
 		QString qStr_code;
 		QString entryPoint;
 		ASL::Shader_Type Shader_Type = ASL::ST_NONE;
+		QVector<RuntimeBufferInfo> buffersInfo;
 	};
 
 	struct ViewSessionInfo

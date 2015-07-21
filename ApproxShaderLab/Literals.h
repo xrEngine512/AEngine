@@ -25,10 +25,15 @@
 #define CTRL_BTN_LOAD_QT			QStringLiteral("Загрузить")
 #define SUB_CTRL_SAVE_SHADER_QT		QStringLiteral("Скомпилированный шейдер")
 #define SUB_CTRL_SAVE_PROJECT_QT	QStringLiteral("Проект шейдера")
+#define CTRL_BTN_ADD_PARAMETER_QT	QStringLiteral("Добавить параметр шейдера")
+#define CTRL_BTN_ADD_TEXTURE_QT		QStringLiteral("Добавить карту шейдера")
 
 //Надписи
 #define LBL_SETTINGS_QT				QStringLiteral("Настройки")
 #define LBL_ENTRY_POINT_QT			QStringLiteral("Точка входа")
+#define LBL_TEXTURE_NAME_QT			QStringLiteral("Имя текстуры")
+#define LBL_PARAMETER_NAME_QT		QStringLiteral("Имя параметра")
+#define LBL_PARAMETER_TYPE_QT		QStringLiteral("Тип параметра")
 
 //Подсказки
 #define TIP_HOLD_SIZE_QT			QStringLiteral("Закрепить размер окна (Scroll Lock)")
@@ -47,10 +52,15 @@
 #define CTRL_BTN_LOAD_QT			"Load"
 #define SUB_CTRL_SAVE_SHADER_QT		"Compiled shader"
 #define SUB_CTRL_SAVE_PROJECT_QT	"Shader project"
+#define CTRL_BTN_ADD_PARAMETER_QT	"Add shader parameter"
+#define CTRL_BTN_ADD_TEXTURE_QT		"Add shader map"
 
 //Labels
 #define LBL_SETTINGS_QT				"Settings"
 #define LBL_ENTRY_POINT_QT			"Entry point"	
+#define LBL_TEXTURE_NAME_QT			"Texture name"
+#define LBL_PARAMETER_NAME_QT		"Parameter name"
+#define LBL_PARAMETER_TYPE_QT		"Parameter type"
 
 //ToolTips
 #define TIP_HOLD_SIZE_QT			"Hold window size (Scroll Lock)"

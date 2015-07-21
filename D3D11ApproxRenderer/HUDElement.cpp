@@ -27,9 +27,9 @@ bool HUDElement::Initialize(ID3D11Device* device, HWND hwnd, wchar_t* texture, u
     m_Width = width;
     m_Texture = new D3DTexture;
     m_Texture->Initialize(device, texture);
-    m_Shader = g_ShaderPool->GetShader(TEXTURE_SHADER);
-    m_ShaderParams = ShaderParamsFactory(TEXTURE_SHADER);    
-    m_Shader->SetTexture(m_Texture->GetTexture(),0);
+    //m_Shader = g_ShaderPool->GetShader(TEXTURE_SHADER);
+    //m_ShaderParams = ShaderParamsFactory(TEXTURE_SHADER);    
+    //m_Shader->SetTexture(m_Texture->GetTexture(),0);
     /*m_MeshLoader = new ObjMeshLoader;
     m_MeshLoader->Inititalize(device, "../../Core/Engine/Resources/Meshes/HUDMesh.obj");
     m_MeshLoader->GetBuffers(m_vertexBuffer, m_indexBuffer);
