@@ -68,26 +68,26 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)ApproxCommonSystem;$(SolutionDir)..\dxtools\Inc;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)ApproxCommonSystem;$(SolutionDir)dxtools\Inc;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
     <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)ApproxCommonSystem;$(SolutionDir)..\dxtools\Inc;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)ApproxCommonSystem;$(SolutionDir)dxtools\Inc;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
     <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)ApproxCommonSystem;$(SolutionDir)..\dxtools\Inc;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)ApproxCommonSystem;$(SolutionDir)dxtools\Inc;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)ApproxCommonSystem;$(SolutionDir)..\dxtools\Inc;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)ApproxCommonSystem;$(SolutionDir)dxtools\Inc;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
     <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -167,11 +167,11 @@
     <ClCompile Include="DirectSoundSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\dxtools\Audio\DirectXTKAudio_Desktop_2013_DXSDK.vcxproj">
-      <Project>{4f150a30-cecb-49d1-8283-6a3f57438cf5}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\ApproxCommonSystem\ApproxCommonSystem.vcxproj">
       <Project>{105793ea-b2ab-497e-b3d1-dca9e4e9473e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dxtools\Audio\DirectXTKAudio_Desktop_2013_DXSDK.vcxproj">
+      <Project>{4f150a30-cecb-49d1-8283-6a3f57438cf5}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -69,25 +69,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
-    <IncludePath>$(SolutionDir)ApproxShaderLab\;$(SolutionDir)ApproxInput\;$(SolutionDir)ApproxSound\;$(SolutionDir)..\dxtools\Inc\;$(SolutionDir)ApproxGlobalServices\;$(SolutionDir)ApproxCommonSystem\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)ApproxShaderLab\;$(SolutionDir)ApproxInput\;$(SolutionDir)ApproxSound\;$(SolutionDir)dxtools\Inc\;$(SolutionDir)ApproxGlobalServices\;$(SolutionDir)ApproxCommonSystem\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
-    <IncludePath>$(SolutionDir)ApproxShaderLab\;$(SolutionDir)ApproxInput\;$(SolutionDir)ApproxSound\;$(SolutionDir)..\dxtools\Inc\;$(SolutionDir)ApproxGlobalServices\;$(SolutionDir)ApproxCommonSystem\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)ApproxShaderLab\;$(SolutionDir)ApproxInput\;$(SolutionDir)ApproxSound\;$(SolutionDir)dxtools\Inc\;$(SolutionDir)ApproxGlobalServices\;$(SolutionDir)ApproxCommonSystem\;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)ApproxShaderLab\;$(SolutionDir)ApproxInput\;$(SolutionDir)ApproxSound\;$(SolutionDir)..\dxtools\Inc\;$(SolutionDir)ApproxGlobalServices\;$(SolutionDir)ApproxCommonSystem\;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)ApproxShaderLab\;$(SolutionDir)ApproxInput\;$(SolutionDir)ApproxSound\;$(SolutionDir)dxtools\Inc\;$(SolutionDir)ApproxGlobalServices\;$(SolutionDir)ApproxCommonSystem\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)ApproxShaderLab\;$(SolutionDir)ApproxInput\;$(SolutionDir)ApproxSound\;$(SolutionDir)..\dxtools\Inc\;$(SolutionDir)ApproxGlobalServices\;$(SolutionDir)ApproxCommonSystem\;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IncludePath>$(SolutionDir)ApproxShaderLab\;$(SolutionDir)ApproxInput\;$(SolutionDir)ApproxSound\;$(SolutionDir)dxtools\Inc\;$(SolutionDir)ApproxGlobalServices\;$(SolutionDir)ApproxCommonSystem\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -438,9 +438,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\dxtools\DirectXTK_Desktop_2013.vcxproj">
-      <Project>{e0b52ae7-e160-4d32-bf3f-910b785e5a8e}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\ApproxCommonSystem\ApproxCommonSystem.vcxproj">
       <Project>{105793ea-b2ab-497e-b3d1-dca9e4e9473e}</Project>
     </ProjectReference>
@@ -452,6 +449,9 @@
     </ProjectReference>
     <ProjectReference Include="..\ApproxSound\ApproxSound.vcxproj">
       <Project>{45523ed8-fb83-4121-8e2c-f790973b0f53}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\dxtools\DirectXTK_Desktop_2013.vcxproj">
+      <Project>{e0b52ae7-e160-4d32-bf3f-910b785e5a8e}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

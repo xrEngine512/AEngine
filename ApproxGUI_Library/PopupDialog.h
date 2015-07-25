@@ -1,15 +1,16 @@
 #pragma once
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QLabel>
+#include <qpushbutton.h>
 #include <QVBoxLayout>
-#include <QPushButton>
+#include "AnimatedWidget.h"
 #include <qpropertyanimation.h>
 #include <qcombobox.h>
 
 namespace ApproxGUI
 {
 	class PopupDialog :
-		public QWidget
+		public AnimatedWidget<QWidget>
 	{
 		Q_OBJECT
 		struct IElement
@@ -63,32 +64,36 @@ namespace ApproxGUI
 		QVector<IElement*> m_Elements;
 		void showEvent(QShowEvent* e) override
 		{
-			auto anim = new QPropertyAnimation(this,"size");
+			/*auto anim = new QPropertyAnimation(this,"size");
 			anim->setStartValue(QSize(10, 10));
 			anim->setEndValue(size());
 			anim->setDuration(300);
-			QWidget::showEvent(e);
-			anim->start(QAbstractAnimation::DeleteWhenStopped);			
+			BaseClass::showEvent(e);
+			anim->start(QAbstractAnimation::DeleteWhenStopped);*/	
+			
 		}
 	signals:
 		void OK();
 	public:
-		PopupDialog(QWidget* parent) :QWidget(parent)
+		PopupDialog(QWidget* parent) :BaseClass(parent)
 		{
 			new QVBoxLayout(this);
+			SetAnimationVariation(GO_LEFT_AND_EXPAND);
 			setWindowFlags(Qt::Popup);
-			setAttribute(Qt::WA_DeleteOnClose);			
+			setAttribute(Qt::WA_DeleteOnClose);		
 		}
 
 		template<class T>
 		void Exec(const T& arg)
 		{
 			Process(arg);
-			resize(100,m_Elements.size() * 60 + 30);
+			m_memoredSize = QSize(100, m_Elements.size() * 60 + 30);
 			m_btnOK = new QPushButton;
 			layout()->addWidget(m_btnOK);
-			move(parentWidget()->mapToGlobal(QPoint(0, 0)));
-			show();
+			
+			auto g = geometry();
+			g.setSize(QSize(10, 10));
+			ShowAnimated(g);
 			connect(m_btnOK, &QPushButton::clicked, [=]()
 			{
 				emit OK();

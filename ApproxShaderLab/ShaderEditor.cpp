@@ -446,6 +446,8 @@ namespace ASL
 			info.m_shaderName = m_wndSettings->ui.txtShaderName->text();
 			info.m_SM = toSM(m_wndSettings->ui.comboBox->currentIndex());
 			info.m_projectFilename = m_wndSettings->ui.txtWorkLib->text() + m_wndSettings->ui.txtShaderName->text();
+			info.m_Params = m_shaderSettings->Parameters();
+			info.m_Textures = m_shaderSettings->Textures();
 			try
 			{
 				m_sessionInterface->SaveProject(info);
@@ -462,7 +464,17 @@ namespace ASL
 		info.m_projectFilename = QFileDialog::getOpenFileName(this, tr("Open Shader project file"), "../", tr("Approx Shader Project (*.asp)"));
 		if (info.m_projectFilename.size())
 		{
-			m_sessionInterface->LoadProject(info);
+			try
+			{
+				m_sessionInterface->LoadProject(info);
+			}
+			catch (ApproxException& exc)
+			{
+				ApproxException e(L"Не удалось открыть файл.");
+				e += exc;
+				e((HWND)winId());
+				return;
+			}
 			m_lblDesc->setText(info.m_shaderName);
 			m_wndSettings->ui.txtShaderName->setText(info.m_shaderName);
 

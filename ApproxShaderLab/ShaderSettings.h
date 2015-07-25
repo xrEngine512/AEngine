@@ -21,12 +21,13 @@ namespace ASL
 		void linkAttempt(ShaderSettingsElement* sender, const QPoint& mouseGlobalPosEnd);
 	public:
 		ShaderSettings(QWidget *parent);
-		const std::vector<TextureInfo>& Textures()const;
+		const QVector<TextureInfo>& Textures()const;
+		const QVector<ShaderParamInfo>& Parameters()const;
 		~ShaderSettings();
 
 	private:
-		std::vector <TextureInfo> m_textures;
-		std::vector<ShaderParamInfo> m_params;
+		QVector<TextureInfo> m_textures;
+		QVector<ShaderParamInfo> m_params;
 
 		QPushButton* m_btnAddParameter, *m_btnAddTexture;
 

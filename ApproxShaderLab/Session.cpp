@@ -1,5 +1,7 @@
 #include "Session.h"
 #include "ShaderPart.h"
+#include "ShaderParamInfo.h"
+#include "TextureInfo.h"
 
 #define IDENTIFY(Type) case ProjectPackElementID::Type: return Type
 
@@ -38,6 +40,16 @@ namespace ASL
 		}
 	}
 
+	void Session::setShaderParams(vector<ShaderParamInfo>& params)
+	{
+		m_ShaderParams = params;
+	}
+
+	void Session::setShaderTextures(vector<TextureInfo>& textures)
+	{
+		m_ShaderTextures = textures;
+	}
+
 	ShaderPart& Session::partByType(Shader_Type type)
 	{
 		for (auto& part : m_ShaderParts)
@@ -71,6 +83,16 @@ namespace ASL
 	{
 		m_project << new ProjectElement(ProjectPackElementID::SHADER_NAME, m_shaderName);
 		m_project << new ProjectElement(ProjectPackElementID::SHADER_MODEL, m_SM);
+		m_project.AllowDuplicatesFor(ProjectPackElementID::PARAMETER);
+		m_project.AllowDuplicatesFor(ProjectPackElementID::TEXTURE);
+		for (auto param : m_ShaderParams)
+		{
+			m_project << new ProjectElement(ProjectPackElementID::PARAMETER, dynamic_cast<ISaveData*>(&param));
+		}
+		for (auto texture : m_ShaderTextures)
+		{
+			m_project << new ProjectElement(ProjectPackElementID::TEXTURE, dynamic_cast<ISaveData*>(&texture));
+		}
 		//Saving source code and entry points
 		for (auto part : m_ShaderParts)
 		{
@@ -79,10 +101,7 @@ namespace ASL
 			*newElem << new ProjectElement(ProjectPackElementID::ENTRY_POINT, part.EntryPoint);
 			for (auto bufferInfo : part.BuffersInfo)
 			{
-				int size;
-				auto buf = bufferInfo.Serialize(size);
-				*newElem << new ProjectElement(ProjectPackElementID::APPROX_VAR_BUFFER_INFO,size ,buf);
-				bufferInfo.CleanSerializedBuffer();
+				*newElem << new ProjectElement(ProjectPackElementID::APPROX_VAR_BUFFER_INFO, dynamic_cast<ISaveData*>(&bufferInfo));
 			}
 			m_project << newElem;
 		}
@@ -123,6 +142,7 @@ namespace ASL
 
 	void Session::OpenProjectFile(const char* filename)
 	{
+		m_project.ClearElements();
 		m_project(filename,false);
 		m_project.FromDisk();
 		m_project.CloseFile();
@@ -138,24 +158,29 @@ namespace ASL
 
 		while (m_project >> element)
 		{
-			Shader_Type ST = toST(element->m_MetaData.ID);
-			if (ST != ST_NONE)
+			try
 			{
-				ShaderPart newPart;
-				
-				element->Find(ProjectPackElementID::ENTRY_POINT)->Get(newPart.EntryPoint);
-				for (auto subElement : element->FindMany(ProjectPackElementID::APPROX_VAR_BUFFER_INFO))
+				Shader_Type ST = toST(element->m_MetaData.ID);
+				if (ST != ST_NONE)
 				{
-					void * pData;
-					RuntimeBufferInfo bufInfo;
-					auto size = subElement->Get(pData);
-					bufInfo.Deserialize(pData, size);
-					newPart.BuffersInfo.push_back(bufInfo);
-					free(pData);
+					ShaderPart newPart;
+
+					element->Find(ProjectPackElementID::ENTRY_POINT)->Get(newPart.EntryPoint);
+					for (auto subElement : element->FindMany(ProjectPackElementID::APPROX_VAR_BUFFER_INFO))
+					{
+						RuntimeBufferInfo bufInfo;
+						subElement->Get(dynamic_cast<ISaveData*>(&bufInfo));
+						newPart.BuffersInfo.push_back(bufInfo);
+					}
+					element->Get(newPart.Str_code);
+					newPart.Shader_Type = ST;
+					m_ShaderParts.push_back(newPart);
 				}
-				element->Get(newPart.Str_code);
-				newPart.Shader_Type = ST;
-				m_ShaderParts.push_back(newPart);
+			}
+			catch (ApproxException&)
+			{
+				m_project.Reset();
+				throw;
 			}
 		}
 	}

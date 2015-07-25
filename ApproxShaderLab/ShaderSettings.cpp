@@ -25,14 +25,20 @@ namespace ASL
 		connect(m_btnAddTexture,	SIGNAL(clicked()), SLOT(AddTexture()));
 	}
 
-	const std::vector<TextureInfo>& ShaderSettings::Textures()const
+	const QVector<TextureInfo>& ShaderSettings::Textures()const
 	{
 		return m_textures;
+	}
+
+	const QVector<ShaderParamInfo>& ShaderSettings::Parameters() const
+	{
+		return m_params;
 	}
 
 	void ShaderSettings::AddTexture()
 	{
 		ApproxGUI::PopupDialog* dialog = new ApproxGUI::PopupDialog(parentWidget());
+		dialog->move(mapToGlobal(m_btnAddTexture->pos()));
 		dialog->Exec(LBL_TEXTURE_NAME_QT);
 		
 		connect(dialog, &ApproxGUI::PopupDialog::OK, [=]()
@@ -63,6 +69,7 @@ namespace ASL
 		Types.push_back("float4");
 		Types.push_back("int");
 		Types.push_back("uint");
+		dialog->move(mapToGlobal(m_btnAddParameter->pos()));
 		dialog->Exec(LBL_PARAMETER_NAME_QT,QPair<QString,QVector<QString>>(LBL_PARAMETER_TYPE_QT,Types));
 		
 		connect(dialog, &ApproxGUI::PopupDialog::OK, [=]()

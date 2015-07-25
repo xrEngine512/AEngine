@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="CloseBtn">
+    <file>Resources/close_hovered.png</file>
+    <file>Resources/close_idle.png</file>
+    <file>Resources/close_pressed.png</file>
+  </qresource>
+</RCC>

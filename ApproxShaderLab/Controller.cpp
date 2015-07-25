@@ -5,6 +5,8 @@
 #include "ShaderPart.h"
 #include "ViewSessionInfo.h"
 #include <qvector.h>
+#include "ShaderParamInfo.h"
+#include "TextureInfo.h"
 
 using namespace MatInterface;
 
@@ -19,6 +21,9 @@ namespace ASL
 		Session* session = res->second;
 		session->setShaderModel(visSession.m_SM);
 		session->setShaderName(visSession.m_shaderName.toStdString());
+		session->setShaderParams(visSession.m_Params.toStdVector());
+		session->setShaderTextures(visSession.m_Textures.toStdVector());
+
 		for (auto part : visSession.m_ShaderParts)
 		{
 			ShaderPart& lpart = session->partByType(part.Shader_Type);

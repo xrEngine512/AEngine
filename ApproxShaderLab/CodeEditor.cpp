@@ -12,8 +12,8 @@
 namespace ASL
 {
 	CodeEditor::CodeEditor(QWidget *parent, ShaderLabGUIElement* controlItem, int Width, int Height)
-		: BaseClass(parent), m_contMenuOpen(false), m_chkHoldSize(nullptr), m_controlItem(controlItem), 
-		m_readOnlyStart(0), m_readOnlyEnd(0), m_cursorPrevPos(0)
+		: BaseClass(parent), m_chkHoldSize(nullptr), m_controlItem(controlItem), m_readOnlyStart(0), 
+		m_readOnlyEnd(0), m_cursorPrevPos(0), m_contMenuOpen(false)
 	{
 		SetAnimationVariation(GO_RIGHT_AND_EXPAND);
 		m_memoredSize = QSize(Width, Height);

@@ -7,6 +7,7 @@
 #include <ApproxSystemErrors.h>
 #include <unordered_set>
 #include "Literals.h"
+#include "ISaveData.h"
 
 enum ShaderPackElementID : unsigned __int16
 {
@@ -17,7 +18,7 @@ enum ShaderPackElementID : unsigned __int16
 enum class ProjectPackElementID : unsigned __int16
 {
 	NONE, VS, PS, GS, CS, DS, HS, ENTRY_POINT, SHADER_MODEL, SHADER_NAME,
-	APPROX_VAR_BUFFER_INFO
+	APPROX_VAR_BUFFER_INFO, PARAMETER, TEXTURE
 };
 
 struct D3D11_INPUT_LAYOUT_ELEMENT
@@ -73,7 +74,7 @@ struct PackElement : DataOwnershipPolicy
 	{
 		Copy(Data, arg);
 	}
-	PackElement(ID_Type _ID, size_t _size, void* pData)
+	PackElement(ID_Type _ID, size_t _size, const void* pData)
 	{
 		Copy(Data, _size, pData);
 		m_MetaData.ID = _ID;
@@ -98,6 +99,16 @@ struct PackElement : DataOwnershipPolicy
 		m_MetaData.ID = _ID;
 		m_MetaData.size = str.size() + 1;
 		Copy(Data, m_MetaData.size, str.c_str());
+	}
+
+	PackElement(ID_Type _ID, ASL::ISaveData* obj)
+	{
+		int size;
+		auto buf = obj->Serialize(size);
+		Copy(Data, size, buf);
+		m_MetaData.ID = _ID;
+		m_MetaData.size = size;
+		obj->CleanSerializedBuffer();
 	}
 
 	void operator=(PackElement const& arg)
@@ -140,6 +151,10 @@ struct PackElement : DataOwnershipPolicy
 		ptr = static_cast<T*>(malloc(m_MetaData.size));
 		memcpy((void*)ptr, Data, m_MetaData.size);
 		return m_MetaData.size;
+	}
+	void Get(ASL::ISaveData* obj)
+	{
+		obj->Deserialize(Data, m_MetaData.size);
 	}
 	void AllowDuplicatesFor(ID_Type ID, bool affectAllHierarchy = false)
 	{
@@ -332,7 +347,6 @@ public:
 	}
 	bool operator>>(LocalElement*& OutElem)
 	{
-		static int counter(0);
 		if (counter < m_Elements.size())
 		{
 			OutElem = m_Elements[counter++];
@@ -342,6 +356,11 @@ public:
 		counter = 0;
 		return false;
 
+	}
+	void Reset()
+	{
+		ClearElements();
+		counter = 0;
 	}
 	void CloseFile()
 	{
@@ -365,6 +384,7 @@ public:
 		CloseFile();
 	}
 private:
+	int counter = 0;
 	void OpenFile(const char* fileName, bool write)
 	{
 		if (write)

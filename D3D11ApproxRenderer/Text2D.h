@@ -2,7 +2,7 @@
 #include <SpriteFont.h>
 #include <mutex>
 #include <atomic>
-#define VERDANA_FONT L"../../Core/Engine/Resources/Fonts/verdana.spritefont"
+#define VERDANA_FONT L"../Engine/Resources/Fonts/verdana.spritefont"
 using namespace DirectX;
 using namespace std;
 

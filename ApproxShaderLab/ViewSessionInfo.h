@@ -2,7 +2,7 @@
 #include <QString>
 #include "Enums.h"
 #include <qvector.h>
-#include "ShaderBuffer.h"
+#include "RuntimeBufferInfo.h"
 
 namespace ASL
 {
@@ -22,5 +22,7 @@ namespace ASL
 		QString m_shaderFilename;
 		QString m_projectFilename;
 		QVector<ViewShaderPartInfo> m_ShaderParts;
+		QVector<TextureInfo> m_Textures;
+		QVector<ShaderParamInfo> m_Params;
 	};
 }

@@ -8,9 +8,9 @@ namespace ASL
 	{
 		int Slot;
 		std::string Name;
-		void* Serialize(int& size) override
+		const void* Serialize(int& size) override
 		{
-			if (serializedBuf)
+			/*if (serializedBuf)
 				delete[] serializedBuf;
 			size = 0;
 			size += sizeof(int);
@@ -18,15 +18,18 @@ namespace ASL
 			serializedBuf = new char[size];
 			memcpy(serializedBuf, &Slot, sizeof(int));
 			memcpy(serializedBuf + sizeof(int), Name.c_str(), Name.size());
-			return serializedBuf;
+			return serializedBuf;*/
+			size = Serialization(Slot, Name);
+			return SerializedBuf();
 		}
 		void Deserialize(void* buf, size_t size)override
 		{
-			memcpy(&Slot, buf, sizeof(int));
+			/*memcpy(&Slot, buf, sizeof(int));
 			size -= sizeof(int);
 			Name.reserve(size);
 			Name.assign(size, '0');
-			Name.copy(static_cast<char*>(buf)+sizeof(int), size);
+			Name.copy(static_cast<char*>(buf)+sizeof(int), size);*/
+			Deserialization(buf,size, Slot, Name);
 		}
 		TextureInfo* ToTextureInfo()override
 		{
