@@ -80,7 +80,7 @@ namespace ASL
 		return ToCode().size();
 	}
 
-	ISaveData* ShaderSettingsElement::Info() const
+	AbstractSaveData* ShaderSettingsElement::Info() const
 	{
 		return m_Data;
 	}

@@ -7,7 +7,7 @@ class QLabel;
 
 namespace ASL
 {
-	struct ISaveData;
+	struct AbstractSaveData;
 	class LinkingPoint;
 	struct ShaderParamInfo;
 	struct TextureInfo;
@@ -25,7 +25,7 @@ namespace ASL
 		~ShaderSettingsElement();
 		QString ToCode()const;
 		int CodeSize()const;
-		ISaveData* Info()const;
+		AbstractSaveData* Info()const;
 	signals:
 		void linkAttempt(ShaderSettingsElement* sender, const QPoint& gPos);
 
@@ -34,7 +34,7 @@ namespace ASL
 		QLabel* m_Name;
 		QLabel* m_Icon;
 		LinkingPoint* m_Point;
-		ISaveData* m_Data;
+		AbstractSaveData* m_Data;
 		Elem_Type m_Type;
 	};
 }

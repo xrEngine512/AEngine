@@ -13,6 +13,7 @@
 #include "LinkingPoint.h"
 #include "ShaderParamInfo.h"
 #include "TextureInfo.h"
+#include "ViewSessionInfo.h"
 
 const int rad = 50;
 const qreal slotSpacing = 5;
@@ -50,13 +51,6 @@ namespace ASL
 	QRectF ShaderLabGUIElement::boundingRect() const
 	{
 		return QRectF(0, 0, m_width, m_height);
-	}
-
-	void ShaderLabGUIElement::setEntryPoint(QString& str)
-	{
-		auto settings = m_Settings->getSettings();
-		settings.EntryPoint = str;
-		m_Settings->setSettings(settings);
 	}
 
 	const QString& ShaderLabGUIElement::EntryPoint()
@@ -136,9 +130,14 @@ namespace ASL
 		}
 	}
 
-	void ShaderLabGUIElement::setShader_Type(Shader_Type type)
+	void ShaderLabGUIElement::Init(const ViewShaderPartInfo& info)
 	{
-		m_type = type;
+		auto settings = m_Settings->getSettings();
+		settings.EntryPoint = info.entryPoint;
+		m_Settings->setSettings(settings);
+		m_type = info.Shader_Type;
+		m_txtedit->setPlainText(info.qStr_code);
+		
 	}
 
 	Shader_Type ShaderLabGUIElement::getShader_Type() const
@@ -223,6 +222,14 @@ namespace ASL
 				break;
 			}
 		}
+		for (auto link = m_allLinks.begin(); link != m_allLinks.end(); ++link)
+		{
+			if (*link == lnk)
+			{
+				m_allLinks.erase(link);
+				break;
+			}
+		}
 	}
 
 	void ShaderLabGUIElement::deleteLink(const SettingsLink* lnk)
@@ -232,6 +239,14 @@ namespace ASL
 			if (*link == lnk)
 			{
 				m_setLinks.erase(link);
+				break;
+			}
+		}
+		for (auto link = m_allLinks.begin(); link != m_allLinks.end(); ++link)
+		{
+			if (*link == lnk)
+			{
+				m_allLinks.erase(link);
 				break;
 			}
 		}
@@ -372,6 +387,19 @@ namespace ASL
 			}
 		}
 		return info;
+	}
+
+	QVector<int> ShaderLabGUIElement::ParamIDs() const
+	{
+		QVector<int> res;
+		if (m_buffers[0])
+		{
+			for (auto param : m_buffers[0]->Params())
+			{
+				res.push_back(param->ID);
+			}
+		}
+		return res;
 	}
 
 	void ShaderLabGUIElement::UpdateGeneratedCode()

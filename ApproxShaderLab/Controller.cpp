@@ -30,6 +30,7 @@ namespace ASL
 			lpart.EntryPoint = part.entryPoint.toStdString();
 			lpart.Str_code = part.qStr_code.toStdString();
 			lpart.BuffersInfo = part.buffersInfo.toStdVector();
+			lpart.ParamsIDs = part.paramIDs.toStdVector();
 		}
 		return session;
 	}

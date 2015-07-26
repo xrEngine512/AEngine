@@ -440,6 +440,7 @@ namespace ASL
 					part_info.qStr_code = m_SP[i]->codeEditor()->getCode();
 					part_info.Shader_Type = m_SP[i]->getShader_Type();
 					part_info.buffersInfo = m_SP[i]->BuffersInfo();
+					part_info.paramIDs = m_SP[i]->ParamIDs();
 					info.m_ShaderParts.push_back(part_info);
 				}
 			}
@@ -478,6 +479,9 @@ namespace ASL
 			m_lblDesc->setText(info.m_shaderName);
 			m_wndSettings->ui.txtShaderName->setText(info.m_shaderName);
 
+			m_shaderSettings->SetParameters(info.m_Params);
+			m_shaderSettings->SetTextures(info.m_Textures);
+
 			ClearElements();
 
 			if (m_sceneVars)
@@ -499,10 +503,26 @@ namespace ASL
 			}
 			for (auto part : info.m_ShaderParts)
 			{
+				for (auto ID : part.paramIDs)
+				{
+					for (auto set : m_shaderSettings->AllSettings())
+					{
+						ShaderParamInfo* info = set->Info()->ToShaderParameterInfo();
+						if (info)
+						{
+							if (info->ID == ID)
+							{
+								new Link<ShaderSettingsElement, ShaderLabGUIElement>(&m_gView, set, GetOrCreateShaderElem(part.Shader_Type));
+							}
+						}
+					}
+				}
+
+			}
+			for (auto part : info.m_ShaderParts)
+			{
 				auto element = GetOrCreateShaderElem(part.Shader_Type);
-				element->codeEditor()->setCode(part.qStr_code);
-				element->setShader_Type(part.Shader_Type);
-				element->setEntryPoint(part.entryPoint);
+				element->Init(part);				
 			}
 
 		}
@@ -539,7 +559,6 @@ namespace ASL
 		if (!m_SP[index])
 		{
 			m_SP[index] = new ShaderLabGUIElement;
-			m_SP[index]->setShader_Type(type);
 			m_SP[index]->moveBy(100 * index, 0);
 			m_gScene.addItem(m_SP[index]);
 			m_SP[index]->InitializeComponents();

@@ -19,7 +19,6 @@ m_textures(nullptr), m_NumberOfTextureSlots(0), PS_buffers(), VS_buffers()
 
 void UnifiedShader::Initialize(ID3D11Device* device)
 {
-	char* sm;
 	bool end_of_file(false);
 	ShaderElement VS_Element;
 
@@ -233,10 +232,6 @@ bool UnifiedShader::UpdatePerObjectBuffers(ID3D11DeviceContext* context)
 
 bool UnifiedShader::Render(ID3D11DeviceContext* context, unsigned int indexCount)
 {
-    HRESULT result;    
-   
-    unsigned int bufferNumber;
-
 	if (!UpdatePerObjectBuffers(context))
 		return false;	
 

@@ -127,6 +127,11 @@ namespace ASL
 		return m_info;
 	}
 
+	const std::vector<const ShaderParamInfo*>& ShaderBuffer::Params() const
+	{
+		return m_params;
+	}
+
 	QString ShaderBuffer::NormalizeType(const QString& type)
 	{
 		if (type.compare("float") == 0)

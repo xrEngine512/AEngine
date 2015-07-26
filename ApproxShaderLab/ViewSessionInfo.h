@@ -12,6 +12,7 @@ namespace ASL
 		QString entryPoint;
 		ASL::Shader_Type Shader_Type = ASL::ST_NONE;
 		QVector<RuntimeBufferInfo> buffersInfo;
+		QVector<int>  paramIDs;
 	};
 
 	struct ViewSessionInfo

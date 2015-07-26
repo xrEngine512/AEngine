@@ -23,6 +23,7 @@ namespace ASL
 		QString ToCode()const;
 		int CodeSize()const;
 		const RuntimeBufferInfo& Info();
+		const std::vector<const ShaderParamInfo*>& Params()const;
 		static inline QString NormalizeType(const QString& type);
 		~ShaderBuffer();
 	private:

@@ -8,6 +8,7 @@
 
 namespace ASL
 {
+	struct ViewShaderPartInfo;
 	__interface ILink;
 	class ShaderPartSettings;
 	class ShaderSettingsElement;
@@ -32,10 +33,11 @@ namespace ASL
 
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 			QWidget *widget)override;
-		void setShader_Type(Shader_Type);
 		
+		
+		void Init(const ViewShaderPartInfo& info);
 		Shader_Type getShader_Type()const;
-		void setEntryPoint(QString&);
+		
 		const QString& EntryPoint();
 		void ShrinkCodeEditor();
 		void InitializeComponents();
@@ -51,6 +53,7 @@ namespace ASL
 		const std::vector<SettingsLink*>& SettingsLinks() const;
 		const std::vector<ILink*>& Links() const;
 		QVector<RuntimeBufferInfo> BuffersInfo() const;
+		QVector<int> ParamIDs()const;
 	public slots:
 		void UpdateGeneratedCode();
 	private:

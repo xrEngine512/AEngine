@@ -25,6 +25,48 @@ namespace ASL
 		connect(m_btnAddTexture,	SIGNAL(clicked()), SLOT(AddTexture()));
 	}
 
+	void ShaderSettings::SetParameters(const QVector<ShaderParamInfo>& params)
+	{
+		for (auto param : params)
+		{
+			AddParameter(param);
+		}
+	}
+
+	void ShaderSettings::SetTextures(const QVector<TextureInfo>& textures)
+	{
+		for (auto tex : textures)
+		{
+			AddTexture(tex);
+		}
+	}
+
+	void ShaderSettings::AddTexture(const TextureInfo& texture)
+	{
+		m_textures.push_back(texture);
+		auto elem = new ShaderSettingsElement(this, texture);
+		m_Settings.push_back(elem);
+		connect(elem, &ShaderSettingsElement::linkAttempt, [=](ShaderSettingsElement *sender, const QPoint& mouseGlobalPos)
+		{
+			emit linkAttempt(sender, mouseGlobalPos);
+		});
+		dynamic_cast<QVBoxLayout*>(layout())->insertWidget(0, elem);
+		resize(size() + QSize(0, 20));
+	}
+
+	void ShaderSettings::AddParameter(const ShaderParamInfo& param)
+	{
+		m_params.push_back(param);
+		auto elem = new ShaderSettingsElement(this, param);
+		m_Settings.push_back(elem);
+		connect(elem, &ShaderSettingsElement::linkAttempt, [=](ShaderSettingsElement *sender, const QPoint& mouseGlobalPos)
+		{
+			emit linkAttempt(sender, mouseGlobalPos);
+		});
+		dynamic_cast<QVBoxLayout*>(layout())->insertWidget(0, elem);
+		resize(size() + QSize(0, 20));
+	}
+
 	const QVector<TextureInfo>& ShaderSettings::Textures()const
 	{
 		return m_textures;
@@ -33,6 +75,11 @@ namespace ASL
 	const QVector<ShaderParamInfo>& ShaderSettings::Parameters() const
 	{
 		return m_params;
+	}
+
+	const QVector<ShaderSettingsElement*>& ShaderSettings::AllSettings() const
+	{
+		return m_Settings;
 	}
 
 	void ShaderSettings::AddTexture()
@@ -47,15 +94,7 @@ namespace ASL
 			auto data = dialog->Data();
 			info.Name = data[0].toStdString();
 			info.Slot = m_textures.size();
-			m_textures.push_back(info);
-			auto elem = new ShaderSettingsElement(this, info);
-			m_Settings.push_back(elem);
-			connect(elem, &ShaderSettingsElement::linkAttempt, [=](ShaderSettingsElement *sender, const QPoint& mouseGlobalPos)
-			{
-				emit linkAttempt(sender, mouseGlobalPos);
-			});
-			dynamic_cast<QVBoxLayout*>(layout())->insertWidget(0, elem);
-			resize(size() + QSize(0, 20));
+			AddTexture(info);
 		});		
 	}
 
@@ -78,15 +117,8 @@ namespace ASL
 			auto data = dialog->Data();
 			info.Name = data[0].toStdString();
 			info.Type = data[1].toStdString();
-			m_params.push_back(info);
-			auto elem = new ShaderSettingsElement(this, info);
-			m_Settings.push_back(elem);
-			connect(elem, &ShaderSettingsElement::linkAttempt, [=](ShaderSettingsElement *sender, const QPoint& mouseGlobalPos)
-			{
-				emit linkAttempt(sender, mouseGlobalPos);
-			});
-			dynamic_cast<QVBoxLayout*>(layout())->insertWidget(0, elem);
-			resize(size() + QSize(0, 20));
+			info.ID = m_params.size();
+			AddParameter(info);
 		});		
 	}
 

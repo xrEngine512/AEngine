@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;cxx;c;def</Extensions>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h</Extensions>
@@ -41,9 +37,6 @@
     </Filter>
     <Filter Include="Control">
       <UniqueIdentifier>{bdcb7072-72a6-4b7e-a878-4c92fde36de6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Native">
-      <UniqueIdentifier>{38e80265-eb2e-41ba-99cb-070c1031d04a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -152,9 +145,6 @@
     <ClCompile Include="ShaderPartSettings.cpp">
       <Filter>View</Filter>
     </ClCompile>
-    <ClCompile Include="Link.cpp">
-      <Filter>View</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_shaderlabguielement.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -205,9 +195,6 @@
     </ClCompile>
     <ClCompile Include="ShaderBuffer.cpp">
       <Filter>View</Filter>
-    </ClCompile>
-    <ClCompile Include="NativeInterface.cpp">
-      <Filter>Native</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_ShaderSettings.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -292,9 +279,6 @@
     <ClInclude Include="MaterialVarInfo.h">
       <Filter>View</Filter>
     </ClInclude>
-    <ClInclude Include="NativeInterface.h">
-      <Filter>Native</Filter>
-    </ClInclude>
     <ClInclude Include="RuntimeBufferInfo.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -304,7 +288,7 @@
     <ClInclude Include="ShaderParamInfo.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="ISaveData.h">
+    <ClInclude Include="AbstractSaveData.h">
       <Filter>Model</Filter>
     </ClInclude>
   </ItemGroup>

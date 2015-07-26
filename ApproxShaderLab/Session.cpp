@@ -87,22 +87,22 @@ namespace ASL
 		m_project.AllowDuplicatesFor(ProjectPackElementID::TEXTURE);
 		for (auto param : m_ShaderParams)
 		{
-			m_project << new ProjectElement(ProjectPackElementID::PARAMETER, dynamic_cast<ISaveData*>(&param));
+			m_project << new ProjectElement(ProjectPackElementID::PARAMETER, dynamic_cast<AbstractSaveData*>(&param));
 		}
 		for (auto texture : m_ShaderTextures)
 		{
-			m_project << new ProjectElement(ProjectPackElementID::TEXTURE, dynamic_cast<ISaveData*>(&texture));
+			m_project << new ProjectElement(ProjectPackElementID::TEXTURE, dynamic_cast<AbstractSaveData*>(&texture));
 		}
 		//Saving source code and entry points
 		for (auto part : m_ShaderParts)
 		{
-			ProjectElement* newElem = new ProjectElement(toID(part.Shader_Type), part.Str_code);
-			newElem->AllowDuplicatesFor(ProjectPackElementID::APPROX_VAR_BUFFER_INFO);
+			ProjectElement* newElem = new ProjectElement(toID(part.Shader_Type), part);
+			/*newElem->AllowDuplicatesFor(ProjectPackElementID::APPROX_VAR_BUFFER_INFO);
 			*newElem << new ProjectElement(ProjectPackElementID::ENTRY_POINT, part.EntryPoint);
 			for (auto bufferInfo : part.BuffersInfo)
 			{
-				*newElem << new ProjectElement(ProjectPackElementID::APPROX_VAR_BUFFER_INFO, dynamic_cast<ISaveData*>(&bufferInfo));
-			}
+				*newElem << new ProjectElement(ProjectPackElementID::APPROX_VAR_BUFFER_INFO, dynamic_cast<AbstractSaveData*>(&bufferInfo));
+			}*/
 			m_project << newElem;
 		}
 
@@ -154,6 +154,20 @@ namespace ASL
 		
 		element->Get(m_shaderName);
 
+		for (auto param : m_project.FindMany(ProjectPackElementID::PARAMETER))
+		{
+			ShaderParamInfo paramInfo;
+			param->Get(paramInfo);
+			m_ShaderParams.push_back(paramInfo);
+		}
+
+		for (auto texture : m_project.FindMany(ProjectPackElementID::TEXTURE))
+		{
+			TextureInfo texInfo;
+			texture->Get(texInfo);
+			m_ShaderTextures.push_back(texInfo);
+		}
+
 		m_ShaderParts.clear();
 
 		while (m_project >> element)
@@ -165,15 +179,15 @@ namespace ASL
 				{
 					ShaderPart newPart;
 
-					element->Find(ProjectPackElementID::ENTRY_POINT)->Get(newPart.EntryPoint);
-					for (auto subElement : element->FindMany(ProjectPackElementID::APPROX_VAR_BUFFER_INFO))
+					element->Get(newPart);
+					/*for (auto subElement : element->FindMany(ProjectPackElementID::APPROX_VAR_BUFFER_INFO))
 					{
 						RuntimeBufferInfo bufInfo;
-						subElement->Get(dynamic_cast<ISaveData*>(&bufInfo));
+						subElement->Get(dynamic_cast<AbstractSaveData*>(&bufInfo));
 						newPart.BuffersInfo.push_back(bufInfo);
-					}
-					element->Get(newPart.Str_code);
-					newPart.Shader_Type = ST;
+					}*/
+					/*element->Get(newPart.Str_code);
+					newPart.Shader_Type = ST;*/
 					m_ShaderParts.push_back(newPart);
 				}
 			}
