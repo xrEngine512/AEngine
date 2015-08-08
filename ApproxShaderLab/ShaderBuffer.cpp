@@ -78,6 +78,20 @@ namespace ASL
 			if ((*variable)->ID == var.ID)
 			{
 				m_vars.erase(variable);
+				m_bufSize -= SizeOf(var.type);
+				break;
+			}
+		}
+	}
+
+	void ShaderBuffer::DeleteVariable(const ShaderParamInfo& var)
+	{
+		for (auto variable = m_params.begin(); variable != m_params.end(); ++variable)
+		{
+			if ((*variable)->ID == var.ID)
+			{
+				m_params.erase(variable);
+				m_bufSize -= SizeOf(var.Type.c_str());
 				break;
 			}
 		}
@@ -90,23 +104,11 @@ namespace ASL
 		QString res;
 		res += "cbuffer " + m_bufferName + "\n{\n";
 		for (auto var : m_vars)
-		{
 			res += VarToCode(*var);
-		}
-
+		
 		for (auto var : m_params)
-		{
 			res += VarToCode(*var);
-		}
-
-		int pNum = 0;
-		auto bSize = m_bufSize;
-		while (bSize % 16 != 0)
-		{
-			res += "\tfloat\tpadding" + QString().setNum(pNum) + ";\n";
-			bSize += 4;
-			++pNum;
-		}
+		
 		res += "};\n\n";
 		return res;
 	}

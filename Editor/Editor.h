@@ -19,10 +19,12 @@ class RendererWrapper;
 class Editor : public ApproxWindow<QWidget>
 {
 	Q_OBJECT
+	
 private slots:
 	void sl_RunEngine();
 	void sl_LoadModel();
 	void sl_RunShaderLab();
+	void on_SceneItemClick(QTreeWidgetItem*, int);
 
 public:
 	Editor(QWidget *parent = 0);

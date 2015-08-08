@@ -6,6 +6,7 @@
 #include "UnifiedShader.h"
 
 using namespace std;
+using namespace ShaderSystem;
 
 inline vector<wstring> get_all_files_names_within_folder(const wstring& folder)
 {
@@ -96,10 +97,18 @@ void ShaderPool::Shutdown()
 {
     for each (auto shader in m_ShaderCache)
     {
-        DELETE_SYS_OBJECT(shader.second)
+        //DELETE_SYS_OBJECT(shader.second)
+		if (shader.second)
+		{
+		shader.second->Shutdown();
+		delete shader.second; 
+		shader.second = nullptr; 
+		}
     }
+	m_ShaderCache.clear();
 }
 
 ShaderPool::~ShaderPool()
 {
+	Shutdown();
 }

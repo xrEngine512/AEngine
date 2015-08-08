@@ -16,7 +16,7 @@ public:
     bool Initialize();
     void Run();
     void Shutdown();
-	IExternalRenderObject* LoadModel(char* objFilename, const ShaderDesc& type);
+	IExternalRenderObject* LoadModel(const char* objFilename, const ShaderDesc& type);
     void GetCameraPos(float &x, float &y, float &z);
     void PosUpdate();
     ISystem* NativeInterface();

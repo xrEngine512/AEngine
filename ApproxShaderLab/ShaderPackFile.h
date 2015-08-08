@@ -12,7 +12,8 @@
 enum ShaderPackElementID : unsigned __int16
 {
     ID_NONE, COMPILED_VS, COMPILED_PS, COMPILED_GS, COMPILED_CS, COMPILED_DS, COMPILED_HS,
-	SAMPLER_DESC, INPUT_LAYOUT_ELEMENT, IL_SEMANTIC_NAME, SHADER_NAME, RUNTIME_BUFFER_INFO
+	SAMPLER_DESC, INPUT_LAYOUT_ELEMENT, IL_SEMANTIC_NAME, SHADER_NAME, RUNTIME_BUFFER_INFO,
+	TEXTURE_DESC, PARAM_DESC, SHADER_SETS
 };
 
 enum class ProjectPackElementID : unsigned __int16
@@ -62,69 +63,103 @@ struct PackElement : DataOwnershipPolicy
 	PackElement() :m_MetaData()
     {
     }
-    explicit PackElement(FILE* &file)
-    {
-        fread_s(&m_MetaData, sizeof m_MetaData, sizeof m_MetaData, 1, file);
-        Data = malloc(m_MetaData.size);
-        fread_s(Data, m_MetaData.size, m_MetaData.size, 1, file);
+	PackElement(FILE* &file)
+	{
+		fread_s(&m_MetaData, sizeof m_MetaData, sizeof m_MetaData, 1, file);
+		Data = malloc(m_MetaData.size);
+		fread_s(Data, m_MetaData.size, m_MetaData.size, 1, file);
 		for (int i = 0; i < m_MetaData.numOfChildren; i++)
 		{
 			m_children.push_back(new PackElement(file));
 		}
+	}
+	static PackElement* fromFile(FILE* &file)
+    {		
+		return new PackElement(file);
     }
 	PackElement(PackElement const& arg) :m_MetaData(arg.m_MetaData)
 	{
-		Copy(Data, arg);
+		if (this != &arg)
+		{
+			Copy(Data, arg.m_MetaData.size, arg.Data);
+			DestroyChildren();
+			m_allowedDuplicates = arg.m_allowedDuplicates;
+			affectHierarchy = arg.affectHierarchy;
+			for (auto child : arg.m_children)
+			{
+				*this << child;
+			}
+		}
 	}
-	PackElement(ID_Type _ID, size_t _size, const void* pData)
+	static PackElement* fromMemory(ID_Type _ID, size_t _size, const void* pData)
 	{
-		Copy(Data, _size, pData);
-		m_MetaData.ID = _ID;
-		m_MetaData.size = _size;
+		auto res = new PackElement;
+		Copy(res->Data, _size, pData);
+		res->m_MetaData.ID = _ID;
+		res->m_MetaData.size = _size;
+		return res;
 	}
 
 	template<typename T>
-	PackElement(ID_Type _ID, const T& obj, typename std::enable_if<!std::is_base_of<ASL::AbstractSaveData, T>::value>::type* = nullptr)
+	static PackElement* fromObj(ID_Type _ID, const T& obj)
 	{
-		m_MetaData.ID = _ID;
-		m_MetaData.size = sizeof(T);
-		Copy(Data, obj);
+		auto res = new PackElement;
+		res->m_MetaData.ID = _ID;
+		res->m_MetaData.size = sizeof(T);
+		Copy(res->Data, obj);
+		return res;
 	}
 	
-	PackElement(ID_Type _ID, const char* c_str)
+	static PackElement* fromC_Str(ID_Type _ID, const char* c_str)
 	{
-		m_MetaData.ID = _ID;
-		m_MetaData.size = strlen(c_str) + 1;
-		Copy(Data,m_MetaData.size, c_str);
+		auto res = new PackElement;
+		res->m_MetaData.ID = _ID;
+		res->m_MetaData.size = strlen(c_str) + 1;
+		Copy(res->Data, res->m_MetaData.size, c_str);
+		return res;
 	}
-	PackElement(ID_Type _ID, std::string& str)
+	static PackElement* fromStdString(ID_Type _ID, std::string& str)
 	{
-		m_MetaData.ID = _ID;
-		m_MetaData.size = str.size() + 1;
-		Copy(Data, m_MetaData.size, str.c_str());
+		auto res = new PackElement;
+		res->m_MetaData.ID = _ID;
+		res->m_MetaData.size = str.size() + 1;
+		Copy(res->Data, res->m_MetaData.size, str.c_str());
+		return res;
 	}
 	
-	PackElement(ID_Type _ID, ASL::AbstractSaveData* obj)
+	static PackElement* fromSaveData(ID_Type _ID, ASL::AbstractSaveData* obj)
 	{
+		auto res = new PackElement;
 		int size;
 		auto buf = obj->Serialize(size);
-		Copy(Data, size, buf);
-		m_MetaData.ID = _ID;
-		m_MetaData.size = size;
+		Copy(res->Data, size, buf);
+		res->m_MetaData.ID = _ID;
+		res->m_MetaData.size = size;
 		obj->CleanSerializedBuffer();
+		return res;
 	}
 
 	template<typename T>
-	PackElement(ID_Type _ID, T& obj, typename std::enable_if<std::is_base_of<ASL::AbstractSaveData, T>::value>::type* = nullptr) : PackElement(_ID,dynamic_cast<ASL::AbstractSaveData*>(&obj))
+	static typename std::enable_if<std::is_base_of<ASL::AbstractSaveData, T>::value, PackElement*>::type fromSaveData(ID_Type _ID, T& obj)
 	{
-		//ASL::AbstractSaveData* ptr = dynamic_cast<ASL::AbstractSaveData*>(&obj);
-		
+		return fromSaveData(_ID, dynamic_cast<ASL::AbstractSaveData*>(&obj));
 	}
 
 	void operator=(PackElement const& arg)
 	{
-		Copy(m_MetaData, arg.m_MetaData);
-		Copy(Data, arg.m_MetaData.size, arg.Data);
+		if (this != &arg)
+		{
+			Copy(m_MetaData, arg.m_MetaData);
+			Copy(Data, arg.m_MetaData.size, arg.Data);
+			m_allowedDuplicates = arg.m_allowedDuplicates;
+			affectHierarchy = arg.affectHierarchy;
+			DestroyChildren();
+			for (auto child : arg.m_children)
+			{
+				m_children.push_back(new PackElement(*child));
+				++m_MetaData.numOfChildren;
+			}
+		}
 	}
 	PackElement* Child(int index)
 	{
@@ -135,7 +170,7 @@ struct PackElement : DataOwnershipPolicy
 		return nullptr;
 	}
 	template <typename T>
-	typename std::enable_if<!std::is_base_of<ASL::AbstractSaveData, T>::value>::type Get(T& obj)
+	typename std::enable_if<!std::is_base_of<ASL::AbstractSaveData, T>::value>::type Get(T& obj) const
 	{
 		if (m_MetaData.size != sizeof(T))
 			throw std::exception("Sizes mismatch!");
@@ -144,29 +179,29 @@ struct PackElement : DataOwnershipPolicy
 		return;
 	}
 	template <typename T>
-	typename std::enable_if<std::is_base_of<ASL::AbstractSaveData, T>::value>::type Get(T& obj)
+	typename std::enable_if<std::is_base_of<ASL::AbstractSaveData, T>::value>::type Get(T& obj) const
 	{
 		return obj.Deserialize(Data, m_MetaData.size);
 	}
 
-	void Get (std::string& obj)
+	void Get (std::string& obj)const
 	{
-		obj = static_cast<char*>(Data);
+		obj = static_cast<const char*>(Data);
 		return;
 	}
-	void Get (std::wstring& obj)
+	void Get (std::wstring& obj)const
 	{
-		obj = static_cast<wchar_t*>(Data);
+		obj = static_cast<const wchar_t*>(Data);
 		return;
 	}
 	template <class T>
-	size_t Get(T*& ptr)
+	size_t Get(T*& ptr)const
 	{
 		ptr = static_cast<T*>(malloc(m_MetaData.size));
 		memcpy((void*)ptr, Data, m_MetaData.size);
 		return m_MetaData.size;
 	}
-	void Get(ASL::AbstractSaveData* obj)
+	void Get(ASL::AbstractSaveData* obj)const
 	{
 		obj->Deserialize(Data, m_MetaData.size);
 	}
@@ -192,7 +227,7 @@ struct PackElement : DataOwnershipPolicy
 			}
 		}
 	}
-	PackElement* Find(ID_Type ID)
+	PackElement* Find(ID_Type ID) const
 	{
 		for (auto child : m_children)
 		{
@@ -203,7 +238,7 @@ struct PackElement : DataOwnershipPolicy
 		}
 		return nullptr;
 	}
-	std::vector<PackElement*> FindMany(ID_Type ID)
+	std::vector<PackElement*> FindMany(ID_Type ID) const
 	{
 		std::vector<PackElement*> res;
 		for (auto child : m_children)
@@ -244,7 +279,7 @@ struct PackElement : DataOwnershipPolicy
 			_child->AllowDuplicatesFor(m_allowedDuplicates, true);
 
 		m_children.push_back(_child);
-		m_MetaData.numOfChildren++;
+		++m_MetaData.numOfChildren;
 	}
 	
 	void DestroyChildren()

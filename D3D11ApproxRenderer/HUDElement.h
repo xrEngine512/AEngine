@@ -20,7 +20,7 @@ class HUDElement : public IInternalHUDElement, public IExternalHUDElement
     int m_indexCount;
     unsigned int m_Width, m_Height;
     std::atomic<float> m_ScaleX, m_ScaleY;
-    IShader* m_Shader;
+	ShaderSystem::IShader* m_Shader;
     IShaderParams* m_ShaderParams;
     D3DTexture* m_Texture;
     IMeshLoader *m_MeshLoader;

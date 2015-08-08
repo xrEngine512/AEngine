@@ -27,7 +27,7 @@ RenderObject::RenderObject(ID3D11Device* device, ShaderDesc type) : RenderObject
     }
 }
 
-bool RenderObject::Initialize(ID3D11Device *device, char *modelFileName, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)
+bool RenderObject::Initialize(ID3D11Device *device, const char *modelFileName, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)
 {
     try
     {

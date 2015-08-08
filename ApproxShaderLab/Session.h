@@ -21,23 +21,27 @@ namespace ASL
 	public:
 		Session();
 
-		Shader_Model ShaderModel() const{return m_SM;}
-		const char* ShaderName() const{return m_shaderName.c_str();}
-
 		void setShaderModel(Shader_Model model){ m_SM = model; }
 		void setShaderName(const string& name){ m_shaderName = name;}
 		void setShaderParams(vector<ShaderParamInfo>& params);
 		void setShaderTextures(vector<TextureInfo>& textures);
 
+
+		Shader_Model ShaderModel() const{return m_SM;}
+		const char* ShaderName() const{return m_shaderName.c_str();}
+		const vector<ShaderPart>& ShaderParts() const;
+
 		ShaderPart& partByType(Shader_Type);
 		ShaderPart* partByIndex(int);
-		const vector<ShaderPart>& ShaderParts() const;
+		const vector<ShaderParamInfo>& ShaderParameters() const{ return m_ShaderParams; }
+		const vector<TextureInfo>& ShaderTextures() const{ return m_ShaderTextures; }
 		static bool CheckFileExists(const char* filename);
 		static bool CheckFileExists(const wchar_t* filename);
 		void SaveShaderFile(const char* filename);
 		void SaveProjectFile(const char* filename);
 		void OpenProjectFile(const char* filename);
 		void writeElement(ShaderElement*);
+		void clearCompiledElements();
 		~Session();	
 
 	private:	

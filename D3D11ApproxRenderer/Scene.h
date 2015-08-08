@@ -55,7 +55,7 @@ class Scene : public IExternalScene
     StatisticsDisplay *m_StatDisplay;
     ASL::IApproxShaderLabExternalControl *m_asl;
 
-    bool LoadThread(IInternalRenderObject* newRenderObject, char *modelFileName, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ);
+    bool LoadThread(IInternalRenderObject* newRenderObject, const char *modelFileName, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ);
     bool Render();
     void UpdateObjects();
     bool SetupEnvironment();
@@ -68,7 +68,7 @@ public:
 	bool Initialize(HWND, int, int, bool);
 	void Shutdown();
 	bool Frame();
-    IExternalRenderObject* AddRenderObject(char *modelFileName, const ShaderDesc &type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)override;
+    IExternalRenderObject* AddRenderObject(const char *modelFileName, const ShaderDesc &type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)override;
     IExternalRenderObject* GetObjectByID(unsigned int ID)override;
     void SetASLInterface(ASL::IApproxShaderLabExternalControl*)override;
 };

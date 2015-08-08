@@ -41,7 +41,7 @@ namespace MatInterface
 			}
 		}
 	private:
-		unordered_set<IShader*> m_Subscribers;
+		unordered_set<ShaderSystem::IShader*> m_Subscribers;
 	};
 	struct PerObject : AlignedObject
 	{

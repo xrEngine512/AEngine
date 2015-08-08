@@ -1,5 +1,4 @@
 #include "MaterialInterfaceManager.h"
-#include "SceneObject.h"
 #include "MaterialVariable.h"
 
 namespace MatInterface
@@ -26,67 +25,57 @@ namespace MatInterface
 		return info;
 	}
 
-	pair<vector <void*>, vector <string> > MaterialInterfaceManager::GetMaterialVariablesPtr()const
+	vector<pair<void*, ShaderSystem::GenericType>> MaterialInterfaceManager::GetMaterialVariablesPtr()const
 	{
-		vector<void*> resPtrs;
-		vector<string> resTypes;
-		resPtrs.reserve(m_materialVariables.size());
-		resTypes.reserve(m_materialVariables.size());
+		vector<pair<void*, ShaderSystem::GenericType>> res;
+		res.reserve(m_materialVariables.size());
 		for (auto prop : m_materialVariables)
 		{
-			resPtrs.push_back(prop->Ptr());
-			resTypes.push_back(NormalizeType(prop->Type()));
+			res.push_back(pair<void*, ShaderSystem::GenericType>(prop->Ptr(), NormalizeType(prop->Type())));
 		}
-		return pair<vector <void*>, vector <string> >(resPtrs,resTypes);
+		return res;
 	}
 
-	pair<vector <void*>, vector <string> > MaterialInterfaceManager::GetMaterialVariablesPtr(const vector<int>& IDs) const
+	vector<pair<void*, ShaderSystem::GenericType>> MaterialInterfaceManager::GetMaterialVariablesPtr(const vector<int>& IDs) const
 	{
-		vector<void*> resPtrs;
-		vector<string> resTypes;
-		resPtrs.reserve(IDs.size());
-		resTypes.reserve(IDs.size());
+		vector<pair<void*, ShaderSystem::GenericType>> res;
+		res.reserve(IDs.size());
 		for (auto id : IDs)
 		{
 			for (auto prop : m_materialVariables)
 			{
 				if (prop->ID() == id)
 				{
-					resPtrs.push_back(prop->Ptr());
-					resTypes.push_back(NormalizeType(prop->Type()));
+					res.push_back(pair<void*, ShaderSystem::GenericType>(prop->Ptr(), NormalizeType(prop->Type())));
 				}
 			}
 		}
-		return pair<vector <void*>, vector <string> >(resPtrs, resTypes);
+		return res;
 	}
 
-	string MaterialInterfaceManager::NormalizeType(const string& type)
+	ShaderSystem::GenericType MaterialInterfaceManager::NormalizeType(const string& type)
 	{
 		if (type.compare("float") == 0)
 		{
-			return "float";
+			return ShaderSystem::FLOAT;
 		}
-		if (type.compare("struct DirectX::XMFLOAT4") == 0)
+		if (type.compare("struct DirectX::XMFLOAT4") == 0 || type.compare("float4") == 0)
 		{
-			return "XMFLOAT4";
+			return ShaderSystem::FLOAT4;
 		}
-		if (type.compare("struct DirectX::XMFLOAT3") == 0)
+		if (type.compare("struct DirectX::XMFLOAT3") == 0 || type.compare("float3") == 0)
 		{
-			return "XMFLOAT3";
+			return ShaderSystem::FLOAT3;
 		}
-		if (type.compare("struct DirectX::XMFLOAT2") == 0)
+		if (type.compare("struct DirectX::XMFLOAT2") == 0 || type.compare("float2") == 0)
 		{
-			return "XMFLOAT2";
+			return ShaderSystem::FLOAT2;
 		}
-		if (type.compare("struct DirectX::XMMATRIX") == 0)
+		if (type.compare("struct DirectX::XMMATRIX") == 0 || type.compare("matrix") == 0)
 		{
-			return "XMMATRIX";
+			return ShaderSystem::MATRIX;
 		}
-		if (type.compare("struct DirectX::XMVECTOR") == 0)
-		{
-			return "XMVECTOR";
-		}
-		return nullptr;
+		throw exception("Unsupported type during NormalizeType");
 	}
 
 	MaterialInterfaceManager* MaterialInterfaceManager::Instance()

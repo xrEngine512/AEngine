@@ -12,24 +12,25 @@ namespace ASL
 		string EntryPoint;
 		vector<RuntimeBufferInfo> BuffersInfo;
 		vector<int> ParamsIDs;
+		vector<int> TextureSlots;
 
 		char CurrentSymbol()const{ return Str_code[pos]; }
 		void PosInc(){ pos++; }
 		int pos = 0;
 		bool PosInRange() const{ return pos < Str_code.size(); }
 		
-		const void* Serialize(int& size)override
+		const void* Serialize(int& size)override final
 		{
-			size = Serialization(Str_code, Shader_Type, EntryPoint, BuffersInfo, ParamsIDs);
+			size = Serialization(Str_code, Shader_Type, EntryPoint, BuffersInfo, ParamsIDs, TextureSlots);
 			return SerializedBuf();
 		}
-		void Deserialize(const void* buf, size_t size)override
+		void Deserialize(const void* buf, size_t size)override final
 		{
-			Deserialization(buf, size, Str_code, Shader_Type, EntryPoint, BuffersInfo, ParamsIDs);
+			Deserialization(buf, size, Str_code, Shader_Type, EntryPoint, BuffersInfo, ParamsIDs, TextureSlots);
 		}
-		int SerializedSize()const override
+		int SerializedSize()const override final
 		{
-			return CalculateSize(Str_code, Shader_Type, EntryPoint, BuffersInfo, ParamsIDs);
+			return CalculateSize(Str_code, Shader_Type, EntryPoint, BuffersInfo, ParamsIDs, TextureSlots);
 		}
 	};
 }

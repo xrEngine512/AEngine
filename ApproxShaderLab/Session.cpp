@@ -10,6 +10,11 @@ namespace ASL
 	Session::Session() :m_SM(SM_NONE)
 	{
 		m_file.AllowDuplicatesFor(INPUT_LAYOUT_ELEMENT);
+		m_file.AllowDuplicatesFor(TEXTURE_DESC);
+		m_file.AllowDuplicatesFor(PARAM_DESC);
+
+		m_project.AllowDuplicatesFor(ProjectPackElementID::PARAMETER);
+		m_project.AllowDuplicatesFor(ProjectPackElementID::TEXTURE);
 	}
 
 	inline ProjectPackElementID toID(Shader_Type type)
@@ -81,22 +86,22 @@ namespace ASL
 
 	void Session::SaveProjectFile(const char* filename)
 	{
-		m_project << new ProjectElement(ProjectPackElementID::SHADER_NAME, m_shaderName);
-		m_project << new ProjectElement(ProjectPackElementID::SHADER_MODEL, m_SM);
-		m_project.AllowDuplicatesFor(ProjectPackElementID::PARAMETER);
-		m_project.AllowDuplicatesFor(ProjectPackElementID::TEXTURE);
+		m_project.ClearElements();
+		m_project << ProjectElement::fromStdString(ProjectPackElementID::SHADER_NAME, m_shaderName);
+		m_project << ProjectElement::fromObj(ProjectPackElementID::SHADER_MODEL, m_SM);
+		
 		for (auto param : m_ShaderParams)
 		{
-			m_project << new ProjectElement(ProjectPackElementID::PARAMETER, dynamic_cast<AbstractSaveData*>(&param));
+			m_project << ProjectElement::fromSaveData(ProjectPackElementID::PARAMETER, param);
 		}
 		for (auto texture : m_ShaderTextures)
 		{
-			m_project << new ProjectElement(ProjectPackElementID::TEXTURE, dynamic_cast<AbstractSaveData*>(&texture));
+			m_project << ProjectElement::fromSaveData(ProjectPackElementID::TEXTURE, texture);
 		}
 		//Saving source code and entry points
 		for (auto part : m_ShaderParts)
 		{
-			ProjectElement* newElem = new ProjectElement(toID(part.Shader_Type), part);
+			ProjectElement* newElem = ProjectElement::fromSaveData(toID(part.Shader_Type), part);
 			/*newElem->AllowDuplicatesFor(ProjectPackElementID::APPROX_VAR_BUFFER_INFO);
 			*newElem << new ProjectElement(ProjectPackElementID::ENTRY_POINT, part.EntryPoint);
 			for (auto bufferInfo : part.BuffersInfo)
@@ -154,6 +159,9 @@ namespace ASL
 		
 		element->Get(m_shaderName);
 
+		m_ShaderParams.clear();
+		m_ShaderTextures.clear();
+
 		for (auto param : m_project.FindMany(ProjectPackElementID::PARAMETER))
 		{
 			ShaderParamInfo paramInfo;
@@ -202,6 +210,11 @@ namespace ASL
 	void Session::writeElement(ShaderElement* element)
 	{
 		m_file << element;
+	}
+
+	void Session::clearCompiledElements()
+	{
+		m_file.ClearElements();
 	}
 
 	Session::~Session()

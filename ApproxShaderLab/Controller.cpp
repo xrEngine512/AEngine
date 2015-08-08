@@ -31,8 +31,15 @@ namespace ASL
 			lpart.Str_code = part.qStr_code.toStdString();
 			lpart.BuffersInfo = part.buffersInfo.toStdVector();
 			lpart.ParamsIDs = part.paramIDs.toStdVector();
+			lpart.TextureSlots = part.textureSlots.toStdVector();
 		}
 		return session;
+	}
+
+	template<class T>
+	inline QVector<T> fromStdVector(const vector<T>& In)
+	{
+		return QVector<T>::fromStdVector(In);
 	}
 
 	inline void ReadSession(const Session& In, ViewSessionInfo& Out)
@@ -40,13 +47,18 @@ namespace ASL
 		Out.m_shaderName = QString(In.ShaderName());
 		Out.m_SM = In.ShaderModel();
 		Out.m_ShaderParts.clear();
+		Out.m_Params = fromStdVector(In.ShaderParameters());
+		Out.m_Textures = fromStdVector(In.ShaderTextures());
+
 		for (auto part : In.ShaderParts())
 		{
 			ViewShaderPartInfo partInfo;
 			partInfo.entryPoint = QString(part.EntryPoint.c_str());
 			partInfo.qStr_code = QString(part.Str_code.c_str());
 			partInfo.Shader_Type = part.Shader_Type;
-			partInfo.buffersInfo = partInfo.buffersInfo.fromStdVector(part.BuffersInfo);	//WTF is This?
+			partInfo.buffersInfo = fromStdVector(part.BuffersInfo);	
+			partInfo.paramIDs = fromStdVector(part.ParamsIDs);
+			partInfo.textureSlots = fromStdVector(part.TextureSlots);
 			Out.m_ShaderParts.push_back(partInfo);
 		}
 	}

@@ -16,7 +16,7 @@ class RenderObject : public IInternalRenderObject, public IExternalRenderObject
     XMFLOAT3    m_globalCoords,m_globalRotation;
     RenderObject(void);
 public:
-    bool Initialize(ID3D11Device *device, char *modelFileName, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ) override;
+    bool Initialize(ID3D11Device *device, const char *modelFileName, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ) override;
     bool Initialize(ID3D11Device *device, MeshBox*, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ) override;
 	bool Render(ID3D11DeviceContext *deviceContext, MatInterface::MaterialInterface&)override;
     void SetCoord(float x, float y, float z)override;

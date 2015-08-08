@@ -1,6 +1,8 @@
 #pragma once
 #include "imeshloader.h"
 
+typedef unsigned long       DWORD;
+
 class ObjMeshLoader :
     public IMeshLoader
 {
@@ -27,11 +29,11 @@ class ObjMeshLoader :
     MeshBox m_MeshBox;
     bool m_firstVertex = true;
 public:
-    int GetIndexCount();
-    int GetVertexCount();
-    MeshBox GetMeshBox();
-    void Inititalize(ID3D11Device* device,CHAR* meshFileName);
-    bool GetBuffers(ID3D11Buffer *&vertexBuffer, ID3D11Buffer *&indexBuffer);
+	int GetIndexCount()override;
+	int GetVertexCount()override;
+	MeshBox GetMeshBox()override;
+    void Inititalize(ID3D11Device* device,const char* meshFileName)override;
+	bool GetBuffers(ID3D11Buffer *&vertexBuffer, ID3D11Buffer *&indexBuffer)override;
     ObjMeshLoader(void);
     ~ObjMeshLoader(void);
 };

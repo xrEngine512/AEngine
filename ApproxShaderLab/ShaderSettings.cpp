@@ -82,6 +82,19 @@ namespace ASL
 		return m_Settings;
 	}
 
+	void ShaderSettings::ClearElements()
+	{
+		for (auto s : m_Settings)
+		{
+			delete s;
+		}
+		m_Settings.clear();
+	
+		m_textures.clear();
+		m_params.clear();
+		resize(200, 100);
+	}
+
 	void ShaderSettings::AddTexture()
 	{
 		ApproxGUI::PopupDialog* dialog = new ApproxGUI::PopupDialog(parentWidget());

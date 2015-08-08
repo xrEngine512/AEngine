@@ -72,7 +72,7 @@ namespace ASL
 		{
 			m_pathItem->scene()->removeItem(m_pathItem);
 			delete m_pathItem;
-			m_item->deleteLink(reinterpret_cast< Link<MaterialVar, ShaderLabGUIElement, MatVarSaveData> *>(this));
+			m_item->deleteLink(reinterpret_cast< Link<LinkingClass1, LinkingClass2, SaveData> *>(this));
 			m_var->Point().deleteRef();
 		}
 	public slots:

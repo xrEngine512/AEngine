@@ -22,7 +22,7 @@ class Mesh
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount;
     IMeshLoader* m_MeshLoader;
-	IShader *m_bindedShader;
+	ShaderSystem::IShader *m_bindedShader;
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
@@ -30,12 +30,12 @@ class Mesh
 public:
 	Mesh(void);
 	~Mesh(void);
-	bool Initialize(ID3D11Device* , char* MeshFileName , bool dynamic_shader);
+	bool Initialize(ID3D11Device* , const char* MeshFileName , bool dynamic_shader);
     bool Initialize(ID3D11Device*, MeshBox*, bool dynamic_shader);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
     MeshBox GetMeshBox();
-	void BindShader(IShader *);
+	void BindShader(ShaderSystem::IShader *);
 	int GetIndexCount();
 };
 

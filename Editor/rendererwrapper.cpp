@@ -58,7 +58,7 @@ ISystem* RendererWrapper::NativeInterface()
     return sys;
 }
 
-IExternalRenderObject* RendererWrapper::LoadModel(char* objFilename, const ShaderDesc& type)
+IExternalRenderObject* RendererWrapper::LoadModel(const char* objFilename, const ShaderDesc& type)
 {
     return sys->GetRendererEx()->GetScene()->AddRenderObject(objFilename, type);
 }

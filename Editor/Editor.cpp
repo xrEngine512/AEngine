@@ -5,7 +5,12 @@
 #include <IApproxShaderLabControl.h>
 #include "rendererwrapper.h"
 #include <qmenubar.h>
+#include "MaterialSettingsUI.h"
 static const int maxTabWidth = 200;
+
+using namespace std;
+
+Q_DECLARE_METATYPE(IExternalRenderObject*);
 
 Editor::Editor(QWidget *parent)
 	: ApproxWindow(), m_modelLoader(this), m_rendererWrp(nullptr), m_renderingWindowX(7), m_renderingWindowY(65), m_UpdateThread(nullptr)
@@ -32,6 +37,7 @@ Editor::Editor(QWidget *parent)
 	connect(actShaderLab, SIGNAL(triggered()), SLOT(sl_RunShaderLab()));
 	connect(actLoadModel, SIGNAL(triggered()), &m_modelLoader, SLOT(show()));
 	connect(&m_modelLoader, SIGNAL(accepted()), SLOT(sl_LoadModel()));
+	connect(ui.treeWidget, &QTreeWidget::itemClicked, this, &Editor::on_SceneItemClick);
 
 	/*ui.statusBar->addPermanentWidget(m_StatusBarText);*/
 }
@@ -54,17 +60,17 @@ void Editor::sl_RunEngine()
 void Editor::sl_LoadModel()
 {
 	int ShaderID;
-	char *objFile;
-	wchar_t **ddsFiles;
-	int numberOfTextures;
-	m_modelLoader.GetInitData(objFile, ddsFiles, numberOfTextures, ShaderID);
-	IExternalRenderObject* object = m_rendererWrp->LoadModel(objFile, ShaderID);
-	for (unsigned short i = 0; i < numberOfTextures; i++)
+	string objFile;
+	vector<wstring> ddsFiles;
+	m_modelLoader.GetInitData(objFile, ddsFiles, ShaderID);
+	IExternalRenderObject* object = m_rendererWrp->LoadModel(objFile.c_str(), ShaderID);
+	for (unsigned short i = 0; i < ddsFiles.size(); i++)
 	{
-		object->GetMaterial()->LoadTexture(ddsFiles[i], i);
+		object->GetMaterial()->LoadTexture(ddsFiles[i].c_str(), i);
 	}
 	m_objects.push_back(object);
 	QTreeWidgetItem *item = new QTreeWidgetItem();
+	item->setData(0, Qt::UserRole, QVariant::fromValue<IExternalRenderObject*>(object));
 	item->setText(0, QString("RenderObject"));
 	ui.treeWidget->addTopLevelItem(item);
 	return;
@@ -73,6 +79,13 @@ void Editor::sl_LoadModel()
 void Editor::sl_RunShaderLab()
 {
 	m_asl->Run();
+}
+
+void Editor::on_SceneItemClick(QTreeWidgetItem* item, int col)
+{
+	auto object = item->data(0, Qt::UserRole).value<IExternalRenderObject*>();
+	MaterialSettingsUI dialog(this, object->GetMaterial());
+	dialog.exec();
 }
 
 bool Editor::nativeEvent(const QByteArray& event_type, void* message, long* result)

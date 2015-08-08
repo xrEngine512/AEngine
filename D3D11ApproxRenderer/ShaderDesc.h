@@ -16,6 +16,7 @@ struct ShaderDesc
 		this->ID = ID;
 	}
 	int ID;
+	unsigned short TextureSlots = 0;
 	std::string name;
 };
 

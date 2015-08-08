@@ -8,7 +8,7 @@ D3DTexture::D3DTexture(void):m_texture(nullptr)
 {
 }
 
-bool D3DTexture::Initialize(ID3D11Device *device, WCHAR* filename)
+bool D3DTexture::Initialize(ID3D11Device *device, const wchar_t* filename)
 {
 	HRESULT result;
 

@@ -61,6 +61,9 @@
     <Filter Include="ShaderSystem\DynamicSystem">
       <UniqueIdentifier>{0fa73900-775d-4b3c-914e-1e3be7211125}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderSystem\DynamicSystem\Memory Management">
+      <UniqueIdentifier>{d42c2e51-11bb-4b3c-b84e-1e7c0f3e8890}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RendererSystem.h">
@@ -186,9 +189,6 @@
     <ClInclude Include="ACSReader.h">
       <Filter>ShaderSystem\DynamicSystem</Filter>
     </ClInclude>
-    <ClInclude Include="RGS.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="SceneObject.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -209,6 +209,27 @@
     </ClInclude>
     <ClInclude Include="ShaderDesc.h">
       <Filter>ShaderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericVariable.h">
+      <Filter>ShaderSystem\DynamicSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory.h">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryBlock.h">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericStruct.h">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericType.h">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryMultiplexer.h">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderSystemTypes.h">
+      <Filter>ShaderSystem\DynamicSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -296,14 +317,26 @@
     <ClCompile Include="ACSReader.cpp">
       <Filter>ShaderSystem\DynamicSystem</Filter>
     </ClCompile>
-    <ClCompile Include="RGS.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="SceneObject.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="MaterialInterfaceManager.cpp">
       <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericVariable.cpp">
+      <Filter>ShaderSystem\DynamicSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory.cpp">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryBlock.cpp">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericStruct.cpp">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryMultiplexer.cpp">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

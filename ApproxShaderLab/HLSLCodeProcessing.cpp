@@ -4,7 +4,8 @@
 #include <d3dcompiler.h>
 #include <d3d11.h>
 #include <string>
-#include <vector>
+#include "TextureInfo.h"
+#include "ShaderParamInfo.h"
 
 using namespace std;
 namespace ASL
@@ -162,7 +163,19 @@ namespace ASL
 		int partIndex = 0;
 		ShaderPart* part = session->partByIndex(partIndex);
 
-		session->writeElement(new ShaderElement(SHADER_NAME, session->ShaderName()));
+		session->clearCompiledElements();
+
+		session->writeElement(ShaderElement::fromC_Str(SHADER_NAME, session->ShaderName()));
+
+		for (auto texture : session->ShaderTextures())
+		{
+			session->writeElement(ShaderElement::fromSaveData(TEXTURE_DESC, texture));
+		}
+
+		for (auto param : session->ShaderParameters())
+		{
+			session->writeElement(ShaderElement::fromSaveData(PARAM_DESC, param));
+		}
 
 		while (part)
 		{
@@ -171,17 +184,17 @@ namespace ASL
 
 			if (res == S_OK)
 			{
-
-				auto elem = new ShaderElement(toID(part->Shader_Type), shader->GetBufferSize(), shader->GetBufferPointer());
+				auto elem = ShaderElement::fromMemory(toID(part->Shader_Type), shader->GetBufferSize(), shader->GetBufferPointer());
 				elem->AllowDuplicatesFor(RUNTIME_BUFFER_INFO);
 				for (auto buffer : part->BuffersInfo)
 				{
-					int size;
-					auto pData = buffer.Serialize(size);
-					*elem << new ShaderElement(RUNTIME_BUFFER_INFO, size, pData);
-					buffer.CleanSerializedBuffer();
+					*elem << ShaderElement::fromSaveData(RUNTIME_BUFFER_INFO, buffer);
 				}
-
+				
+				int size;
+				auto ptr = AbstractSaveData::Serialize(size, part->ParamsIDs, part->TextureSlots);
+				*elem << ShaderElement::fromMemory(SHADER_SETS, size, ptr);
+				
 				session->writeElement(elem);
 				
 
@@ -290,8 +303,8 @@ namespace ASL
 						element.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 						element.InstanceDataStepRate = 0;
 
-						auto ILE = new ShaderElement(INPUT_LAYOUT_ELEMENT, element);
-						*ILE << new ShaderElement(IL_SEMANTIC_NAME, tmp);
+						auto ILE = ShaderElement::fromObj(INPUT_LAYOUT_ELEMENT, element);
+						*ILE << ShaderElement::fromC_Str(IL_SEMANTIC_NAME, tmp);
 						
 						delete[] tmp;
 						tmp = nullptr;

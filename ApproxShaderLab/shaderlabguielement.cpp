@@ -53,6 +53,11 @@ namespace ASL
 		return QRectF(0, 0, m_width, m_height);
 	}
 
+	void ShaderLabGUIElement::setShader_Type(Shader_Type t)
+	{
+		m_type = t;
+	}
+
 	const QString& ShaderLabGUIElement::EntryPoint()
 	{
 		return m_Settings->getSettings().EntryPoint;
@@ -234,6 +239,28 @@ namespace ASL
 
 	void ShaderLabGUIElement::deleteLink(const SettingsLink* lnk)
 	{
+		auto info = lnk->GetLinkingObjects().first->Info();
+		if (info->ToShaderParameterInfo())
+		{
+			if (m_buffers[0])
+			{
+				m_buffers[0]->DeleteVariable(*info->ToShaderParameterInfo());
+				UpdateGeneratedCode();
+			}
+		}
+		else if (info->ToTextureInfo())
+		{
+			for (auto variable = m_Textures.begin(); variable != m_Textures.end(); ++variable)
+			{
+				if ((*variable)->Info()->ToTextureInfo())
+					if ((*variable)->Info()->ToTextureInfo()->Slot == info->ToTextureInfo()->Slot)
+					{
+						m_Textures.erase(variable);
+						UpdateGeneratedCode();
+						break;
+					}
+			}			
+		}
 		for (auto link = m_setLinks.begin(); link != m_setLinks.end(); ++link)
 		{
 			if (*link == lnk)
@@ -398,6 +425,16 @@ namespace ASL
 			{
 				res.push_back(param->ID);
 			}
+		}
+		return res;
+	}
+
+	QVector<int> ShaderLabGUIElement::TextureSlots() const
+	{
+		QVector<int> res;
+		for (auto texture : m_Textures)
+		{
+			res.push_back(texture->Info()->ToTextureInfo()->Slot);
 		}
 		return res;
 	}

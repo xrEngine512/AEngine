@@ -130,6 +130,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,6 +141,9 @@
     <FxCompile>
       <TreatWarningAsError>false</TreatWarningAsError>
     </FxCompile>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -217,6 +221,9 @@
     <ClInclude Include="D3D11System.h" />
     <ClInclude Include="D3DTexture.h" />
     <ClInclude Include="Frustum.h" />
+    <ClInclude Include="GenericStruct.h" />
+    <ClInclude Include="GenericType.h" />
+    <ClInclude Include="GenericVariable.h" />
     <ClInclude Include="HUD2D.h" />
     <ClInclude Include="HUDElement.h" />
     <ClInclude Include="IExternalHUDElement.h" />
@@ -234,6 +241,8 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MaterialInterface.h" />
+    <ClInclude Include="Memory.h" />
+    <ClInclude Include="MemoryBlock.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshBox.h" />
     <ClInclude Include="MultitextureShader.h">
@@ -245,7 +254,7 @@
     <ClInclude Include="ObjMeshLoader.h" />
     <ClInclude Include="RendererSystem.h" />
     <ClInclude Include="RenderObject.h" />
-    <ClInclude Include="RGS.h" />
+    <ClInclude Include="MemoryMultiplexer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneGraphNode.h" />
     <ClInclude Include="SceneObject.h" />
@@ -253,6 +262,7 @@
     <ClInclude Include="MaterialInterfaceManager.h" />
     <ClInclude Include="ShaderPool.h" />
     <ClInclude Include="ShaderDesc.h" />
+    <ClInclude Include="ShaderSystemTypes.h" />
     <ClInclude Include="SpecularShader.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -301,11 +311,15 @@
     <ClCompile Include="D3D11System.cpp" />
     <ClCompile Include="D3DTexture.cpp" />
     <ClCompile Include="Frustum.cpp" />
+    <ClCompile Include="GenericStruct.cpp" />
+    <ClCompile Include="GenericVariable.cpp" />
     <ClCompile Include="HUD2D.cpp" />
     <ClCompile Include="HUDElement.cpp" />
     <ClCompile Include="IShader.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Memory.cpp" />
+    <ClCompile Include="MemoryBlock.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MultitextureShader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -316,7 +330,7 @@
     <ClCompile Include="ObjMeshLoader.cpp" />
     <ClCompile Include="RendererSystem.cpp" />
     <ClCompile Include="RenderObject.cpp" />
-    <ClCompile Include="RGS.cpp" />
+    <ClCompile Include="MemoryMultiplexer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneGraphNode.cpp" />
     <ClCompile Include="SceneObject.cpp" />

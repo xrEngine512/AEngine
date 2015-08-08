@@ -2,9 +2,6 @@
 #include <qfiledialog.h>
 #include <ShaderDesc.h>
 
-wchar_t* QStringToWChar(QString qstr);
-char* QStringToChar(QString qstr);
-
 ModelLoaderUI::ModelLoaderUI(QWidget *parent)
     : QDialog(parent)
 {
@@ -22,13 +19,16 @@ ModelLoaderUI::ModelLoaderUI(QWidget *parent)
 
 void ModelLoaderUI::SetAvailableShaders(const std::vector<const ShaderDesc*>& availShaders)
 {
+	ui.cbxShaderType->clear();
+	m_DescsByIndexes.clear();
 	int i = 0;
 	for (auto desc : availShaders)
 	{
 		ui.cbxShaderType->addItem(QString::fromStdString(desc->name));
-		m_IDsByIndexes.insert(std::pair<int , int>( i, desc->ID));
+		m_DescsByIndexes.insert(std::pair<int, ShaderDesc>(i, *desc));
 		i++;
 	}
+	OnShaderTypeChange();
 }
 
 ModelLoaderUI::~ModelLoaderUI()
@@ -39,7 +39,7 @@ ModelLoaderUI::~ModelLoaderUI()
 void ModelLoaderUI::OnObjOpen()
 {
     ui.lblMeshFile->setText(QFileDialog::getOpenFileName(this,
-        tr("Open obj file"), "D:/BackUpBecauseofShitHappens/Users/Islam/Desktop/DX/Core/Engine/Resources/Meshes", tr("WaweFront (*.obj)")));
+        tr("Open obj file"), "../Engine/Resources/Meshes", tr("WaweFront (*.obj)")));
 }
 
 void ModelLoaderUI::OnDDSOpen(int index)
@@ -54,32 +54,45 @@ void ModelLoaderUI::OnDDSOpen(int index)
     }
     if (led)
         led->setText(QFileDialog::getOpenFileName(this,
-            tr("Open DDS file"), "D:/BackUpBecauseofShitHappens/Users/Islam/Desktop/DX/Core/Engine/Resources/Textures", tr("DirectDrawSurface (*.dds)")));
+            tr("Open DDS file"), "../Engine/Resources/Textures", tr("DirectDrawSurface (*.dds)")));
 }
 
 void ModelLoaderUI::OnShaderTypeChange()
 {
-    switch (ui.cbxShaderType->currentIndex())
+	auto res = m_DescsByIndexes.find(ui.cbxShaderType->currentIndex());
+	int numOfTextures;
+	if (res != m_DescsByIndexes.end())
+		numOfTextures = res->second.TextureSlots;
+	else
+		numOfTextures = 0;
+
+	switch (numOfTextures)
     {
-    case 0:
-	case 1:
-    case 2:
-    case 3:
-	case 4: 
+    case 0:	 
         SetEnabledTextureElement1(false);
         SetEnabledTextureElement2(false);
         SetEnabledTextureElement3(false);
         SetEnabledTextureElement4(false); break;
-    
+    case 1:    
         SetEnabledTextureElement1(true);
         SetEnabledTextureElement2(false);
         SetEnabledTextureElement3(false);
         SetEnabledTextureElement4(false); break;
-    
+    case 2:    
         SetEnabledTextureElement1(true);
         SetEnabledTextureElement2(true);
         SetEnabledTextureElement3(false);
         SetEnabledTextureElement4(false); break;
+	case 3:
+		SetEnabledTextureElement1(true);
+		SetEnabledTextureElement2(true);
+		SetEnabledTextureElement3(true);
+		SetEnabledTextureElement4(false); break;
+	case 4:
+		SetEnabledTextureElement1(true);
+		SetEnabledTextureElement2(true);
+		SetEnabledTextureElement3(true);
+		SetEnabledTextureElement4(true); break;
     }
 }
 
@@ -123,56 +136,25 @@ void ModelLoaderUI::SetEnabledTextureElement4(bool set)
     ui.ledTex4->setEnabled(set);
 }
 
-void ModelLoaderUI::GetInitData(char* &objFilename, wchar_t** &ddsFilenames, int &numberOfTextures, int &ID)
+void ModelLoaderUI::GetInitData(std::string &objFilename, std::vector<std::wstring> &ddsFilenames, int &ID)
 {
-    ddsFilenames = new wchar_t*[4];
-    numberOfTextures = 0;
-
     if (ui.ledTex1->isEnabled())
     {
-        ddsFilenames[0] = QStringToWChar(ui.ledTex1->text());
-        numberOfTextures++;
+		ddsFilenames.push_back(ui.ledTex1->text().toStdWString());
     }
     if (ui.ledTex2->isEnabled())
     {
-        ddsFilenames[1] = QStringToWChar(ui.ledTex2->text());
-        numberOfTextures++;
+		ddsFilenames.push_back(ui.ledTex2->text().toStdWString());
     }
     if (ui.ledTex3->isEnabled())
     {
-        ddsFilenames[2] = QStringToWChar(ui.ledTex3->text());
-        numberOfTextures++;
+		ddsFilenames.push_back(ui.ledTex3->text().toStdWString());
     }
     if (ui.ledTex4->isEnabled())
     {
-        ddsFilenames[3] = QStringToWChar(ui.ledTex4->text());
-        numberOfTextures++;
+		ddsFilenames.push_back(ui.ledTex4->text().toStdWString());
     }
 
-    objFilename = QStringToChar(ui.lblMeshFile->text());
-    ID = m_IDsByIndexes.find(ui.cbxShaderType->currentIndex())->second;
-}
-
-wchar_t* QStringToWChar(QString qstr)
-{
-    wchar_t* buf;
-    int size = qstr.size();
-    buf = new wchar_t[size + 1];
-    qstr.toWCharArray(buf);
-    buf[size] = '\0';
-    return buf;
-}
-
-char* QStringToChar(QString qstr)
-{
-    char* c_buf;
-    wchar_t *w_buf;
-    int size = qstr.size();
-    c_buf = new char[size + 1]; 
-    w_buf = new wchar_t[size + 1];
-    qstr.toWCharArray(w_buf);
-    wcstombs(c_buf, w_buf, size);
-    delete[] w_buf;
-    c_buf[size] = '\0';
-    return c_buf;
+    objFilename = ui.lblMeshFile->text().toStdString();
+    ID = m_DescsByIndexes.find(ui.cbxShaderType->currentIndex())->second.ID;
 }

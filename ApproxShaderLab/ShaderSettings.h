@@ -28,6 +28,7 @@ namespace ASL
 		const QVector<TextureInfo>& Textures()const;
 		const QVector<ShaderParamInfo>& Parameters()const;
 		const QVector<ShaderSettingsElement*>& AllSettings()const;
+		void ClearElements();
 		~ShaderSettings();
 
 	private:

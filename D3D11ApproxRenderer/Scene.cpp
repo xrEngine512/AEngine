@@ -122,7 +122,7 @@ bool Scene::Initialize(HWND hwnd, int screenWidth, int screenHeight, bool FullSc
 	return true;
 }
 
-IExternalRenderObject* Scene::AddRenderObject(char *modelFileName, const ShaderDesc& type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)
+IExternalRenderObject* Scene::AddRenderObject(const char *modelFileName, const ShaderDesc& type, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)
 {
     if (m_ModelLoadingThread)
     {
@@ -138,7 +138,7 @@ IExternalRenderObject* Scene::AddRenderObject(char *modelFileName, const ShaderD
     return dynamic_cast<IExternalRenderObject*> (newRenderObject);
 }
 
-bool Scene::LoadThread(IInternalRenderObject* newRenderObject ,char *modelFileName, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)
+bool Scene::LoadThread(IInternalRenderObject* newRenderObject ,const char *modelFileName, float PosX, float PosY, float PosZ, float RotX, float RotY, float RotZ)
 {
     try
     {

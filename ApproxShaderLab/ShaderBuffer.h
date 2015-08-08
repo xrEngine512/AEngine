@@ -20,6 +20,7 @@ namespace ASL
 		void AddVariable(const MaterialVarInfo& var);
 		void AddVariable(const ShaderParamInfo& var);
 		void DeleteVariable(const MaterialVarInfo& var);
+		void DeleteVariable(const ShaderParamInfo& var);
 		QString ToCode()const;
 		int CodeSize()const;
 		const RuntimeBufferInfo& Info();

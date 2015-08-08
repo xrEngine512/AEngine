@@ -39,7 +39,7 @@ int ObjMeshLoader::GetVertexCount()
     return buffer->verticesI+1;
 }
 
-void ObjMeshLoader::Inititalize(ID3D11Device* device,CHAR* meshFileName)
+void ObjMeshLoader::Inititalize(ID3D11Device* device,const char* meshFileName)
 {
     m_device = device;
 

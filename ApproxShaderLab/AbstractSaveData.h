@@ -59,7 +59,20 @@ namespace ASL
 			delete[] serializedBuf;
 			serializedBuf = nullptr;
 		}
+		template<class ...Ts>
+		static inline void const* Serialize(int& size, const Ts&... objects)
+		{
+			void* pData;
+			size = Serialization(pData, objects...);
+			return pData;
+		}
+		template<class ...Ts>
+		static inline void Deserialize(const void* buf, int size, Ts&... objects)
+		{
+			return Deserialization(buf, size, objects...);
+		}
 	protected:
+
 		template<class ...Ts>
 		int Serialization(const Ts&... objects)
 		{
@@ -74,19 +87,24 @@ namespace ASL
 		}
 
 		template<class ...Ts>
-		void Deserialization(const void* buf, size_t size, Ts&... objects)
+		static void Deserialization(const void* buf, size_t size, Ts&... objects)
 		{
 			if (size)
 			{
 				int read = CalculateSize(buf, objects...);
-				if (read > size)
+				if (read != size)
 					throw ApproxException(L"Ошибка десериализации");
 				ProcessDeserialization(static_cast<const char*>(buf), objects...);
 			}
 			
 		}
+		template<class T>
+		static inline int CalculateSize(const T& obj)
+		{
+			return reqSize(obj);
+		}
 		template<class T, class ...Ts>
-		inline int CalculateSize(const T& obj, const Ts&... objects)const
+		static inline int CalculateSize(const T& obj, const Ts&... objects)
 		{
 			return reqSize(obj) + CalculateSize<Ts...>(objects...);
 		}
@@ -96,16 +114,15 @@ namespace ASL
 		}
 
 	private:
-		template<class T>
-		inline void ProcessDeserialization(const char* buf, T& obj)
+		template<class ...Ts>
+		static int Serialization(void*& pData, const Ts&... objects)
 		{
-			CopyD(buf, obj);
-		}
+			auto size = CalculateSize(objects...);
+			pData = new char[size];
 
-		template<class T, class ...Ts>
-		inline void ProcessDeserialization(const char* buf, T& obj, Ts&... objects)
-		{
-			ProcessDeserialization<Ts...>(buf + CopyD(buf, obj), objects...);
+			ProcessSerialization(static_cast<char*>(pData), objects...);
+
+			return size;
 		}
 
 		template<class T>
@@ -121,73 +138,122 @@ namespace ASL
 			ProcessSerialization<Ts...>(shift, objects...);
 		}
 
+		template<class T>
+		static inline void ProcessDeserialization(const char* buf, T& obj)
+		{
+			CopyD(buf, obj);
+		}
+
+		template<class T, class ...Ts>
+		static inline void ProcessDeserialization(const char* buf, T& obj, Ts&... objects)
+		{
+			ProcessDeserialization<Ts...>(buf + CopyD(buf, obj), objects...);
+		}
+
+		
+
+		template<class T>
+		static inline void ProcessSerialization(char* ptr, const T& obj)
+		{
+			CopyS(ptr, obj);
+		}
+
+		template<class T, class ...Ts>
+		static inline void ProcessSerialization(char* ptr, const T& obj, const Ts&... objects)
+		{
+			ProcessSerialization<Ts...>(ptr + CopyS(ptr, obj), objects...);
+		}
+
 		//Copy Serialization methods begin
+		template<class T>
+		inline int CopyS(int shift, const T& obj)
+		{
+			return CopyS(serializedBuf + shift, obj);
+		}
+
+
 		template<typename saveData>
-		inline typename std::enable_if<std::is_base_of<AbstractSaveData, saveData>::value, int>::type CopyS(int shift, saveData& obj)
+		static inline typename std::enable_if<std::is_base_of<AbstractSaveData, saveData>::value, int>::type CopyS(char* buf, saveData& obj)
 		{
 			AbstractSaveData* data = dynamic_cast<AbstractSaveData*>(&obj);
 			int size;
 			auto ptr = data->Serialize(size);
 			size += sizeof(int);
-			memcpy(serializedBuf + shift, &size, sizeof(int));
-			memcpy(serializedBuf + shift + sizeof(int), ptr, size - sizeof(int));
+			memcpy(buf, &size, sizeof(int));
+			memcpy(buf + sizeof(int), ptr, size - sizeof(int));
 			data->CleanSerializedBuffer();
 			return size;
 		}
-
+		
 		template<typename T>
-		inline typename std::enable_if<is_simple<T>::value,int>::type CopyS(int shift, const T& obj)
+		static inline typename std::enable_if<is_simple<T>::value, int>::type CopyS(char* buf, const T& obj)
 		{
-			memcpy(serializedBuf + shift, &obj, sizeof(T));
+			memcpy(buf, &obj, sizeof(T));
 			return sizeof(T);
 		}
-
-		inline int CopyS(int shift, const std::string& obj)
+		
+		static inline int CopyS(char *buf, const std::string& obj)
 		{
 			int size = reqSize(obj);
-			memcpy(serializedBuf + shift, &size, sizeof(int));
-			memcpy(serializedBuf + shift + sizeof(int), obj.c_str(), size - sizeof(int));
+			memcpy(buf, &size, sizeof(int));
+			memcpy(buf + sizeof(int), obj.c_str(), size - sizeof(int));
 			return size;
 		}
 
-		inline int CopyS(int shift, const std::pair<const void*, int>& obj)
+		static inline int CopyS(char *buf, const std::pair<const void*, int>& obj)
 		{
-			memcpy(serializedBuf + shift, &obj.second, sizeof(int));
-			memcpy(serializedBuf + shift + sizeof(int), obj.first, obj.second);
+			memcpy(buf, &obj.second, sizeof(int));
+			memcpy(buf + sizeof(int), obj.first, obj.second);
 			return obj.second + sizeof(int);
 		}
 
 		template<class T>
-		inline typename std::enable_if<is_simple<T>::value, int>::type CopyS(int shift, const std::vector<T>& obj)
+		static inline typename std::enable_if<is_simple<T>::value, int>::type CopyS(char *buf, const std::vector<T>& obj)
 		{
 			int size = reqSize(obj);
-			memcpy(serializedBuf + shift, &size, sizeof(int));
-			memcpy(serializedBuf + shift + sizeof(int), obj.data(), size - sizeof(int));
+			memcpy(buf, &size, sizeof(int));
+			memcpy(buf + sizeof(int), obj.data(), size - sizeof(int));
 			return size;
 		}
 		template<class T>
-		inline typename std::enable_if<!is_simple<T>::value, int>::type CopyS(int shift, const std::vector<T>& objects)
+		static inline typename std::enable_if<!is_simple<T>::value, int>::type CopyS(char *buf, const std::vector<T>& objects)
 		{
 			int size = reqSize(objects);
-			memcpy(serializedBuf + shift, &size, sizeof(int));
+			memcpy(buf, &size, sizeof(int));
+			int shift = 0;
 			for (auto obj : objects)
 			{
-				shift += CopyS(shift + sizeof(int), obj);
+				shift += CopyS(buf + shift + sizeof(int), obj);
 			}
 			return size;
 		}
+		/*template<typename saveData>
+		inline typename std::enable_if<std::is_base_of<AbstractSaveData, saveData>::value, int>::type CopyS(int shift, saveData& obj)
+		{
+			return CopyS(serializedBuf + shift, obj);
+		}*/
+
+		
+
+		/*template<typename T>
+		inline typename std::enable_if<is_simple<T>::value,int>::type CopyS(int shift, const T& obj)
+		{
+			return CopyS(serializedBuf + shift, obj);
+		}*/
+
+		
 
 		//Copy Serialization methods end
 
 		//Copy Deserialization methods begin
 		template<class T>
-		inline typename std::enable_if<is_simple<T>::value, int>::type CopyD(const void* buf, T& obj)
+		static inline typename std::enable_if<is_simple<T>::value, int>::type CopyD(const void* buf, T& obj)
 		{
 			memcpy(&obj, buf, sizeof(T));
 			return sizeof(T);
 		}
 
-		inline int CopyD(const void* buf, std::string& obj)
+		static inline int CopyD(const void* buf, std::string& obj)
 		{
 			int size = *static_cast<const int*>(buf) - sizeof(int);
 			obj.reserve(size);
@@ -198,7 +264,7 @@ namespace ASL
 		}
 
 		template<typename T>
-		inline typename std::enable_if<is_simple<T>::value, int>::type CopyD(const void* buf, std::vector<T>& obj)
+		static inline typename std::enable_if<is_simple<T>::value, int>::type CopyD(const void* buf, std::vector<T>& obj)
 		{
 			int size = *static_cast<const int*>(buf)-sizeof(int);
 			obj.reserve(size / sizeof(T));
@@ -208,14 +274,14 @@ namespace ASL
 		}
 
 		template<typename T>
-		inline typename std::enable_if<!is_simple<T>::value, int>::type CopyD(const void* buf, std::vector<T>& objects)
+		static inline typename std::enable_if<!is_simple<T>::value, int>::type CopyD(const void* buf, std::vector<T>& objects)
 		{
 			int size = *static_cast<const int*>(buf);
-			int remainedSize = size;
+			int remainedSize = size - sizeof(int);
 			while (remainedSize != 0)
 			{
 				T obj;
-				remainedSize -= CopyD(static_cast<const char*>(buf)+sizeof(int) + size - remainedSize, obj);
+				remainedSize -= CopyD(static_cast<const char*>(buf) + size - remainedSize, obj);
 				objects.push_back(obj);
 				if (remainedSize < 0)
 					throw ApproxException(L"Ошибка десериализации при работе с вектором.");
@@ -224,7 +290,7 @@ namespace ASL
 		}
 
 		template<typename saveData>
-		inline typename std::enable_if<std::is_base_of<AbstractSaveData, saveData>::value, int>::type CopyD(const void* buf, saveData& obj)
+		static inline typename std::enable_if<std::is_base_of<AbstractSaveData, saveData>::value, int>::type CopyD(const void* buf, saveData& obj)
 		{
 			AbstractSaveData* data = dynamic_cast<AbstractSaveData*>(&obj);
 			const int size = *static_cast<const int*>(buf);
@@ -234,36 +300,36 @@ namespace ASL
 		//Copy Deserialization methods end
 
 		template<typename simpleType>
-		inline typename std::enable_if<is_simple<simpleType>::value, int>::type reqSize(simpleType)const
+		static inline typename std::enable_if<is_simple<simpleType>::value, int>::type reqSize(simpleType)
 		{
 			return sizeof(simpleType);
 		}
 		
 		template<typename simpleType>
-		inline typename std::enable_if<is_simple<simpleType>::value, int>::type reqSize(const void*, simpleType)const
+		static inline typename std::enable_if<is_simple<simpleType>::value, int>::type reqSize(const void*, simpleType)
 		{
 			return sizeof(simpleType);
 		}
 
 		template<typename saveData>
-		inline typename std::enable_if<std::is_base_of<AbstractSaveData, saveData>::value, int>::type reqSize(const saveData& Data)const
+		static inline typename std::enable_if<std::is_base_of<AbstractSaveData, saveData>::value, int>::type reqSize(const saveData& Data)
 		{
 			return Data.SerializedSize() + sizeof(int);
 		}
 
-		inline int reqSize(const std::string& obj)const
+		static inline int reqSize(const std::string& obj)
 		{
 			return obj.size() + sizeof(int);
 		}
 
 		template<class T>
-		inline typename std::enable_if<is_simple<T>::value, int>::type reqSize(const std::vector<T>& obj)const
+		static inline typename std::enable_if<is_simple<T>::value, int>::type reqSize(const std::vector<T>& obj)
 		{
 			return obj.size() * sizeof(T) + sizeof(int);
 		}
 
 		template<class T>
-		inline typename std::enable_if<!(is_simple<T>::value), int>::type reqSize(const std::vector<T>& objects)const
+		static inline typename std::enable_if<!(is_simple<T>::value), int>::type reqSize(const std::vector<T>& objects)
 		{
 			int res = 0;
 			for (auto obj : objects)
@@ -273,31 +339,27 @@ namespace ASL
 			return res + sizeof(int);
 		}
 
-		inline int reqSize(const std::pair<const void*, int>& obj)const
+		static inline int reqSize(const std::pair<const void*, int>& obj)
 		{
 			return obj.second + sizeof(int);
 		}
 
 		template<typename notSimpleType>
-		inline typename std::enable_if<!(is_simple<notSimpleType>::value), int>::type reqSize(const void* buf, const notSimpleType&)const
+		static inline typename std::enable_if<!(is_simple<notSimpleType>::value), int>::type reqSize(const void* buf, const notSimpleType&)
 		{
 			return *static_cast<const int*>(buf);
 		}
 
-		template<class T>
-		inline int CalculateSize(const T& obj)const
-		{
-			return reqSize(obj);
-		}
+		
 		
 
 		template<class T>
-		inline int CalculateSize(const void* buf, const T& obj)const
+		static inline int CalculateSize(const void* buf, const T& obj)
 		{
 			return reqSize(buf, obj);
 		}
 		template<class T, class ...Ts>
-		inline int CalculateSize(const void* buf, const T& obj, const Ts&... objects)const
+		static inline int CalculateSize(const void* buf, const T& obj, const Ts&... objects)
 		{
 			int shift = reqSize(buf, obj);
 			return shift + CalculateSize<Ts...>(static_cast<const char*>(buf) + shift, objects...);

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "MemoryMultiplexer.h"
 using namespace std;
 
 namespace MatInterface
@@ -23,9 +24,9 @@ namespace MatInterface
 		
 		void RegisterVariable(IMaterialVariable*);
 		MaterialInterfaceInfo GetMaterialInterfaceInfo()const;
-		pair<vector <void*>, vector <string> > GetMaterialVariablesPtr()const;
-		pair<vector <void*>, vector <string> >  GetMaterialVariablesPtr(const vector<int> &const IDs)const;
-		static string NormalizeType(const string& type);
+		vector<pair<void*, ShaderSystem::GenericType>> GetMaterialVariablesPtr()const;
+		vector<pair<void*, ShaderSystem::GenericType>> GetMaterialVariablesPtr(const vector<int> &const IDs)const;
+		static ShaderSystem::GenericType NormalizeType(const string& type);
 		static MaterialInterfaceManager* Instance();
 	};
 

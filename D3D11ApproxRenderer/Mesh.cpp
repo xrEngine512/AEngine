@@ -11,7 +11,7 @@ Mesh::Mesh(void) :m_vertexBuffer(nullptr), m_indexBuffer(nullptr), m_MeshLoader(
 
 //UINT currVertCount;
 
-bool Mesh::Initialize(ID3D11Device* device, char* MeshFileName, bool dynamic_shader)
+bool Mesh::Initialize(ID3D11Device* device, const char* MeshFileName, bool dynamic_shader)
 {
 	bool result;
 
@@ -110,7 +110,7 @@ MeshBox Mesh::GetMeshBox()
 }
 
 
-void Mesh::BindShader(IShader *shader)
+void Mesh::BindShader(ShaderSystem::IShader *shader)
 {
 	m_bindedShader = shader;
 }

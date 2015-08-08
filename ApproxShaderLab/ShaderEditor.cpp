@@ -246,6 +246,7 @@ namespace ASL
 			delete m_SP[i];
 			m_SP[i] = nullptr;
 		}
+		m_shaderSettings->ClearElements();
 	}
 
 	ShaderLabGUIElement* ShaderEditor::GetOrCreateShaderElem(Shader_Type type)
@@ -338,6 +339,8 @@ namespace ASL
 				part_info.qStr_code = m_SP[i]->codeEditor()->getCode();
 				part_info.Shader_Type = m_SP[i]->getShader_Type();
 				part_info.buffersInfo = m_SP[i]->BuffersInfo();
+				part_info.paramIDs = m_SP[i]->ParamIDs();
+				part_info.textureSlots = m_SP[i]->TextureSlots();
 				info.m_ShaderParts.push_back(part_info);
 			}
 		}
@@ -441,6 +444,7 @@ namespace ASL
 					part_info.Shader_Type = m_SP[i]->getShader_Type();
 					part_info.buffersInfo = m_SP[i]->BuffersInfo();
 					part_info.paramIDs = m_SP[i]->ParamIDs();
+					part_info.textureSlots = m_SP[i]->TextureSlots();
 					info.m_ShaderParts.push_back(part_info);
 				}
 			}
@@ -479,10 +483,10 @@ namespace ASL
 			m_lblDesc->setText(info.m_shaderName);
 			m_wndSettings->ui.txtShaderName->setText(info.m_shaderName);
 
+			ClearElements();		
+
 			m_shaderSettings->SetParameters(info.m_Params);
 			m_shaderSettings->SetTextures(info.m_Textures);
-
-			ClearElements();
 
 			if (m_sceneVars)
 			{
@@ -503,21 +507,31 @@ namespace ASL
 			}
 			for (auto part : info.m_ShaderParts)
 			{
-				for (auto ID : part.paramIDs)
+				for (auto set : m_shaderSettings->AllSettings())
 				{
-					for (auto set : m_shaderSettings->AllSettings())
-					{
-						ShaderParamInfo* info = set->Info()->ToShaderParameterInfo();
-						if (info)
+					ShaderParamInfo* info = set->Info()->ToShaderParameterInfo();
+					if (info)
+						for (auto ID : part.paramIDs)
 						{
 							if (info->ID == ID)
 							{
 								new Link<ShaderSettingsElement, ShaderLabGUIElement>(&m_gView, set, GetOrCreateShaderElem(part.Shader_Type));
 							}
+
 						}
+					else
+					{
+						TextureInfo* texInfo = set->Info()->ToTextureInfo();
+						if (texInfo)
+							for (auto Slot : part.textureSlots)
+							{
+								if (texInfo->Slot == Slot)
+								{
+									new Link<ShaderSettingsElement, ShaderLabGUIElement>(&m_gView, set, GetOrCreateShaderElem(part.Shader_Type));
+								}
+							}
 					}
 				}
-
 			}
 			for (auto part : info.m_ShaderParts)
 			{
@@ -560,6 +574,7 @@ namespace ASL
 		{
 			m_SP[index] = new ShaderLabGUIElement;
 			m_SP[index]->moveBy(100 * index, 0);
+			m_SP[index]->setShader_Type(type);
 			m_gScene.addItem(m_SP[index]);
 			m_SP[index]->InitializeComponents();
 		}
@@ -592,15 +607,24 @@ namespace ASL
 		{
 			QPoint newPos = pos();;
 			QPoint mousePos = event->pos();
-			QPoint mappedPos = mapToParent(mousePos);
-			QSize parentSize = parentWidget()->size();
+			
+			if (parentWidget())
+			{
+				QPoint mappedPos = mapToParent(mousePos);
+				QSize parentSize = parentWidget()->size();
 
-			if (inRange(mappedPos.x(), 0, parentSize.width()))
+				if (inRange(mappedPos.x(), 0, parentSize.width()))
+				{
+					newPos.setX(mousePos.x() - m_Prev.x() + x());
+				}
+				if (inRange(mappedPos.y(), 0, parentSize.height()))
+				{
+					newPos.setY(mousePos.y() - m_Prev.y() + y());
+				}
+			}
+			else
 			{
 				newPos.setX(mousePos.x() - m_Prev.x() + x());
-			}
-			if (inRange(mappedPos.y(), 0, parentSize.height()))
-			{
 				newPos.setY(mousePos.y() - m_Prev.y() + y());
 			}
 			move(newPos);

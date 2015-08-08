@@ -1,5 +1,7 @@
 #pragma once
-#include <d3d11.h>
+
+struct ID3D11ShaderResourceView;
+struct ID3D11Device;
 
 class D3DTexture
 {
@@ -7,7 +9,7 @@ class D3DTexture
 public:
 	D3DTexture(void);
 	~D3DTexture(void);
-	bool Initialize(ID3D11Device*, WCHAR*);
+	bool Initialize(ID3D11Device*, const wchar_t*);
 	void Shutdown();
 	ID3D11ShaderResourceView* GetTexture();
 };

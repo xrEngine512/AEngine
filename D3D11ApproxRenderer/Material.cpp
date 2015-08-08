@@ -5,7 +5,7 @@
 #include <ApproxSystemErrors.h>
 #include "ShaderPool.h"
 
-Material::Material() :m_Shader(nullptr), m_NumberOFTextureSlots(0), m_State(NOT_INITIALIZED)
+Material::Material() :m_State(NOT_INITIALIZED), m_Shader(nullptr), m_NumberOFTextureSlots(0)
 {
 }
 
@@ -27,18 +27,28 @@ bool Material::Initialize(ID3D11Device* device, ShaderDesc type)
     }
     m_State = INITIALIZED;
     if (m_NumberOFTextureSlots)
-        LoadTexture(L"../../Core/Engine/Resources/Textures/NoTexture.dds", 0);
+        LoadTexture(L"../Engine/Resources/Textures/NoTexture.dds", 0);
     
     while (!m_newTextures.empty())
     {
-        pair<wchar_t*, unsigned short> element = m_newTextures.front();
-        LoadTexture(element.first, element.second);
+        pair<wstring, unsigned short> element = m_newTextures.front();
+        LoadTexture(element.first.c_str(), element.second);
         m_newTextures.pop();
     }
     return true;
 }
 
-bool Material::LoadTexture(wchar_t* diffTexfilename, unsigned short slot)
+inline const ShaderSystem::ShaderSettings& Material::Settings()const
+{
+	return m_Shader->GetSettings();
+}
+
+inline void Material::SetParameter(const std::string& name, const ShaderSystem::floatVariant& value)
+{
+	return m_Shader->SetParameter(name, value);
+}
+
+bool Material::LoadTexture(const wchar_t* diffTexfilename, unsigned short slot)
 {
     if (m_State >= INITIALIZED)
     {
@@ -66,9 +76,10 @@ bool Material::LoadTexture(wchar_t* diffTexfilename, unsigned short slot)
     {
         if (diffTexfilename)
         {
-            m_newTextures.push(pair<wchar_t*, unsigned short>(diffTexfilename, slot));
+            m_newTextures.push(pair<const wchar_t*, unsigned short>(diffTexfilename, slot));
             return true;
         }
+		return false;
     }
 }
 

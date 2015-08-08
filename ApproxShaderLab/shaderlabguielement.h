@@ -33,7 +33,7 @@ namespace ASL
 
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 			QWidget *widget)override;
-		
+		void setShader_Type(Shader_Type);
 		
 		void Init(const ViewShaderPartInfo& info);
 		Shader_Type getShader_Type()const;
@@ -54,6 +54,7 @@ namespace ASL
 		const std::vector<ILink*>& Links() const;
 		QVector<RuntimeBufferInfo> BuffersInfo() const;
 		QVector<int> ParamIDs()const;
+		QVector<int> TextureSlots()const;
 	public slots:
 		void UpdateGeneratedCode();
 	private:
