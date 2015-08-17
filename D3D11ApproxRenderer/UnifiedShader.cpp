@@ -10,6 +10,7 @@
 #include <ShaderParamInfo.h>
 #include "GenericStruct.h"
 #include "GenericVariable.h"
+#include <d3dcompiler.h>
 
 using namespace MatInterface;
 using namespace ASL;
@@ -18,14 +19,9 @@ namespace ShaderSystem
 {
 	UnifiedShader::UnifiedShader(const wchar_t *acs_filename, const ShaderDesc& desc) :m_desc(desc), m_vertexShader(nullptr), m_pixelShader(nullptr),
 		m_geometryShader(nullptr), m_computeShader(nullptr), m_hullShader(nullptr), m_domainShader(nullptr), m_layout(nullptr), VS_buffers(),
-		PS_buffers(), m_sampleState(nullptr), m_textures(nullptr)
+		PS_buffers(), m_sampleState(nullptr)
 	{
 		m_reader = new ACSReader(acs_filename);
-	}
-
-	void UnifiedShader::SetParameter(const std::string& name, const floatVariant& value)
-	{
-		(*m_ParamsData)[name] = value;
 	}
 
 	void UnifiedShader::LoadBuffers(ID3D11Device* device, const ShaderElement& elem, BufferPack& pack)
@@ -54,7 +50,6 @@ namespace ShaderSystem
 			for (auto info : m_Settings.ParamsInfo)
 			{
 				TypesAndNames.push_back(pair<GenericType, string>(MaterialInterfaceManager::NormalizeType(info.Type), info.Name));
-				break;
 			}
 			m_ParamsData = new GenericStruct(TypesAndNames);
 		}
@@ -95,6 +90,8 @@ namespace ShaderSystem
 			{
 				VS_Element = current_element;
 				auto res = device->CreateVertexShader(current_element.Data, current_element.m_MetaData.size, NULL, &m_vertexShader);
+				res = CreateInputLayoutDescFromVertexShaderSignature(current_element.Data, current_element.m_MetaData.size, device,
+					&m_layout);
 				break;
 			}
 			case COMPILED_PS:
@@ -165,9 +162,13 @@ namespace ShaderSystem
 	}
 	delete m_reader;
 	m_reader = nullptr;
-	auto result = device->CreateInputLayout(inputLayout.data(), inputLayout.size(), VS_Element.Data, VS_Element.m_MetaData.size, &m_layout);
-	if (FAILED(result)) throw ApproxException(L"Ошибка при создании Input layout");
-	m_textures = static_cast<ID3D11ShaderResourceView**>(calloc(1, sizeof(void*)*m_desc.TextureSlots));
+	//auto result = device->CreateInputLayout(inputLayout.data(), inputLayout.size(), VS_Element.Data, VS_Element.m_MetaData.size, &m_layout);
+	//if (FAILED(result)) throw ApproxException(L"Ошибка при создании Input layout");
+	}
+
+	const GenericStruct& UnifiedShader::ShaderParams() const
+	{
+		return *m_ParamsData;
 	}
 
 	void UnifiedShader::Shutdown()
@@ -180,13 +181,85 @@ namespace ShaderSystem
 		DELETE_D3D11_OBJECT(m_computeShader);
 		DELETE_D3D11_OBJECT(m_hullShader);
 		DELETE_D3D11_OBJECT(m_domainShader);
-		for (int i = 0; i < m_desc.TextureSlots; i++)
-		{
-			DELETE_D3D11_OBJECT(m_textures[i]);
-		}
 		delete m_ParamsData;
 	}
+	HRESULT UnifiedShader::CreateInputLayoutDescFromVertexShaderSignature(LPCVOID bufPtr, SIZE_T bufSize, ID3D11Device* pD3DDevice, ID3D11InputLayout** pInputLayout, int* inputLayoutByteLength)
+	{
+		// Reflect shader info
+		ID3D11ShaderReflection* pVertexShaderReflection = nullptr;
+		HRESULT hr = S_OK;
+		if (FAILED(D3DReflect(bufPtr, bufSize, IID_ID3D11ShaderReflection, (void**)&pVertexShaderReflection)))
+		{
+			return S_FALSE;
+		}
 
+		// get shader description
+		D3D11_SHADER_DESC shaderDesc;
+		pVertexShaderReflection->GetDesc(&shaderDesc);
+
+		// Read input layout description from shader info
+		unsigned int byteOffset = 0;
+		std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
+		for (unsigned int i = 0; i< shaderDesc.InputParameters; ++i)
+		{
+			D3D11_SIGNATURE_PARAMETER_DESC paramDesc;
+			pVertexShaderReflection->GetInputParameterDesc(i, &paramDesc);
+
+			// create input element desc
+			D3D11_INPUT_ELEMENT_DESC elementDesc;
+			elementDesc.SemanticName = paramDesc.SemanticName;
+			elementDesc.SemanticIndex = paramDesc.SemanticIndex;
+			elementDesc.InputSlot = 0;
+			elementDesc.AlignedByteOffset = byteOffset;
+			elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			elementDesc.InstanceDataStepRate = 0;
+
+			// determine DXGI format
+			if (paramDesc.Mask == 1)
+			{
+				if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32_UINT;
+				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32_SINT;
+				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32_FLOAT;
+				byteOffset += 4;
+			}
+			else if (paramDesc.Mask <= 3)
+			{
+				if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32_UINT;
+				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32_SINT;
+				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+				byteOffset += 8;
+			}
+			else if (paramDesc.Mask <= 7)
+			{
+				if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32_UINT;
+				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32_SINT;
+				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				byteOffset += 12;
+			}
+			else if (paramDesc.Mask <= 15)
+			{
+				if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_UINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_SINT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
+				else if (paramDesc.ComponentType == D3D_REGISTER_COMPONENT_FLOAT32) elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+				byteOffset += 16;
+			}
+
+			//save element desc
+			inputLayoutDesc.push_back(elementDesc);
+		}
+
+		// Try to create Input Layout
+		hr = pD3DDevice->CreateInputLayout(&inputLayoutDesc[0], inputLayoutDesc.size(), bufPtr, bufSize, pInputLayout);
+
+		//Free allocation shader reflection memory
+		pVertexShaderReflection->Release();
+
+		//record byte length
+		if (inputLayoutByteLength != nullptr)
+			*inputLayoutByteLength = byteOffset;
+
+		return hr;
+	}
 	const ShaderDesc& UnifiedShader::GetDesc()
 	{
 		return m_desc;
@@ -200,16 +273,6 @@ namespace ShaderSystem
 	unsigned short UnifiedShader::GetNumberOfTextureSlots()
 	{
 		return m_desc.TextureSlots;
-	}
-
-	bool UnifiedShader::SetTexture(ID3D11ShaderResourceView* texture, unsigned slot)
-	{
-		if (slot < m_desc.TextureSlots)
-		{
-			m_textures[slot] = texture;
-			return true;
-		}
-		return false;
 	}
 
 	void UnifiedShader::InitializeBuffer(ID3D11Device* device, const ASL::RuntimeBufferInfo& info, BufferPack& pack, short BufferNum, const vector<int>& ParamIDs)
@@ -229,15 +292,7 @@ namespace ShaderSystem
 		switch (info.group)
 		{
 		case SCENE_CONSTANT:
-		{
-			for (auto ID : ParamIDs)
-			{
-				for (auto pInfo : m_Settings.ParamsInfo)
-				{
-					if (pInfo.ID == ID)
-						vars.push_back(pair<void*, GenericType>((*m_ParamsData)[pInfo.Name].Get()));
-				}
-			}
+		{			
 			pack.m_sceneConstantsData = new MemoryMultiplexer;
 			pack.m_sceneConstantsData->setInput(vars);
 			pack.m_sceneConstants.num = BufferNum;
@@ -256,6 +311,14 @@ namespace ShaderSystem
 		}
 		case PER_OBJECT:
 		{
+			for (auto ID : ParamIDs)
+			{
+				for (auto pInfo : m_Settings.ParamsInfo)
+				{
+					if (pInfo.ID == ID)
+						vars.push_back(pair<void*, GenericType>((*m_ParamsData)[pInfo.Name].Get()));
+				}
+			}
 			pack.m_perObjectData = new MemoryMultiplexer;
 			pack.m_perObjectData->setInput(vars);
 			pack.m_perObjectBuffer.num = BufferNum;
@@ -316,10 +379,10 @@ namespace ShaderSystem
 		return true;
 	}
 
-	bool UnifiedShader::Render(ID3D11DeviceContext* context, unsigned int indexCount)
+	bool UnifiedShader::Render(ID3D11DeviceContext* context, unsigned int indexCount, ID3D11ShaderResourceView** textures, const GenericStruct* sets)
 	{
-		if (!UpdateSceneConstantsBuffers(context))
-			return false;
+		*m_ParamsData = *sets;
+
 		if (!UpdatePerObjectBuffers(context))
 			return false;
 
@@ -337,7 +400,7 @@ namespace ShaderSystem
 			context->PSSetConstantBuffers(PS_buffers.m_perObjectBuffer.num, 1, &PS_buffers.m_perObjectBuffer.m_Buffer);
 
 		if (m_desc.TextureSlots)
-			context->PSSetShaderResources(0, m_desc.TextureSlots, m_textures);
+			context->PSSetShaderResources(0, m_desc.TextureSlots, textures);
 		// Set the vertex input layout.
 		context->IASetInputLayout(m_layout);
 

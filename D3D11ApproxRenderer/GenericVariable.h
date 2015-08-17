@@ -2,6 +2,7 @@
 #include <utility>
 #include <exception>
 #include "GenericType.h"
+#include "ShaderSystemTypes.h"
 
 using std::pair;
 
@@ -18,12 +19,15 @@ namespace ShaderSystem
 		template<typename T>
 		void operator=(const T& val)
 		{
-			if (sizeof(T) < m_Type)
-				throw std::exception("Different sizes during assign");
-			memcpy(m_Data, &val, m_Type);
+			/*if (sizeof(T) < m_Type)
+				throw std::exception("Different sizes during assign");*/
+			if (m_Data)
+				memcpy(m_Data, &val, m_Type);
 		}
 
 		pair<void*, GenericType> Get();
+		void Set(void* ptr, GenericType type);
+		void Set(void* ptr);
 		GenericType Type()const;
 	private:
 		void* m_Data;

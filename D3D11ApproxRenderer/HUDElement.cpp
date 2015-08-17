@@ -156,7 +156,7 @@ bool __vectorcall HUDElement::Render(ID3D11DeviceContext* context, XMMATRIX orth
     params->projectionMatrix = orthoMatrix;
     params->viewMatrix = m_orthoview;
     RenderBuffers(context);
-    return m_Shader->Render(context,6);
+	return true; // return m_Shader->Render(context,6);
 }
 
 void HUDElement::Shutdown()

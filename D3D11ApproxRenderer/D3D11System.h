@@ -24,7 +24,7 @@ class D3D11 : public AlignedObject
 	ID3D11DepthStencilState* m_depthStencilState;
     ID3D11DepthStencilState* m_depthDisabledStencilState;
 	ID3D11DepthStencilView* m_depthStencilView;
-	ID3D11RasterizerState* m_rasterState;
+	ID3D11RasterizerState* m_rasterStateSolid, *m_rasterStateWireframe;
     ID3D11BlendState* m_d3dBlendStateAlpha, *m_d3dBlendStateDisabled;
 	XMMATRIX m_projectionMatrix;
 	XMMATRIX m_worldMatrix;
@@ -42,6 +42,8 @@ public:
     void TurnZBufferOff();
     void EnableAlphaBlending();
     void DisableAlphaBlending();
+	void SetSolidFillMode();
+	void SetWireframeFillMode();
 
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();

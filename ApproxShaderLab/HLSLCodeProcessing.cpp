@@ -236,6 +236,8 @@ namespace ASL
 		return res;
 	}
 
+
+
 	Errors HLSLCodeProcessing::GenerateInputLayout(Session* session, ShaderPart& part)
 	{
 		register const char* str_code = part.Str_code.c_str();

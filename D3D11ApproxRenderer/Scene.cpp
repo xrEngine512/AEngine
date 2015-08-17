@@ -318,7 +318,9 @@ bool Scene::Render()
 
 	g_ShaderPool->UpdatePerFrameBuffersForAll(m_D3D->GetDeviceContext());
 
+	//m_D3D->SetWireframeFillMode();
     m_SceneGraphRoot->Render(m_D3D->GetDeviceContext(), m_materialInterface);
+	//m_D3D->SetSolidFillMode();
 	
     m_D3D->TurnZBufferOff();
     m_D3D->EnableAlphaBlending();

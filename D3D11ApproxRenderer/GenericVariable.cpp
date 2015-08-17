@@ -25,6 +25,17 @@ namespace ShaderSystem
 		return pair<void*, GenericType>(m_Data, m_Type);
 	}
 
+	void GenericVariable::Set(void* ptr, GenericType type)
+	{
+		m_Data = ptr;
+		m_Type = type;
+	}
+
+	void GenericVariable::Set(void* ptr)
+	{
+		m_Data = ptr;
+	}
+
 	GenericType GenericVariable::Type() const
 	{
 		return m_Type;

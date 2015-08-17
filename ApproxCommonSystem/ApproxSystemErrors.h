@@ -12,10 +12,10 @@ private:
 
 	void ShowMessage(void* hwnd);
 public:
-	ApproxException(wchar_t* msg, Parameter param = DEFAULT_MSG_DISPLAY);
-	explicit ApproxException(std::wstring msg, Parameter param = DEFAULT_MSG_DISPLAY);
-	ApproxException(wchar_t* msg, wchar_t* className, Parameter param = DEFAULT_MSG_DISPLAY);
-	ApproxException(std::wstring msg, std::wstring className, Parameter param = DEFAULT_MSG_DISPLAY);
+	explicit ApproxException(const std::wstring& msg, Parameter param = DEFAULT_MSG_DISPLAY);
+	explicit ApproxException(const std::string& msg, Parameter param = DEFAULT_MSG_DISPLAY);
+	ApproxException(const std::string& msg, const std::string& className, Parameter param = DEFAULT_MSG_DISPLAY);
+	ApproxException(const std::wstring& msg, std::wstring className, Parameter param = DEFAULT_MSG_DISPLAY);
     void operator()(void* hwnd);
 	ApproxException becauseOf(const ApproxException& reason);
 	void operator+=(ApproxException& reason);

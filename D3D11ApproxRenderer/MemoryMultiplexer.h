@@ -19,6 +19,7 @@ namespace ShaderSystem
 		MemoryMultiplexer();
 		void setInput(const vector<pair<void*, GenericType>>& data);
 		void setOutput(void* out);
+		void*& Input(int index);
 		void process();
 		int size();
 		~MemoryMultiplexer();

@@ -2,8 +2,8 @@
 #include <ApproxSystemTools.h>
 
 
-D3D11::D3D11(void) :m_swapChain(0), m_device(0), m_deviceContext(0), m_renderTargetView(0), m_depthStencilBuffer(0), m_depthStencilState(0), m_depthStencilView(0), m_rasterState(0), m_depthDisabledStencilState(0)
-//m_orthoMatrix("orthoMatrix", "use this matrix instead of projectionMatrix if you want achieve orthograpfic view")
+D3D11::D3D11(void) :m_swapChain(nullptr), m_device(nullptr), m_deviceContext(0), m_renderTargetView(0), m_depthStencilBuffer(0), m_depthStencilState(0), 
+m_depthDisabledStencilState(0), m_depthStencilView(0), m_rasterStateSolid(0), m_rasterStateWireframe(0)
 {
 }
 
@@ -299,14 +299,22 @@ bool D3D11::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd,
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 	// Create the rasterizer state from the description we just filled out.
-	result = m_device->CreateRasterizerState(&rasterDesc, &m_rasterState);
+	result = m_device->CreateRasterizerState(&rasterDesc, &m_rasterStateSolid);
 	if(FAILED(result))
 	{
 		return false;
 	}
 
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+
+	result = m_device->CreateRasterizerState(&rasterDesc, &m_rasterStateWireframe);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
 	// Now set the rasterizer state.
-	m_deviceContext->RSSetState(m_rasterState);
+	m_deviceContext->RSSetState(m_rasterStateSolid);
 	// Setup the viewport for rendering.
 	viewport.Width = (float)screenWidth;
 	viewport.Height = (float)screenHeight;
@@ -377,7 +385,8 @@ bool D3D11::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd,
 		m_swapChain->SetFullscreenState(false, NULL);
 	}
 
-    DELETE_D3D11_OBJECT(m_rasterState);
+	DELETE_D3D11_OBJECT(m_rasterStateSolid);
+	DELETE_D3D11_OBJECT(m_rasterStateWireframe);
     DELETE_D3D11_OBJECT(m_depthStencilView);
     DELETE_D3D11_OBJECT(m_depthStencilState);
     DELETE_D3D11_OBJECT(m_depthStencilBuffer);
@@ -437,11 +446,20 @@ void D3D11::DisableAlphaBlending()
     m_deviceContext->OMSetBlendState(m_d3dBlendStateDisabled, 0, 0xffffffff);
 }
 
+void D3D11::SetSolidFillMode()
+{
+	m_deviceContext->RSSetState(m_rasterStateSolid);
+}
+
+void D3D11::SetWireframeFillMode()
+{
+	m_deviceContext->RSSetState(m_rasterStateWireframe);
+}
+
 ID3D11Device* D3D11::GetDevice()
 {
 	return m_device;
 }
-
 
 ID3D11DeviceContext* D3D11::GetDeviceContext()
 {

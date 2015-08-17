@@ -20,6 +20,8 @@ namespace ShaderSystem
 		GenericStruct();
 		explicit GenericStruct(const vector<pair<string, string>>& TypesAndNames);
 		explicit GenericStruct(const vector<pair<GenericType, string>>& TypesAndNames);
+		GenericStruct(const GenericStruct&);
+		void operator=(const GenericStruct&);
 		void push(const string& Type, const string& Name);
 		void push(GenericType Type, const string& Name);
 		GenericVariable& operator[](int index);

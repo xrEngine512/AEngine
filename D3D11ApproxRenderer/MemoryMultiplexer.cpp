@@ -219,56 +219,16 @@ namespace ShaderSystem
 		}
 		m_size = (shift / struct_alignment) * struct_alignment;
 		if (shift > m_size) m_size += struct_alignment;
-		/*vector<int> sizes;
-		sizes.reserve(data.size());
-		m_shifts.reserve(data.size());
-		m_sizes.reserve(data.size());
-		for (auto type : data)
-		{
-		int size = type.second;
-		m_ptrsToCopy.push_back(type.first);
-		sizes.push_back(size);
-		int aligned_size = struct_alignment;
-		if (!size)
-		throw std::exception("Unsupported type passed to MemoryMultiplexer");
-		//m_sizes.push_back(size);
-		if (size % struct_alignment != 0)
-		{
-		while (aligned_size < size)
-		{
-		aligned_size += struct_alignment;
-		}
-		}
-		else
-		{
-		aligned_size = size;
-		}
-		m_size += aligned_size;
-		m_sizes.push_back(aligned_size);
-		}
-		int aligned_size = memory_alignment;
-		if (m_size % memory_alignment != 0)
-		{
-		while (aligned_size < m_size)
-		{
-		aligned_size += 16;
-		}
-		m_size = aligned_size;
-		}
-
-
-		int shift = 0;
-		m_shifts.push_back(shift);
-		for (int i = 0; i < m_sizes.size() - 1; i++)
-		{
-		shift += m_sizes[i];
-		m_shifts.push_back(shift);
-		}*/
 	}
 
 	void MemoryMultiplexer::setOutput(void* out)
 	{
 		m_Data = static_cast<byte*>(out);
+	}
+
+	void*& MemoryMultiplexer::Input(int index)
+	{
+		return m_ptrsToCopy[index];
 	}
 
 	MemoryMultiplexer::~MemoryMultiplexer()

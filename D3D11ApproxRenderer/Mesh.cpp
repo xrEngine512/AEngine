@@ -154,32 +154,32 @@ bool Mesh::InitializeBuffers(ID3D11Device* device)
 		return false;
 	}
 	// Load the vertex array with data.
-	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
+	vertices[0].position = XMFLOAT4(-1.0f, -1.0f, 0.0f, 1.0f);  // Bottom left.
 	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
 	//vertices[0].color = XMFLOAT4(1.0f,0.0f,0.0f,1.0f);
 	vertices[0].normal = XMFLOAT3(0.0f,0.0f,-1.0f);
 
-	vertices[1].position = XMFLOAT3(1.0f, 1.0f, 0.0f);  // Top right.
+	vertices[1].position = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);  // Top right.
 	vertices[1].texture = XMFLOAT2(1.0f, 0.0f);
 	//vertices[1].color = XMFLOAT4(0.0f,1.0f,0.0f,1.0f);
 	vertices[1].normal = XMFLOAT3(0.0f,0.0f,-1.0f);
 
-	vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
+	vertices[2].position = XMFLOAT4(1.0f, -1.0f, 0.0f, 1.0f);  // Bottom right.
 	vertices[2].texture = XMFLOAT2(1.0f, 1.0f);
 	//vertices[2].color = XMFLOAT4(0.0f,0.0f,1.0f,1.0f);
 	vertices[2].normal = XMFLOAT3(0.0f,0.0f,-1.0f);
 
-	vertices[3].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
+	vertices[3].position = XMFLOAT4(-1.0f, -1.0f, 0.0f, 1.0f);  // Bottom left.
 	vertices[3].texture = XMFLOAT2(0.0f, 1.0f);
 	//vertices[3].color = XMFLOAT4(1.0f,0.0f,0.0f,1.0f);
 	vertices[3].normal = XMFLOAT3(0.0f,0.0f,-1.0f);
 
-	vertices[4].position = XMFLOAT3(-1.0f, 1.0f, 0.0f);  // Top left.
+	vertices[4].position = XMFLOAT4(-1.0f, 1.0f, 0.0f, 1.0f);  // Top left.
 	vertices[4].texture = XMFLOAT2(0.0f, 0.0f);
 	//vertices[4].color = XMFLOAT4(1.0f,0.0f,0.0f,1.0f);
 	vertices[4].normal = XMFLOAT3(0.0f,0.0f,-1.0f);
 
-	vertices[5].position = XMFLOAT3(1.0f, 1.0f, 0.0f);  // Top right.
+	vertices[5].position = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);  // Top right.
 	vertices[5].texture = XMFLOAT2(1.0f, 0.0f);
 	//vertices[5].color = XMFLOAT4(0.0f,1.0f,0.0f,1.0f);
 	vertices[5].normal = XMFLOAT3(0.0f,0.0f,-1.0f);

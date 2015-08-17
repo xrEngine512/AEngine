@@ -16,21 +16,6 @@
     <Filter Include="ShaderSystem">
       <UniqueIdentifier>{f4272169-74c8-4e8a-a2cc-0b069baf4ae6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderSystem\Shaders">
-      <UniqueIdentifier>{610431b3-ef0b-4e72-a84b-e4d999425328}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderSystem\Shaders\AmbientLightShader">
-      <UniqueIdentifier>{935637a5-872a-4450-8d68-cce9358b32b7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderSystem\Shaders\ColorShader">
-      <UniqueIdentifier>{55caff5f-01c5-412f-899d-dcacbdfa21b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderSystem\Shaders\TextureShader">
-      <UniqueIdentifier>{1a3bbbbf-57c7-4245-be13-86143fb03d14}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderSystem\Shaders\SpecularShader">
-      <UniqueIdentifier>{d989eb0a-96bf-444b-a0d4-723430c69755}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ShaderSystem\Interfaces">
       <UniqueIdentifier>{0ceb05ef-683a-44ea-8513-e0c11024abb7}</UniqueIdentifier>
     </Filter>
@@ -49,20 +34,35 @@
     <Filter Include="CommonSystem">
       <UniqueIdentifier>{9e15d78d-dde6-4d4f-b9bd-2f05547bf35e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderSystem\Shaders\MultitextureShader">
-      <UniqueIdentifier>{5536e707-295f-499b-932f-9f5a1eaaaca2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderSystem\Shaders\Wireframe">
-      <UniqueIdentifier>{c11bf3b1-4cf5-4709-97d3-f3b0858d1272}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ShaderSystem\Shaders\AbstractShader">
-      <UniqueIdentifier>{adc45081-926e-47f3-aff7-ddba61c8d56a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ShaderSystem\DynamicSystem">
       <UniqueIdentifier>{0fa73900-775d-4b3c-914e-1e3be7211125}</UniqueIdentifier>
     </Filter>
     <Filter Include="ShaderSystem\DynamicSystem\Memory Management">
       <UniqueIdentifier>{d42c2e51-11bb-4b3c-b84e-1e7c0f3e8890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\StaticSystem">
+      <UniqueIdentifier>{610431b3-ef0b-4e72-a84b-e4d999425328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\StaticSystem\AmbientLightShader">
+      <UniqueIdentifier>{935637a5-872a-4450-8d68-cce9358b32b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\StaticSystem\ColorShader">
+      <UniqueIdentifier>{55caff5f-01c5-412f-899d-dcacbdfa21b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\StaticSystem\TextureShader">
+      <UniqueIdentifier>{1a3bbbbf-57c7-4245-be13-86143fb03d14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\StaticSystem\SpecularShader">
+      <UniqueIdentifier>{d989eb0a-96bf-444b-a0d4-723430c69755}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\StaticSystem\MultitextureShader">
+      <UniqueIdentifier>{5536e707-295f-499b-932f-9f5a1eaaaca2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\StaticSystem\Wireframe">
+      <UniqueIdentifier>{c11bf3b1-4cf5-4709-97d3-f3b0858d1272}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSystem\StaticSystem\AbstractShader">
+      <UniqueIdentifier>{adc45081-926e-47f3-aff7-ddba61c8d56a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -103,19 +103,19 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="AbstractShader.h">
-      <Filter>ShaderSystem\Shaders\AbstractShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\AbstractShader</Filter>
     </ClInclude>
     <ClInclude Include="AmbientLightShader.h">
-      <Filter>ShaderSystem\Shaders\AmbientLightShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\AmbientLightShader</Filter>
     </ClInclude>
     <ClInclude Include="ColorShader.h">
-      <Filter>ShaderSystem\Shaders\ColorShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\ColorShader</Filter>
     </ClInclude>
     <ClInclude Include="SpecularShader.h">
-      <Filter>ShaderSystem\Shaders\SpecularShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\SpecularShader</Filter>
     </ClInclude>
     <ClInclude Include="TextureShader.h">
-      <Filter>ShaderSystem\Shaders\TextureShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\TextureShader</Filter>
     </ClInclude>
     <ClInclude Include="IShader.h">
       <Filter>ShaderSystem\Interfaces</Filter>
@@ -163,7 +163,7 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="MultitextureShader.h">
-      <Filter>ShaderSystem\Shaders\MultitextureShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\MultitextureShader</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Заголовочные файлы</Filter>
@@ -178,7 +178,7 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="WireframeShader.h">
-      <Filter>ShaderSystem\Shaders\Wireframe</Filter>
+      <Filter>ShaderSystem\StaticSystem\Wireframe</Filter>
     </ClInclude>
     <ClInclude Include="ShaderPool.h">
       <Filter>ShaderSystem</Filter>
@@ -210,9 +210,6 @@
     <ClInclude Include="ShaderDesc.h">
       <Filter>ShaderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="GenericVariable.h">
-      <Filter>ShaderSystem\DynamicSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Memory.h">
       <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
     </ClInclude>
@@ -230,6 +227,9 @@
     </ClInclude>
     <ClInclude Include="ShaderSystemTypes.h">
       <Filter>ShaderSystem\DynamicSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericVariable.h">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -264,19 +264,19 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="AbstractShader.cpp">
-      <Filter>ShaderSystem\Shaders\AbstractShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\AbstractShader</Filter>
     </ClCompile>
     <ClCompile Include="AmbientLightShader.cpp">
-      <Filter>ShaderSystem\Shaders\AmbientLightShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\AmbientLightShader</Filter>
     </ClCompile>
     <ClCompile Include="ColorShader.cpp">
-      <Filter>ShaderSystem\Shaders\ColorShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\ColorShader</Filter>
     </ClCompile>
     <ClCompile Include="SpecularShader.cpp">
-      <Filter>ShaderSystem\Shaders\SpecularShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\SpecularShader</Filter>
     </ClCompile>
     <ClCompile Include="TextureShader.cpp">
-      <Filter>ShaderSystem\Shaders\TextureShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\TextureShader</Filter>
     </ClCompile>
     <ClCompile Include="IShader.cpp">
       <Filter>ShaderSystem\Interfaces</Filter>
@@ -297,7 +297,7 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="MultitextureShader.cpp">
-      <Filter>ShaderSystem\Shaders\MultitextureShader</Filter>
+      <Filter>ShaderSystem\StaticSystem\MultitextureShader</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Файлы исходного кода</Filter>
@@ -306,7 +306,7 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="WireframeShader.cpp">
-      <Filter>ShaderSystem\Shaders\Wireframe</Filter>
+      <Filter>ShaderSystem\StaticSystem\Wireframe</Filter>
     </ClCompile>
     <ClCompile Include="ShaderPool.cpp">
       <Filter>ShaderSystem</Filter>
@@ -323,9 +323,6 @@
     <ClCompile Include="MaterialInterfaceManager.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="GenericVariable.cpp">
-      <Filter>ShaderSystem\DynamicSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Memory.cpp">
       <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
     </ClCompile>
@@ -336,6 +333,9 @@
       <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
     </ClCompile>
     <ClCompile Include="MemoryMultiplexer.cpp">
+      <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericVariable.cpp">
       <Filter>ShaderSystem\DynamicSystem\Memory Management</Filter>
     </ClCompile>
   </ItemGroup>

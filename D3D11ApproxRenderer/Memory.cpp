@@ -1,25 +1,42 @@
 #include "Memory.h"
-#include "MemoryBlock.h"
 
 using Byte = unsigned char;
 namespace ShaderSystem
 {
-	Memory::Memory() :m_pData(nullptr), m_Size(0)
+	inline size_t AlignedSize(size_t size, const int alignment = 16)
+	{
+		if (size % alignment != 0)
+		{
+			int aligned_size = (size / alignment) * alignment; //Optimizaton may affect
+			while (aligned_size < size)
+			{
+				aligned_size += alignment;
+			}
+			return aligned_size;
+		}
+		return size;
+	}
+
+	Memory::Memory() :m_pData(nullptr), m_allocatedSize(0), m_usedSize(0)
 	{}
+
+	Memory::Memory(const Memory& mem)
+	{
+		*this = mem;
+	}
 
 	void Memory::setSize(size_t size)
 	{
-		size = AlignedSize(size);
-		if (size > m_Size)
+		if (size > m_allocatedSize)
 		{
 			m_pData = realloc(m_pData, size);
 			int pos = 0;
-			for (auto block : m_Blocks)
+			for (auto& block : m_Blocks)
 			{
 				block.setData(static_cast<Byte*>(m_pData)+pos);
 				pos += block.Size();
 			}
-			m_Size = size;
+			m_allocatedSize = size;
 		}
 	}
 
@@ -33,14 +50,35 @@ namespace ShaderSystem
 		return m_Blocks[index];
 	}
 
+	void Memory::operator=(const Memory& mem)
+	{
+		if (this != &mem)
+		{
+			if (mem.m_allocatedSize > m_allocatedSize)
+			{
+				m_allocatedSize = mem.m_allocatedSize;
+				m_pData = realloc(m_pData, m_allocatedSize);
+			}
+			m_usedSize = mem.m_usedSize;
+			memcpy(m_pData, mem.m_pData, m_allocatedSize);
+			m_Blocks = mem.m_Blocks;
+			int pos = 0;
+			for (auto& block : m_Blocks)
+			{
+				block.setData(static_cast<Byte*>(m_pData)+pos);
+				pos += block.Size();
+			}
+		}
+	}
+
 	const void* Memory::MemoryPtr() const
 	{
 		return m_pData;
 	}
 
-	size_t Memory::Size() const
+	size_t Memory::Size(bool allocated) const
 	{
-		return m_Size;
+		return allocated ? m_allocatedSize : m_usedSize;
 	}
 
 	MemoryBlock& Memory::addBlock(GenericType type)
@@ -52,9 +90,10 @@ namespace ShaderSystem
 	{
 		MemoryBlock block;
 		block.setSize(blockSize);
+		m_usedSize += blockSize;
 		m_Blocks.push_back(block);
 		expand();
-		m_Blocks.back().setData(static_cast<Byte*>(m_pData) + m_Size - block.Size(true));
+		m_Blocks.back().setData(static_cast<Byte*>(m_pData) + m_usedSize - block.Size(true));
 		return m_Blocks.back();
 	}
 
@@ -66,11 +105,6 @@ namespace ShaderSystem
 
 	void Memory::expand()
 	{
-		size_t size = 0;
-		for (auto block : m_Blocks)
-		{
-			size += block.Size(true);
-		}
-		setSize(size);
+		setSize(m_usedSize);
 	}
 }

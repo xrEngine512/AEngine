@@ -25,6 +25,37 @@ namespace ShaderSystem
 		Construct(TypesAndNames);
 	}
 
+	GenericStruct::GenericStruct(const GenericStruct& arg)
+	{
+		if (this != &arg)
+		{
+			m_VarsByName = arg.m_VarsByName;
+			m_Memory = arg.m_Memory;
+			int i = 0;
+			for (auto& var : m_VarsByName)
+			{
+				var.second.Set(m_Memory[i++].Data());
+				m_Vars.push_back(&var.second);
+			}
+		}
+	}
+
+	void GenericStruct::operator=(const GenericStruct& arg)
+	{
+		if (this != &arg)
+		{
+			m_VarsByName = arg.m_VarsByName;
+			m_Memory = arg.m_Memory;
+			int i = 0;
+			m_Vars.clear();
+			for (auto& var : m_VarsByName)
+			{
+				var.second.Set(m_Memory[i++].Data());
+				m_Vars.push_back(&var.second);
+			}
+		}
+	}
+
 	inline void GenericStruct::push(const string& Type, const string& Name)
 	{
 		push(ReadType(Type), Name);

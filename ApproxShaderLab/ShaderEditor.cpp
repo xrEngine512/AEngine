@@ -335,7 +335,10 @@ namespace ASL
 			if (m_SP[i])
 			{
 				ViewShaderPartInfo part_info;
-				part_info.entryPoint = QString("main");
+				if (m_SP[i]->EntryPoint().size())
+					part_info.entryPoint = m_SP[i]->EntryPoint();
+				else
+					part_info.entryPoint = QString("main");
 				part_info.qStr_code = m_SP[i]->codeEditor()->getCode();
 				part_info.Shader_Type = m_SP[i]->getShader_Type();
 				part_info.buffersInfo = m_SP[i]->BuffersInfo();

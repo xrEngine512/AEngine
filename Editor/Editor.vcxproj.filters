@@ -33,6 +33,9 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="MaterialUI">
+      <UniqueIdentifier>{2ae8e827-85fb-41a0-8d6c-8338dbad70e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -56,9 +59,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_modelloaderui.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="editor_old.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -71,14 +71,41 @@
     <ClCompile Include="GeneratedFiles\qrc_editor.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="MaterialSettingsUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_MaterialSettingsUI.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_MaterialSettingsUI.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialSettingsUI.cpp">
+      <Filter>MaterialUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_FloatParamUI.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_FloatParamUI.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatParamUI.cpp">
+      <Filter>MaterialUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ColorParamUI.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ColorParamUI.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorParamUI.cpp">
+      <Filter>MaterialUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_TextureParamUI.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_TextureParamUI.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureParamUI.cpp">
+      <Filter>MaterialUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -104,7 +131,25 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="MaterialSettingsUI.h">
-      <Filter>Header Files</Filter>
+      <Filter>MaterialUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FloatParamUI.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FloatParamUI.h">
+      <Filter>MaterialUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorParamUI.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorParamUI.h">
+      <Filter>MaterialUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TextureParamUI.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TextureParamUI.h">
+      <Filter>MaterialUI</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +160,15 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_Editor.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_FloatParamUI.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_ColorParamUI.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_TextureParamUI.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

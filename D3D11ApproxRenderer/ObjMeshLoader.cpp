@@ -55,7 +55,7 @@ void ObjMeshLoader::Inititalize(ID3D11Device* device,const char* meshFileName)
 
     //Создание временного хранилища входящих данных, как только данные будут
     //загружены в подходящий формат скопируем эти данные в вершинный и индексный буферы
-    XMFLOAT3 * Positions=new XMFLOAT3[buffermax];
+    XMFLOAT4 * Positions=new XMFLOAT4[buffermax];
     XMFLOAT2 * TexCoords=new XMFLOAT2[buffermax];
     XMFLOAT3 * Normals=new XMFLOAT3[buffermax];
 
@@ -113,7 +113,7 @@ void ObjMeshLoader::Inititalize(ID3D11Device* device,const char* meshFileName)
                 if (z < m_MeshBox.front)
                     m_MeshBox.front = z;
             }
-            Positions[PositionsI++]=XMFLOAT3(x,y,z);
+			Positions[PositionsI++] = XMFLOAT4(x, y, z, 1.0f);
         }
         else if( 0 == wcscmp( strCommand, L"vt" ) )
         {

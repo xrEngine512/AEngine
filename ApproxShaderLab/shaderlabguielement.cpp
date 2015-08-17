@@ -75,10 +75,10 @@ namespace ASL
 		if (Info->ToShaderParameterInfo())
 		{
 			auto ParamInfo = Info->ToShaderParameterInfo();
-			auto& selectedBuffer = m_buffers[0];
+			auto& selectedBuffer = m_buffers[2];
 			if (!selectedBuffer)
 			{
-				selectedBuffer = new ShaderBuffer(this, SCENE_CONSTANT);
+				selectedBuffer = new ShaderBuffer(this, PER_OBJECT);
 			}
 			
 			selectedBuffer->AddVariable(*ParamInfo);
@@ -90,10 +90,7 @@ namespace ASL
 			m_Textures.push_back(lnk->GetLinkingObjects().first);
 			UpdateGeneratedCode();
 		}
-		else
-		{
-			throw std::exception("Invalid RTTI");
-		}
+		
 		m_setLinks.push_back(lnk);
 		m_allLinks.push_back(lnk);
 		return m_setLinks.size() - 1;
@@ -242,9 +239,9 @@ namespace ASL
 		auto info = lnk->GetLinkingObjects().first->Info();
 		if (info->ToShaderParameterInfo())
 		{
-			if (m_buffers[0])
+			if (m_buffers[2])
 			{
-				m_buffers[0]->DeleteVariable(*info->ToShaderParameterInfo());
+				m_buffers[2]->DeleteVariable(*info->ToShaderParameterInfo());
 				UpdateGeneratedCode();
 			}
 		}
@@ -419,9 +416,9 @@ namespace ASL
 	QVector<int> ShaderLabGUIElement::ParamIDs() const
 	{
 		QVector<int> res;
-		if (m_buffers[0])
+		if (m_buffers[2])
 		{
-			for (auto param : m_buffers[0]->Params())
+			for (auto param : m_buffers[2]->Params())
 			{
 				res.push_back(param->ID);
 			}

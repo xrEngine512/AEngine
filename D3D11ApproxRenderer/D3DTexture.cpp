@@ -38,4 +38,5 @@ ID3D11ShaderResourceView* D3DTexture::GetTexture()
 
 D3DTexture::~D3DTexture(void)
 {
+	Shutdown();
 }

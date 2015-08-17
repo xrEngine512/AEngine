@@ -1,17 +1,18 @@
 #ifndef MATERIALSETTINGSUI_H
 #define MATERIALSETTINGSUI_H
 
-#include <QDialog>
+#include <QWidget>
 #include <unordered_map>
 
 struct IExternalMaterial;
+class QPushButton;
 
 namespace ShaderSystem
 {
 	enum GenericType;
 }
 
-class MaterialSettingsUI : public QDialog
+class MaterialSettingsUI : public QWidget
 {
 	Q_OBJECT
 

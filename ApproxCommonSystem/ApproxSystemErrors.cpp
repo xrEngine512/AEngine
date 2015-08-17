@@ -2,21 +2,22 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-ApproxException::ApproxException(wchar_t* msg, Parameter param) :_msg(msg), m_Param(param)
+ApproxException::ApproxException(const std::string& msg, Parameter param) :m_Param(param)
 {
-	
+	copy(msg.begin(), msg.end(), _msg.begin());
 }
 
-ApproxException::ApproxException(std::wstring msg, Parameter param) : _msg(msg), m_Param(param)
+ApproxException::ApproxException(const std::wstring& msg, Parameter param) : m_Param(param), _msg(msg)
 {
 }
 
-ApproxException::ApproxException(wchar_t* msg, wchar_t* className, Parameter param) : m_Param(param)
+ApproxException::ApproxException(const std::string& msg, const std::string& className, Parameter param) : m_Param(param)
 {
-    _msg = std::wstring(msg) + L"(In class: " + std::wstring(className) + L")";
+	std::string message = msg + "(In class: " + className + ")";
+	copy(message.begin(), message.end(), _msg.begin());
 }
 
-ApproxException::ApproxException(std::wstring msg, std::wstring className, Parameter param) : _msg(msg + L"(In class: " + className + L")"), m_Param(param)
+ApproxException::ApproxException(const std::wstring& msg, std::wstring className, Parameter param) : m_Param(param), _msg(msg + L"(In class: " + className + L")")
 {
 }
 

@@ -84,8 +84,8 @@ void Editor::sl_RunShaderLab()
 void Editor::on_SceneItemClick(QTreeWidgetItem* item, int col)
 {
 	auto object = item->data(0, Qt::UserRole).value<IExternalRenderObject*>();
-	MaterialSettingsUI dialog(this, object->GetMaterial());
-	dialog.exec();
+	MaterialSettingsUI* dialog = new MaterialSettingsUI(this, object->GetMaterial());
+	dialog->show();
 }
 
 bool Editor::nativeEvent(const QByteArray& event_type, void* message, long* result)

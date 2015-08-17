@@ -1,17 +1,23 @@
 #include "MaterialSettingsUI.h"
 #include <ShaderSystemTypes.h>
 #include <ShaderParamInfo.h>
-#include <qslider.h>
+#include <TextureInfo.h>
 #include <QVBoxLayout>
 #include <qpushbutton.h>
 #include <IExternalMaterial.h>
-#include <QtWidgets/QLabel>
+
+#include "FloatParamUI.h"
+#include "ColorParamUI.h"
+#include "TextureParamUI.h"
 
 using namespace ShaderSystem;
 
-MaterialSettingsUI::MaterialSettingsUI(QWidget* parent, IExternalMaterial* material): QDialog(parent)
+MaterialSettingsUI::MaterialSettingsUI(QWidget* parent, IExternalMaterial* material): QWidget(parent)
 {
 	setLayout(new QVBoxLayout(this));
+	layout()->setAlignment(Qt::AlignTop);
+	setAttribute(Qt::WA_DeleteOnClose);
+	setWindowFlags(Qt::Window);
 	resize(200, 500);
 	for (auto info : material->Settings().ParamsInfo)
 	{
@@ -20,18 +26,11 @@ MaterialSettingsUI::MaterialSettingsUI(QWidget* parent, IExternalMaterial* mater
 		{
 		case FLOAT:
 		{
-			auto slider = new QSlider(Qt::Horizontal);
-			auto label = new QLabel;
-			layout()->addWidget(label);
-			label->setText(QString::fromStdString(info.Name));
-			slider->setMinimum(1);
-			slider->setMaximum(1000);
-			layout()->addWidget(slider);
-			connect(slider, &QSlider::valueChanged, [=](int value)
-			{
-				floatVariant var;
-				var.float1 = static_cast<float>(value) / 100;
-				material->SetParameter(info.Name, var);
+			auto paramUI = new FloatParamUI(this, info);
+			layout()->addWidget(paramUI);
+			connect(paramUI, &FloatParamUI::valueChanged, [=](const floatVariant& value)
+			{				
+				material->SetParameter(info.Name, value);
 			});
 			break;
 		}
@@ -45,15 +44,30 @@ MaterialSettingsUI::MaterialSettingsUI(QWidget* parent, IExternalMaterial* mater
 		}
 		case FLOAT4:
 		{
+			auto paramUI = new ColorParamUI(this, info);
+			layout()->addWidget(paramUI);
+			connect(paramUI, &ColorParamUI::valueChanged, [=](const floatVariant& value)
+			{
+				material->SetParameter(info.Name, value);
+			});
 			break;
 		}
+		default: break;
 		}
+	}
+	for (auto info : material->Settings().TexturesInfo)
+	{
+		auto paramUI = new TextureParamUI(this, info);
+		layout()->addWidget(paramUI);
+		connect(paramUI, &TextureParamUI::pathChange, [=](const QString& path)
+		{
+			material->LoadTexture(path.toStdWString().c_str(), info.Slot);
+		});
 	}
 	btnOK = new QPushButton(this);
 	connect(btnOK, &QPushButton::clicked, [&]()
 	{
-
-		accept();
+		close();
 	});
 }
 
