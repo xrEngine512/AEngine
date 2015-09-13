@@ -61,7 +61,7 @@ bool SystemClass::Initialize(void* ParentWindowID, bool FullScreenOn = false, in
 
 IExternalRenderer* SystemClass::GetRendererEx()
 {
-    return dynamic_cast<IExternalRenderer*>(m_Renderer);
+	return dynamic_cast<IExternalRenderer*>(m_Renderer);
 }
 
 SystemState SystemClass::State() const
@@ -77,9 +77,11 @@ IExternalSound* SystemClass::GetSoundSystemEx()
 void SystemClass::Shutdown()
 {
     DELETE_SYS_OBJECT(m_ThreadPool);
+	m_State.ThreadPool = SYS_NOT_INITIALIZED;
 	if (m_State.Renderer >= SYS_INITIALIZED)
 		m_Renderer->Shutdown();
-	return;
+	m_State.Renderer = SYS_NOT_INITIALIZED;
+	m_State.Input = SYS_INITIALIZED;
 }
 
 
@@ -90,6 +92,7 @@ void SystemClass::Run()
     m_ThreadPool->Run();
     m_State.Renderer = SYS_RUNNING;
     m_State.ThreadPool = SYS_RUNNING;
+	m_State.Input = SYS_RUNNING;
     //dynamic_cast<IExternalSound*> (m_SoundSystem)->PlayRain();
 	return;
 }

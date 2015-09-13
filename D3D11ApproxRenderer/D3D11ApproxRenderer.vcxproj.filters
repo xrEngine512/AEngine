@@ -19,9 +19,6 @@
     <Filter Include="ShaderSystem\Interfaces">
       <UniqueIdentifier>{0ceb05ef-683a-44ea-8513-e0c11024abb7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ShaderSystem\ShaderParams">
-      <UniqueIdentifier>{da357905-983a-41a0-9c10-8970287bf63c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interfaces">
       <UniqueIdentifier>{6ea13641-dc9c-4ad9-9b92-9e03d2ffc1d2}</UniqueIdentifier>
     </Filter>
@@ -277,9 +274,6 @@
     </ClCompile>
     <ClCompile Include="TextureShader.cpp">
       <Filter>ShaderSystem\StaticSystem\TextureShader</Filter>
-    </ClCompile>
-    <ClCompile Include="IShader.cpp">
-      <Filter>ShaderSystem\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="HUDElement.cpp">
       <Filter>Файлы исходного кода</Filter>

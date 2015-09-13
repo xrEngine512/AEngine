@@ -19,10 +19,11 @@ class MaterialSettingsUI : public QWidget
 public:
 	MaterialSettingsUI(QWidget *parent, IExternalMaterial* material);
 	~MaterialSettingsUI();
-
+signals:
+	void closed();
 private:
 	std::unordered_map<ShaderSystem::GenericType, QWidget*> m_Param;
-
+	void closeEvent(QCloseEvent*)override;
 	QPushButton* btnOK;
 };
 

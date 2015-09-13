@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Template Library">
+      <UniqueIdentifier>{8abc2a1e-9f1a-4a1b-a600-6c68a1c68a36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -24,19 +27,22 @@
     <ClInclude Include="ApproxSystemTools.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="FnPtr.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="IFnPtr.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="Tuple.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="ApproxMemory.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="EventEmitter.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Tuple.h">
+      <Filter>Template Library</Filter>
+    </ClInclude>
+    <ClInclude Include="IFnPtr.h">
+      <Filter>Template Library</Filter>
+    </ClInclude>
+    <ClInclude Include="FnPtr.h">
+      <Filter>Template Library</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericPool.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

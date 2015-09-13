@@ -3,11 +3,13 @@
 #include "qpropertyanimation.h"
 #include <QMouseEvent>
 #include <qwidget.h>
-#include <qdesktopwidget.h>
+#include <qapplication.h>
 #include <qlabel.h>
 #include "ApproxGuiResManager.h"
 #include <QGraphicsDropShadowEffect>
 #include <qsizegrip.h>
+#include <qdesktopwidget.h>
+#include "MouseTracker.h"
 
 namespace ApproxGUI
 {
@@ -23,9 +25,10 @@ namespace ApproxGUI
 		bool m_minimized;
 		QPointF m_lPrev;
 		bool m_dragging;
+		MouseTracker* mouseTracker;
 	public:
 		template<typename... Ts>
-		ApproxWindow(Ts... args) :QWidget(nullptr), m_dragging(false), m_minimized(false)
+		ApproxWindow(Ts... args) :QWidget(nullptr), m_minimized(false), m_dragging(false)
 		{
 			setObjectName("ApproxWindow");
 			setWindowFlags(Qt::FramelessWindowHint);
@@ -34,8 +37,11 @@ namespace ApproxGUI
 			m_clientWidget->setWindowFlags(Qt::Widget);
 			m_screenBounds = QApplication::desktop()->geometry();
 			m_displayBounds = QApplication::desktop()->screenGeometry();
-
 			m_clientWidget->move(border, btnSize + border);
+
+			mouseTracker = MouseTracker::Instance();
+
+			connect(mouseTracker, &MouseTracker::mouseMove, this, &ApproxWindow::On_mouseMoveEvent);
 
 			setStyleSheet
 			(
@@ -67,10 +73,10 @@ namespace ApproxGUI
 	{
 		QRect End_geom(m_displayBounds.center().x(), m_displayBounds.height(), 100, 100);
 		m_geometry = geometry();
-
+		
 		auto geom_anim = new QPropertyAnimation(this, "geometry");
 		auto opac_anim = new QPropertyAnimation(this, "windowOpacity");
-
+	
 		geom_anim->setDuration(400);
 		opac_anim->setDuration(400);
 
@@ -91,6 +97,18 @@ namespace ApproxGUI
 	void s_MaximizeNormalize()
 	{
 		Blink(!isMaximized());
+	}
+
+	void On_mouseMoveEvent(const QPoint& pos)
+	{
+		if (m_dragging)
+		{
+			int px, py;
+			if (m_screenBounds.contains(pos))
+			{
+				move(pos - m_lPrev.toPoint());
+			}
+		}
 	}
 	private:
 		void Blink(bool maximize)
@@ -215,24 +233,6 @@ namespace ApproxGUI
 			{
 				QWidget::mouseReleaseEvent(event);
 			}
-		}
-
-		void mouseMoveEvent(QMouseEvent* event)override
-		{
-			if (m_dragging)
-			{
-				int px, py;
-				QPoint mousePos = event->pos();
-				if (m_screenBounds.contains(mousePos))
-				{					
-					move(event->globalPos() - m_lPrev.toPoint());
-				}
-				else
-				{
-					int hh = 0;
-				}
-			}
-			QWidget::mouseMoveEvent(event);
 		}
 
 		void showEvent(QShowEvent* e)override

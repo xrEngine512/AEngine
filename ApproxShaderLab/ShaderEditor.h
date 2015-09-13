@@ -33,7 +33,6 @@ namespace ASL
 	{
 		typedef QFrame BaseClass;
 		Q_OBJECT
-
 	public:
 		ShaderEditor(IControllerSession* sessionInterface, QWidget *parent = nullptr);
 		~ShaderEditor();
@@ -91,6 +90,7 @@ namespace ASL
 		QStatusBar* m_statusBar;
 		MaterialVarsContainer* m_sceneVars;
 		ShaderSettings* m_shaderSettings;
+		QGLWidget* m_glWidget;
 
 		QPoint m_Prev;
 		bool m_dragging;

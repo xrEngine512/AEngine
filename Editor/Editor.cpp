@@ -1,28 +1,39 @@
 #include "Editor.h"
 #include <QTreeWidget>
+#include <QStatusBar>
 #include <ShaderDesc.h>
 #include <IApproxShaderLabExternalControl.h>
 #include <IApproxShaderLabControl.h>
 #include "rendererwrapper.h"
 #include <qmenubar.h>
 #include "MaterialSettingsUI.h"
+
+/*#define DECL_Q_OBJECT(className, memberClass) class className : public QObject\
+				{\
+				public:\
+				memberClass memberName;\
+				template<class ...Ts> className(QObject *parent,Ts... args):QObject(parent),memberName(args...){}\
+				}
+				*/
 static const int maxTabWidth = 200;
 
 using namespace std;
 
 Q_DECLARE_METATYPE(IExternalRenderObject*);
+Q_DECLARE_METATYPE(MaterialSettingsUI*);
+
+//typedef DECL_Q_OBJECT(threadWrapper, std::thread) QObjectThread;
 
 Editor::Editor(QWidget *parent)
-	: ApproxWindow(), m_modelLoader(this), m_rendererWrp(nullptr), m_renderingWindowX(7), m_renderingWindowY(65), m_UpdateThread(nullptr)
+	: ApproxWindow(), m_rendererWrp(nullptr), m_modelLoader(this), m_renderingWindowX(7), m_renderingWindowY(65)
 {
 	ui.setupUi(client);
-	setMouseTracking(true);
 	InitUI();
 	m_asl = ASL::GetASLControl();
 	m_StatusBarText = new QLabel(client);
 	m_rendererWrp = new RendererWrapper(client);
+	m_statusBar = new QStatusBar(client);
 	m_rendererWrp->hide();
-	m_done = false;
 	m_menuBar = new QMenuBar(client);
 	QMenu* subMenu1 = m_menuBar->addMenu(QStringLiteral("Действия"));
 	QMenu* subMenu2 = m_menuBar->addMenu(QStringLiteral("Инструменты"));
@@ -38,8 +49,9 @@ Editor::Editor(QWidget *parent)
 	connect(actLoadModel, SIGNAL(triggered()), &m_modelLoader, SLOT(show()));
 	connect(&m_modelLoader, SIGNAL(accepted()), SLOT(sl_LoadModel()));
 	connect(ui.treeWidget, &QTreeWidget::itemClicked, this, &Editor::on_SceneItemClick);
-
-	/*ui.statusBar->addPermanentWidget(m_StatusBarText);*/
+	client->layout()->addWidget(m_statusBar);
+	m_statusBar->addPermanentWidget(m_StatusBarText);
+	done = false;
 }
 
 void Editor::sl_RunEngine()
@@ -47,7 +59,7 @@ void Editor::sl_RunEngine()
 	m_rendererWrp->show();
 	m_rendererWrp->Initialize();
 	m_rendererWrp->Run();
-	m_UpdateThread = new std::thread(&Editor::Update, this);
+	update_thread = make_unique<std::thread>(&Editor::Update, this);
 	m_rendererWrp->move(0, 35);
 	resize(m_rendererWrp->width() + ui.treeWidget->width(), m_rendererWrp->height() + 100);
 	ui.tabWidget->move(m_rendererWrp->width(), 0);
@@ -83,15 +95,21 @@ void Editor::sl_RunShaderLab()
 
 void Editor::on_SceneItemClick(QTreeWidgetItem* item, int col)
 {
-	auto object = item->data(0, Qt::UserRole).value<IExternalRenderObject*>();
-	MaterialSettingsUI* dialog = new MaterialSettingsUI(this, object->GetMaterial());
-	dialog->show();
+	if (!item->data(1, Qt::UserRole).value<MaterialSettingsUI*>())
+	{
+		auto object = item->data(0, Qt::UserRole).value<IExternalRenderObject*>();
+		MaterialSettingsUI* dialog = new MaterialSettingsUI(this, object->GetMaterial());
+		item->setData(1, Qt::UserRole, QVariant::fromValue<MaterialSettingsUI*>(dialog));
+		connect(dialog, &MaterialSettingsUI::closed, [=]()
+		{
+			item->setData(1, Qt::UserRole, QVariant::fromValue<MaterialSettingsUI*>(nullptr));
+		});
+		dialog->show();
+	}
 }
 
 bool Editor::nativeEvent(const QByteArray& event_type, void* message, long* result)
 {
-	Q_UNUSED(result);
-
 	if (event_type == "windows_generic_MSG")
 	{
 		if (m_rendererWrp)
@@ -105,12 +123,16 @@ bool Editor::nativeEvent(const QByteArray& event_type, void* message, long* resu
 
 void Editor::Update()
 {
-	while (!m_done.load())
+	while (!done)
 	{
-		float x, y, z;
-		m_rendererWrp->GetCameraPos(x, y, z);
-		//m_StatusBarText->setText("Camera position X=" + QString().setNum(x) + "  Y=" + QString().setNum(y) + "  Z=" + QString().setNum(z));
-		std::this_thread::sleep_for(std::chrono::milliseconds(17));
+		if (m_rendererWrp->NativeInterface()->State().Renderer != SYS_NOT_INITIALIZED)
+		{
+			float x, y, z;
+			m_rendererWrp->GetCameraPos(x, y, z);
+			m_StatusBarText->setText("Camera position X=" + QString().setNum(x) + "  Y=" + QString().setNum(y) + "  Z=" + QString().setNum(z));
+			m_statusBar->update();
+		}
+		this_thread::sleep_for(chrono::milliseconds(16));
 	}
 }
 
@@ -122,12 +144,7 @@ void Editor::moveEvent(QMoveEvent *event)
 
 void Editor::closeEvent(QCloseEvent* event)
 {
-	m_done.store(true);
-	if (m_UpdateThread)
-	{
-		if (m_UpdateThread->joinable())
-			m_UpdateThread->join();
-	}
+	done = true;
 	if (m_rendererWrp)
 		m_rendererWrp->Shutdown();
 	if (m_asl)

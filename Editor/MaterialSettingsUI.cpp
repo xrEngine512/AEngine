@@ -75,3 +75,9 @@ MaterialSettingsUI::~MaterialSettingsUI()
 {
 
 }
+
+void MaterialSettingsUI::closeEvent(QCloseEvent* e)
+{
+	QWidget::closeEvent(e);
+	emit closed();
+}

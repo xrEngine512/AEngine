@@ -157,6 +157,7 @@
     <ClInclude Include="ApproxSystemTools.h" />
     <ClInclude Include="EventEmitter.h" />
     <ClInclude Include="FnPtr.h" />
+    <ClInclude Include="GenericPool.h" />
     <ClInclude Include="IFnPtr.h" />
     <ClInclude Include="ApproxMemory.h" />
     <ClInclude Include="Tuple.h" />

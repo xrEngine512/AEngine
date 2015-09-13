@@ -9,34 +9,40 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="ThreadPool">
+      <UniqueIdentifier>{421e0e16-68e3-415d-b4da-54e398ee33fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThreadPool\SyncSystem">
+      <UniqueIdentifier>{a18ace19-22b2-429e-ae7a-8b8c8a30536a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="systemclass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SystemThreadPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ApproxGameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AbstractThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SynchronizedSlaveThread.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ThreadPool</Filter>
     </ClCompile>
     <ClCompile Include="SynchronizedThread.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ThreadPool\SyncSystem</Filter>
     </ClCompile>
     <ClCompile Include="SynchronizedMasterThread.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ThreadPool\SyncSystem</Filter>
     </ClCompile>
-    <ClCompile Include="AsynchronicThread.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="SynchronizedSlaveThread.cpp">
+      <Filter>ThreadPool\SyncSystem</Filter>
     </ClCompile>
     <ClCompile Include="SyncEvent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ThreadPool\SyncSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemThreadPool.cpp">
+      <Filter>ThreadPool</Filter>
+    </ClCompile>
+    <ClCompile Include="AsynchronicThread.cpp">
+      <Filter>ThreadPool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -49,29 +55,29 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SystemThreadPool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ApproxGameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AbstractThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SynchronizedSlaveThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SynchronizedThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SynchronizedMasterThread.h">
-      <Filter>Header Files</Filter>
+      <Filter>ThreadPool</Filter>
     </ClInclude>
     <ClInclude Include="AsynchronicThread.h">
-      <Filter>Header Files</Filter>
+      <Filter>ThreadPool</Filter>
     </ClInclude>
     <ClInclude Include="SyncEvent.h">
-      <Filter>Header Files</Filter>
+      <Filter>ThreadPool\SyncSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SynchronizedThread.h">
+      <Filter>ThreadPool\SyncSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SynchronizedSlaveThread.h">
+      <Filter>ThreadPool\SyncSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SynchronizedMasterThread.h">
+      <Filter>ThreadPool\SyncSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemThreadPool.h">
+      <Filter>ThreadPool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

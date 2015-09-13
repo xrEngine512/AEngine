@@ -22,6 +22,8 @@
 #include "HLSLHighlighter.h"
 #include "Link.h"
 #include "ShaderSettings.h"
+#include <QGLWidget>
+#include <qwindow.h>
 
 #define DEF_MENU_ITEM(menu,str,handler) connect(menu->addAction(str), SIGNAL(triggered()), SLOT(handler()))
 
@@ -46,9 +48,15 @@ namespace ASL
 		memset(m_SP, 0, sizeof(void*) * 6);
 		
 		resize(800, 600);
-
+		/*auto fmt = QGLFormat(QGL::DoubleBuffer | QGL::DirectRendering);
+		fmt.setSampleBuffers(true);
+		fmt.setSamples(4);
+		m_glWidget = new QGLWidget(fmt,this);
+		m_gView.setViewport(m_glWidget);*/
+		m_gView.setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+		m_gView.update();
 		info.m_SessionID = m_sessionInterface->OpenSession();
-
+		
 		info.m_ShaderParts.reserve(6);
 
 		m_wndSettings = new wnd(this);
@@ -69,9 +77,8 @@ namespace ASL
 
 		m_statusBar = new QStatusBar(this);
 		m_lblStatus = new QLabel(QStringLiteral("Тестовое сообщение"));
-		m_lblRendererStatus = new QLabel(this);;
+		m_lblRendererStatus = new QLabel(this);
 		m_lblRendererStatusIcon = new QLabel(this);
-
 
 		connect(m_btnCompile, SIGNAL(clicked()), SLOT(on_Compile()));
 		connect(m_btnSettings, SIGNAL(clicked()), SLOT(on_Settings()));
@@ -351,11 +358,13 @@ namespace ASL
 		if (m_sessionInterface->Compile(info) == ASL_NO_ERROR)
 		{
 			m_lblStatus->setText(COMPILATION_SUCCESS_QT);
+			m_lblStatus->setStyleSheet("QLabel{color : rgb(10,240,10);}");
 			m_btnSave->menu()->actions()[1]->setEnabled(true);
 		}
 		else
 		{
 			m_lblStatus->setText(COMPILATION_FAIL_QT);
+			m_lblStatus->setStyleSheet("QLabel{color : rgb(240,10,10);}");
 			m_btnSave->menu()->actions()[1]->setEnabled(false);
 		}
 	}
@@ -547,7 +556,9 @@ namespace ASL
 
 	void ShaderEditor::on_Frame()
 	{
-		m_gScene.update();
+		//m_gScene.update();
+//		m_glWidget->qglClearColor(QColor(150, 150, 150));
+//		m_glWidget->updateGL();
 	}
 
 	void ShaderEditor::setShaderName(QString name)
