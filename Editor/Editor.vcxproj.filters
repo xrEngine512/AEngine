@@ -36,6 +36,11 @@
     <Filter Include="MaterialUI">
       <UniqueIdentifier>{2ae8e827-85fb-41a0-8d6c-8338dbad70e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -67,9 +72,6 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_Editor.cpp">
       <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_editor.cpp">
-      <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_MaterialSettingsUI.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -107,6 +109,9 @@
     <ClCompile Include="TextureParamUI.cpp">
       <Filter>MaterialUI</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_editor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="rendererwrapper.h">
@@ -126,9 +131,6 @@
     </CustomBuild>
     <CustomBuild Include="Editor.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Resources\editor.qrc">
-      <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="MaterialSettingsUI.h">
       <Filter>MaterialUI</Filter>
@@ -150,6 +152,9 @@
     </CustomBuild>
     <CustomBuild Include="TextureParamUI.h">
       <Filter>MaterialUI</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Resources\editor.qrc">
+      <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -173,15 +178,17 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\minimizeButton\hovered.png">
+    <None Include="approxeditor_ru.ts">
+      <Filter>Translation Files</Filter>
+    </None>
+    <None Include="approxeditor_en.ts">
+      <Filter>Translation Files</Filter>
+    </None>
+    <None Include="Resources\UI.qml">
       <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\minimizeButton\idle.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Resources\minimizeButton\pressed.png">
-      <Filter>Resource Files</Filter>
-    </Image>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <Image Include="Resources\closeButton\hovered.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -200,7 +207,19 @@
     <Image Include="Resources\maximizeButton\pressed.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Resources\Separator.png">
+    <Image Include="Resources\minimizeButton\hovered.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\minimizeButton\idle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\minimizeButton\pressed.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\separator.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\title.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

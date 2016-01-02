@@ -12,7 +12,7 @@ public:
     Frustum();
     ~Frustum();
 
-    void __vectorcall ConstructFrustum(float screenDepth, XMMATRIX &projectionMatrix, XMMATRIX &viewMatrix);
+    void ConstructFrustum(float screenDepth, const XMMATRIX &projectionMatrix, const XMMATRIX &viewMatrix);
 
     bool CheckPoint(float, float, float);
     bool CheckPoint(XMFLOAT3);

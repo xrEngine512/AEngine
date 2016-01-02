@@ -43,28 +43,13 @@ namespace ApproxGUI
 
 			connect(mouseTracker, &MouseTracker::mouseMove, this, &ApproxWindow::On_mouseMoveEvent);
 
-			setStyleSheet
-			(
-			"QLabel{color: rgb(150,150,150);}\
-			QMenu::item{color:rgb(200,200,200)}\
-			QMenu::item:disabled{color:rgb(100,100,100)}\
-			QMenu::item:selected{background-color:rgb(100,100,100);color:rgb(255,255,255)}\
-			QMenu::item:selected:disabled{background-color:rgb(90,90,90);color:rgb(150,150,150)}\
-			QWidget{background-color:rgb(60,60,60)}\
-			#ApproxWindow{background-color:rgb(40,40,40)}\
-			QGraphicsView{background-color:rgb(40,40,40)}\
-			QMenuBar::item{background-color:rgb(60,60,60);color:rgb(200,200,200)}\
-			QMenuBar::item:selected{background-color:rgb(100,100,100);color:white}\
-			QLineEdit{color:white;border:none;background-color:rgb(50,50,50)}\
-			QComboBox{color:white;background-color:rgb(50,50,50);}\
-			QComboBox::item{background-color:rgb(60,60,60);color:rgb(200,200,200)}\
-			QTextEdit {background-color: rgb(50,50,50);}\
-			QGroupBox{border:1px solid black;}\
-			QGroupBox::title{color: rgb(200,200,200);}\
-			QPushButton{color:rgb(150,150,150);}\
-			QStatusBar::item {border: none;}\
-			QPushButton:disabled{color:rgb(50,50,50);}"
-			);
+			QFile styleF;
+			
+			styleF.setFileName(QApplication::applicationDirPath() + "/qss/style.css");
+			styleF.open(QFile::ReadOnly);
+			QString qssStr = styleF.readAll();
+
+			setStyleSheet(qssStr);
 		}
 		~ApproxWindow()
 		{}

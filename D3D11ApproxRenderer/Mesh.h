@@ -22,7 +22,6 @@ class Mesh
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount;
     IMeshLoader* m_MeshLoader;
-	ShaderSystem::IShader *m_bindedShader;
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
@@ -35,7 +34,6 @@ public:
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
     MeshBox GetMeshBox();
-	void BindShader(ShaderSystem::IShader *);
 	int GetIndexCount();
 };
 

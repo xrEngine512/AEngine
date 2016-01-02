@@ -5,7 +5,7 @@ Frustum::Frustum()
 {
 }
 
-void Frustum::ConstructFrustum(float screenDepth, XMMATRIX &projectionMatrix, XMMATRIX &viewMatrix)
+void Frustum::ConstructFrustum(float screenDepth, const XMMATRIX &projectionMatrix, const XMMATRIX &viewMatrix)
 {
     float zMinimum, r;
     XMMATRIX matrix;

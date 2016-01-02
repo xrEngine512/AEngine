@@ -43,7 +43,7 @@
       <Filter>Template Library</Filter>
     </ClInclude>
     <ClInclude Include="GenericPool.h">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>Template Library</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

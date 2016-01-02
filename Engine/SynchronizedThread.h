@@ -1,5 +1,6 @@
 #pragma once
 #include "AbstractThread.h"
+#include <windef.h>
 
 class SynchronizedThread : public AbstractThread
 {

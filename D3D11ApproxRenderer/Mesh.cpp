@@ -109,12 +109,6 @@ MeshBox Mesh::GetMeshBox()
     return m_MeshLoader->GetMeshBox();
 }
 
-
-void Mesh::BindShader(ShaderSystem::IShader *shader)
-{
-	m_bindedShader = shader;
-}
-
 void Mesh::Render(ID3D11DeviceContext* deviceContext)
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
@@ -278,10 +272,6 @@ void Mesh::RenderBuffers(ID3D11DeviceContext* deviceContext)
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-   // deviceContext->DrawIndexed( m_indexCount, 0, 0 ); 
-	
-	return;
 }
 
 Mesh::~Mesh(void)

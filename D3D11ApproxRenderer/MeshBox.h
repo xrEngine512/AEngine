@@ -1,5 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
+#include <cmath>
 using namespace DirectX;
 
 struct MeshBox

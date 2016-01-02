@@ -82,15 +82,12 @@ namespace ASL
 		QPropertyAnimation* m_fadeAnim;
 		QPropertyAnimation* m_shrinkAnim;
 
-		//std::vector<MaterialVarInfo>* m_propertyInfo;
-
 		ShaderLabGUIElement* m_SP[6];
 		wnd *m_wndSettings;
 		QLabel* m_lblDesc, *m_lblStatus, *m_lblRendererStatus, *m_lblRendererStatusIcon;
 		QStatusBar* m_statusBar;
 		MaterialVarsContainer* m_sceneVars;
 		ShaderSettings* m_shaderSettings;
-		QGLWidget* m_glWidget;
 
 		QPoint m_Prev;
 		bool m_dragging;

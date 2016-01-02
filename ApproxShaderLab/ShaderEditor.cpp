@@ -22,7 +22,6 @@
 #include "HLSLHighlighter.h"
 #include "Link.h"
 #include "ShaderSettings.h"
-#include <QGLWidget>
 #include <qwindow.h>
 
 #define DEF_MENU_ITEM(menu,str,handler) connect(menu->addAction(str), SIGNAL(triggered()), SLOT(handler()))
@@ -48,11 +47,7 @@ namespace ASL
 		memset(m_SP, 0, sizeof(void*) * 6);
 		
 		resize(800, 600);
-		/*auto fmt = QGLFormat(QGL::DoubleBuffer | QGL::DirectRendering);
-		fmt.setSampleBuffers(true);
-		fmt.setSamples(4);
-		m_glWidget = new QGLWidget(fmt,this);
-		m_gView.setViewport(m_glWidget);*/
+		
 		m_gView.setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 		m_gView.update();
 		info.m_SessionID = m_sessionInterface->OpenSession();

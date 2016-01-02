@@ -1,15 +1,16 @@
 <RCC>
-  <qresource prefix="Editor">
-    <file>closeButton/hovered.png</file>
-    <file>closeButton/idle.png</file>
-    <file>closeButton/pressed.png</file>
-    <file>maximizeButton/hovered.png</file>
-    <file>maximizeButton/idle.png</file>
-    <file>maximizeButton/pressed.png</file>
-    <file>minimizeButton/hovered.png</file>
-    <file>minimizeButton/idle.png</file>
-    <file>minimizeButton/pressed.png</file>
-    <file>separator.png</file>
-    <file>title.png</file>
-  </qresource>
+    <qresource prefix="/Editor">
+        <file>closeButton/hovered.png</file>
+        <file>closeButton/idle.png</file>
+        <file>closeButton/pressed.png</file>
+        <file>maximizeButton/hovered.png</file>
+        <file>maximizeButton/idle.png</file>
+        <file>maximizeButton/pressed.png</file>
+        <file>minimizeButton/hovered.png</file>
+        <file>minimizeButton/idle.png</file>
+        <file>minimizeButton/pressed.png</file>
+        <file>separator.png</file>
+        <file>title.png</file>
+        <file>UI.qml</file>
+    </qresource>
 </RCC>
