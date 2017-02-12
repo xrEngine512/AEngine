@@ -516,7 +516,7 @@ namespace ASL
 			{
 				for (auto set : m_shaderSettings->AllSettings())
 				{
-					ShaderParamInfo* info = set->Info()->ToShaderParameterInfo();
+					ShaderParamInfo* info = dynamic_cast<ShaderParamInfo*>(set->Info());
 					if (info)
 						for (auto ID : part.paramIDs)
 						{
@@ -528,7 +528,7 @@ namespace ASL
 						}
 					else
 					{
-						TextureInfo* texInfo = set->Info()->ToTextureInfo();
+						TextureInfo* texInfo = dynamic_cast<TextureInfo*>(set->Info());
 						if (texInfo)
 							for (auto Slot : part.textureSlots)
 							{

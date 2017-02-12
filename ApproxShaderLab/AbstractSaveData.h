@@ -16,12 +16,6 @@ namespace ASL
 
 	struct AbstractSaveData 
 	{
-		void CleanSerializedBuffer()
-		{
-			delete[] serializedBuf;
-			serializedBuf = nullptr;
-			m_size = 0;
-		}
 		AbstractSaveData(){}
 		AbstractSaveData(const AbstractSaveData& obj)
 		{
@@ -36,29 +30,19 @@ namespace ASL
 				}
 			}
 		}
-		virtual void const* Serialize(int& size) = 0;
-
-		virtual void Deserialize(const void* buf, size_t size) = 0;
-
-		virtual int SerializedSize()const = 0;
-
-		virtual ShaderParamInfo* ToShaderParameterInfo()
-		{
-			return nullptr;
-		}
-		virtual TextureInfo* ToTextureInfo()
-		{
-			return nullptr;
-		}
-		virtual RuntimeBufferInfo* ToRuntimeBufferInfo()
-		{
-			return nullptr;
-		}
 		virtual ~AbstractSaveData()
 		{
 			delete[] serializedBuf;
 			serializedBuf = nullptr;
 		}
+
+#pragma region PublicInterface
+		virtual void const* Serialize(int& size) = 0;
+
+		virtual void Deserialize(const void* buf, size_t size) = 0;
+
+		virtual int SerializedSize()const = 0;
+		
 		template<class ...Ts>
 		static inline void const* Serialize(int& size, const Ts&... objects)
 		{
@@ -66,13 +50,23 @@ namespace ASL
 			size = Serialization(pData, objects...);
 			return pData;
 		}
+
 		template<class ...Ts>
 		static inline void Deserialize(const void* buf, int size, Ts&... objects)
 		{
 			return Deserialization(buf, size, objects...);
 		}
-	protected:
+		
+		void CleanSerializedBuffer()
+		{
+			delete[] serializedBuf;
+			serializedBuf = nullptr;
+			m_size = 0;
+		}
+#pragma endregion
 
+#pragma region ProtectedMethods
+	protected:
 		template<class ...Ts>
 		int Serialization(const Ts&... objects)
 		{
@@ -112,7 +106,9 @@ namespace ASL
 		{
 			return serializedBuf;
 		}
+#pragma endregion
 
+#pragma region PrivateMethods
 	private:
 		template<class ...Ts>
 		static int Serialization(void*& pData, const Ts&... objects)
@@ -150,8 +146,6 @@ namespace ASL
 			ProcessDeserialization<Ts...>(buf + CopyD(buf, obj), objects...);
 		}
 
-		
-
 		template<class T>
 		static inline void ProcessSerialization(char* ptr, const T& obj)
 		{
@@ -170,7 +164,6 @@ namespace ASL
 		{
 			return CopyS(serializedBuf + shift, obj);
 		}
-
 
 		template<typename saveData>
 		static inline typename std::enable_if<std::is_base_of<AbstractSaveData, saveData>::value, int>::type CopyS(char* buf, saveData& obj)
@@ -222,27 +215,10 @@ namespace ASL
 			memcpy(buf, &size, sizeof(int));
 			int shift = 0;
 			for (auto obj : objects)
-			{
 				shift += CopyS(buf + shift + sizeof(int), obj);
-			}
+
 			return size;
 		}
-		/*template<typename saveData>
-		inline typename std::enable_if<std::is_base_of<AbstractSaveData, saveData>::value, int>::type CopyS(int shift, saveData& obj)
-		{
-			return CopyS(serializedBuf + shift, obj);
-		}*/
-
-		
-
-		/*template<typename T>
-		inline typename std::enable_if<is_simple<T>::value,int>::type CopyS(int shift, const T& obj)
-		{
-			return CopyS(serializedBuf + shift, obj);
-		}*/
-
-		
-
 		//Copy Serialization methods end
 
 		//Copy Deserialization methods begin
@@ -258,7 +234,6 @@ namespace ASL
 			int size = *static_cast<const int*>(buf) - sizeof(int);
 			obj.reserve(size);
 			obj.assign(size, '0');
-			//obj.copy(static_cast<char*>(buf) + sizeof(int),size);
 			memcpy(&obj[0], static_cast<const char*>(buf)+sizeof(int), size);
 			return size + sizeof(int);
 		}
@@ -350,9 +325,6 @@ namespace ASL
 			return *static_cast<const int*>(buf);
 		}
 
-		
-		
-
 		template<class T>
 		static inline int CalculateSize(const void* buf, const T& obj)
 		{
@@ -364,8 +336,9 @@ namespace ASL
 			int shift = reqSize(buf, obj);
 			return shift + CalculateSize<Ts...>(static_cast<const char*>(buf) + shift, objects...);
 		}
+#pragma endregion
 
-		char* serializedBuf = nullptr;
-		int m_size = 0;
+		char*			serializedBuf = nullptr;
+		int				m_size = 0;
 	};
 }

@@ -23,10 +23,5 @@ namespace ASL
 		{
 			return CalculateSize(group, IDs);
 		}
-		RuntimeBufferInfo* ToRuntimeBufferInfo()override
-		{
-			return this;
-		}
-
 	};
 }

@@ -183,7 +183,7 @@ bool Scene::SetupEnvironment()
         return false;
     }    
 
-	m_light->SetDiffuseColor(1, 0.5, 0.5, 1);
+	m_light->SetDiffuseColor(0.8, 0.8, 0.8, 1);
 	m_light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_light->SetDirection(1, 0, 1);
 
@@ -234,19 +234,19 @@ bool Scene::Frame()
 	
     if (m_Input->IsKeyDown(W_Key))
     {
-        m_Camera->MoveLocal(0, 0, 0.5f);
+        m_Camera->MoveLocal(0, 0, 0.125f);
     }
     if (m_Input->IsKeyDown(S_Key))
     {
-        m_Camera->MoveLocal(0, 0, -0.5f);
+        m_Camera->MoveLocal(0, 0, -0.125f);
     }
     if (m_Input->IsKeyDown(A_Key))
     {
-        m_Camera->MoveLocal(0.5f, 0, 0);
+        m_Camera->MoveLocal(0.125f, 0, 0);
     }
     if (m_Input->IsKeyDown(D_Key))
     {
-        m_Camera->MoveLocal(-0.5f, 0, 0);
+        m_Camera->MoveLocal(-0.125f, 0, 0);
     }
 
     /*if (m_Input->IsKeyDown(M_Key))

@@ -5,7 +5,7 @@
 #include "VertexTypes.h"//пока не используется
 #include "D3D11Common.h"
 
-Mesh::Mesh(void) :m_vertexBuffer(nullptr), m_indexBuffer(nullptr), m_MeshLoader(nullptr), m_bindedShader(nullptr)
+Mesh::Mesh(void) :m_vertexBuffer(nullptr), m_indexBuffer(nullptr), m_MeshLoader(nullptr)
 {
 }
 
@@ -13,8 +13,6 @@ Mesh::Mesh(void) :m_vertexBuffer(nullptr), m_indexBuffer(nullptr), m_MeshLoader(
 
 bool Mesh::Initialize(ID3D11Device* device, const char* MeshFileName, bool dynamic_shader)
 {
-	bool result;
-
     m_MeshLoader = new ObjMeshLoader;
 	// Initialize the vertex and index buffer that hold the geometry for the triangle.
     m_MeshLoader->Inititalize(device,MeshFileName);

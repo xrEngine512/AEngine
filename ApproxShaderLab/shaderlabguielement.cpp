@@ -72,20 +72,19 @@ namespace ASL
 	{
 		auto Info = lnk->GetLinkingObjects().first->Info();
 		
-		if (Info->ToShaderParameterInfo())
+		if (auto shaderParam = dynamic_cast<ShaderParamInfo*>(Info))
 		{
-			auto ParamInfo = Info->ToShaderParameterInfo();
 			auto& selectedBuffer = m_buffers[2];
 			if (!selectedBuffer)
 			{
 				selectedBuffer = new ShaderBuffer(this, PER_OBJECT);
 			}
 			
-			selectedBuffer->AddVariable(*ParamInfo);
-			m_txtedit->SyntaxHilighter()->AddShaderParam(ParamInfo->Name.c_str());
+			selectedBuffer->AddVariable(*shaderParam);
+			m_txtedit->SyntaxHilighter()->AddShaderParam(shaderParam->Name.c_str());
 			UpdateGeneratedCode();
 		}
-		else if (Info->ToTextureInfo())
+		else if (dynamic_cast<TextureInfo*>(Info))
 		{
 			m_Textures.push_back(lnk->GetLinkingObjects().first);
 			UpdateGeneratedCode();
@@ -237,20 +236,20 @@ namespace ASL
 	void ShaderLabGUIElement::deleteLink(const SettingsLink* lnk)
 	{
 		auto info = lnk->GetLinkingObjects().first->Info();
-		if (info->ToShaderParameterInfo())
+		if (auto shaderParamInfo = dynamic_cast<ShaderParamInfo*>(info))
 		{
 			if (m_buffers[2])
 			{
-				m_buffers[2]->DeleteVariable(*info->ToShaderParameterInfo());
+				m_buffers[2]->DeleteVariable(*shaderParamInfo);
 				UpdateGeneratedCode();
 			}
 		}
-		else if (info->ToTextureInfo())
+		else if (auto textureInfo = dynamic_cast<TextureInfo*>(info))
 		{
 			for (auto variable = m_Textures.begin(); variable != m_Textures.end(); ++variable)
 			{
-				if ((*variable)->Info()->ToTextureInfo())
-					if ((*variable)->Info()->ToTextureInfo()->Slot == info->ToTextureInfo()->Slot)
+				if (auto textureInfoVariable = dynamic_cast<TextureInfo*>((*variable)->Info()))
+					if (textureInfoVariable->Slot == textureInfo->Slot)
 					{
 						m_Textures.erase(variable);
 						UpdateGeneratedCode();
@@ -431,7 +430,7 @@ namespace ASL
 		QVector<int> res;
 		for (auto texture : m_Textures)
 		{
-			res.push_back(texture->Info()->ToTextureInfo()->Slot);
+			res.push_back(dynamic_cast<TextureInfo*>(texture->Info())->Slot);
 		}
 		return res;
 	}

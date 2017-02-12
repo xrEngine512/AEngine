@@ -22,9 +22,5 @@ namespace ASL
 		{
 			return CalculateSize(ID, Type, Name);
 		}
-		ShaderParamInfo* ToShaderParameterInfo()override
-		{
-			return this;
-		}
 	};
 }

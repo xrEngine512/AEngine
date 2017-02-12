@@ -64,7 +64,7 @@ namespace ASL
 		{
 		case TEXTURE:
 		{
-			res += QString("Texture2D ") + m_Data->ToTextureInfo()->Name.c_str() + ";\n";
+			res += QString("Texture2D ") + dynamic_cast<TextureInfo*>(m_Data)->Name.c_str() + ";\n";
 			break;
 		}
 		default:

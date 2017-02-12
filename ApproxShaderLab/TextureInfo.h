@@ -21,9 +21,5 @@ namespace ASL
 		{
 			return CalculateSize(Slot, Name);
 		}
-		TextureInfo* ToTextureInfo()override
-		{
-			return this;
-		}
 	};
 }
