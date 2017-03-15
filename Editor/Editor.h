@@ -9,12 +9,13 @@
 #include <atomic>
 #include <vector>
 #include <memory>
+#include <QtWidgets/QMenuBar>
 
 using namespace ApproxGUI;
 namespace ASL{
-	__interface IApproxShaderLabControl;
+	interface IApproxShaderLabControl;
 }
-__interface IExternalRenderObject;
+interface IExternalRenderObject;
 class RendererWrapper;
 class QStatusBar;
 class Editor : public ApproxWindow<QWidget>
@@ -26,7 +27,9 @@ private slots:
 	void sl_LoadModel();
 	void sl_RunShaderLab();
 	void on_SceneItemClick(QTreeWidgetItem*, int);
-	
+
+	void start_update_thread();
+	void stop_update_thread();
 public:
 	Editor(QWidget *parent = 0);
 	~Editor();

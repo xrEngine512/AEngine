@@ -4,7 +4,7 @@
 #include <QWidget>
 #include "ui_rendererwrapper.h"
 #include <ISystem.h>
-#include <IInternalInput.h>
+#include <include/IInternalInput.h>
 
 class RendererWrapper : public QWidget
 {
@@ -16,16 +16,17 @@ public:
     bool Initialize();
     void Run();
     void Shutdown();
-	IExternalRenderObject* LoadModel(const char* objFilename, const ShaderDesc& type);
+	RenderObjectPromise LoadModel(const std::string &objFilename, const ShaderDesc &type);
     void GetCameraPos(float &x, float &y, float &z);
     void PosUpdate();
     ISystem* NativeInterface();
     bool ExternalNativeEvent(const QByteArray&, void*, long*);
 private:
     void moveEvent(QMoveEvent*)override;
-    bool nativeEvent(const QByteArray&, void*, long*)override;
-    
-    void mousePressEvent(QMouseEvent*)override;
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void keyPressEvent(QKeyEvent *event) override;
+	void keyReleaseEvent(QKeyEvent *event) override;
     
     Ui::RendererWrapper ui;
     ISystem *sys;

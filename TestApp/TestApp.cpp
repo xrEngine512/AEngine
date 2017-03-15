@@ -1,4 +1,4 @@
-// TestApp.cpp: определяет точку входа для консольного приложения.
+// TestApp.cpp: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 //
 
 #include "stdafx.h"
@@ -111,8 +111,10 @@ __declspec(align(32)) struct AMMATRIX
 		doubleRows[0] = half1;
 		doubleRows[1] = half2;
 	}
-	AMMATRIX(float a11, float a12, float a13, float a14, float a21, float a22, float a23, float a24,
-		float a31, float a32, float a33, float a34, float a41, float a42, float a43, float a44)
+	AMMATRIX(float a11, float a12, float a13, float a14,
+			 float a21, float a22, float a23, float a24,
+			 float a31, float a32, float a33, float a34,
+			 float a41, float a42, float a43, float a44)
 	{
 		doubleRows[0] = _mm256_setr_ps(a11, a12, a13, a14, a21, a22, a23, a24);
 		doubleRows[1] = _mm256_setr_ps(a31, a32, a33, a34, a41, a42, a43, a44);
@@ -144,7 +146,7 @@ __declspec(align(32)) struct AMMATRIX
 	}
 
 
-	static AMMATRIX __vectorcall Multiply(const AMMATRIX &M1, const AMMATRIX &M2)
+	static AMMATRIX simdcall Multiply(const AMMATRIX &M1, const AMMATRIX &M2)
 	{
 		AMMATRIX MRes;
 
@@ -189,7 +191,7 @@ __declspec(align(32)) struct AMMATRIX
 
 		return MRes;
 	}
-	AMMATRIX __vectorcall operator*(const AMMATRIX& M2) const
+	AMMATRIX simdcall operator*(const AMMATRIX& M2) const
 	{
 		return Multiply(*this ,M2);
 	}
@@ -211,19 +213,19 @@ __declspec(align(32)) union VecD
 		float z;
 		float w;
 	};
-	VecD __vectorcall Mul_AVX(const VecD& _vec)
+	VecD simdcall Mul_AVX(const VecD& _vec)
 	{
 		VecD res;
 		_mm256_store_ps(&res.x, _mm256_mul_ps(vec, _vec.vec));
 		return res;
 	}
-	VecD __vectorcall Add_AVX(const VecD& _vec)
+	VecD simdcall Add_AVX(const VecD& _vec)
 	{
 		VecD res;
 		_mm256_store_ps(&res.x, _mm256_add_ps(vec, _vec.vec));
 		return res;
 	}
-	VecD __vectorcall Mul_SSE2(const VecD& _vec)
+	VecD simdcall Mul_SSE2(const VecD& _vec)
 	{
 		VecD res;
 
@@ -232,7 +234,7 @@ __declspec(align(32)) union VecD
 
 		return res;
 	}
-	VecD __vectorcall Add_SSE2(const VecD& _vec)
+	VecD simdcall Add_SSE2(const VecD& _vec)
 	{
 		VecD res;
 
@@ -258,11 +260,11 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	if (resTimeAM < resTimeXM)
 	{
-		cout << "AMMATRIX " << resTimeXM / resTimeAM << " times faster than XMMATRIX" << endl;
+		cout << "AMMATRIX " << resTimeXM / resTimeAM << " times faster than AMatrix" << endl;
 	}
 	else
 	{
-		cout << "XMMATRIX " << resTimeAM / resTimeXM << " times faster than AMMATRIX" << endl;
+		cout << "AMatrix " << resTimeAM / resTimeXM << " times faster than AMMATRIX" << endl;
 	}*/
 
 	/*VecD* vecs1 = static_cast<VecD*>(_aligned_malloc(sizeof(VecD)*numOfElems, 32));
@@ -374,17 +376,17 @@ double RunXM()
 	LARGE_INTEGER t1, t2;
 	//allocate memory
 
-	XMMATRIX* xmMarices1 = static_cast<XMMATRIX*>(_aligned_malloc(sizeof(XMMATRIX)*numOfElems, 16));
-	XMMATRIX* xmMarices2 = static_cast<XMMATRIX*>(_aligned_malloc(sizeof(XMMATRIX)*numOfElems, 16));
-	XMMATRIX* xmMarices3 = static_cast<XMMATRIX*>(_aligned_malloc(sizeof(XMMATRIX)*numOfElems, 16));
+	AMatrix* xmMarices1 = static_cast<AMatrix*>(_aligned_malloc(sizeof(AMatrix)*numOfElems, 16));
+	AMatrix* xmMarices2 = static_cast<AMatrix*>(_aligned_malloc(sizeof(AMatrix)*numOfElems, 16));
+	AMatrix* xmMarices3 = static_cast<AMatrix*>(_aligned_malloc(sizeof(AMatrix)*numOfElems, 16));
 
-	XMMATRIX XMinitVal(1.1f, 1.2f, 1.3f, 1.4f, 2.1f, 2.2f, 2.3f, 2.4f, 3.1f, 3.2f, 3.3f, 3.4f, 4.1f, 4.2f, 4.3f, 4.4f);
+	AMatrix XMinitVal(1.1f, 1.2f, 1.3f, 1.4f, 2.1f, 2.2f, 2.3f, 2.4f, 3.1f, 3.2f, 3.3f, 3.4f, 4.1f, 4.2f, 4.3f, 4.4f);
 	for (int i = 0; i < numOfElems; i++)
 	{
 		xmMarices2[i] = XMinitVal;
 		xmMarices3[i] = XMinitVal;
 	}
-	memset(xmMarices1, 0, sizeof(XMMATRIX) * numOfElems);
+	memset(xmMarices1, 0, sizeof(AMatrix) * numOfElems);
 
 
 

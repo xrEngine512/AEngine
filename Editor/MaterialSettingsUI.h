@@ -3,14 +3,11 @@
 
 #include <QWidget>
 #include <unordered_map>
+#include <GenericType.h>
 
 struct IExternalMaterial;
 class QPushButton;
 
-namespace ShaderSystem
-{
-	enum GenericType;
-}
 
 class MaterialSettingsUI : public QWidget
 {

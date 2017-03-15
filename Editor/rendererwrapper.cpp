@@ -1,4 +1,9 @@
 #include "rendererwrapper.h"
+
+#ifdef None
+#undef None
+#endif
+
 #include <QMouseEvent>
 
 
@@ -10,15 +15,11 @@ RendererWrapper::RendererWrapper(QWidget *parent) : QWidget(parent), m_input(nul
 }
 
 bool RendererWrapper::Initialize()
-{ 
-    
-    if(!sys->Initialize((void*)winId(),false,1280,720,x(),y()))
+{
+    if(!sys->initialize(winId(), false, 1280, 720, x(), y()))
         return false;
     m_input = GetInput();
-    sys->GetRendererEx()->SetPosition(x(),y());
-    int w, h;
-    sys->GetRendererEx()->GetWndSize(w, h);
-    this->resize(w,h);
+    this->resize(1280, 720);
     return true;
 }
 
@@ -29,13 +30,12 @@ void RendererWrapper::Run()
 
 void RendererWrapper::Shutdown()
 {
-
-    return sys->Shutdown();
+    return sys->shutdown();
 }
 
 void RendererWrapper::GetCameraPos(float &x, float &y, float &z)
 {
-    sys->GetRendererEx()->GetScene()->GetCameraPos(x, y, z);
+    sys->GetRendererEx()->get_scene()->GetCameraPos(x, y, z);
 }
 
 void RendererWrapper::PosUpdate()
@@ -49,7 +49,7 @@ void RendererWrapper::PosUpdate()
     if (sys->State().Renderer >= SYS_INITIALIZED)
     {
         QPoint global_pos = mapToGlobal(pos());
-        sys->GetRendererEx()->SetPosition(global_pos.x(), global_pos.y());
+        //sys->GetRendererEx()->SetPosition(global_pos.x(), global_pos.y());
     }
 }
 
@@ -58,9 +58,9 @@ ISystem* RendererWrapper::NativeInterface()
     return sys;
 }
 
-IExternalRenderObject* RendererWrapper::LoadModel(const char* objFilename, const ShaderDesc& type)
+RenderObjectPromise RendererWrapper::LoadModel(const std::string &objFilename, const ShaderDesc &type)
 {
-    return sys->GetRendererEx()->GetScene()->AddRenderObject(objFilename, type);
+    return std::move(sys->GetRendererEx()->get_scene()->AddRenderObject(objFilename, type));
 }
 
 void RendererWrapper::moveEvent(QMoveEvent*)
@@ -68,34 +68,31 @@ void RendererWrapper::moveEvent(QMoveEvent*)
     PosUpdate();
 }
 
-bool RendererWrapper::nativeEvent(const QByteArray& event_type, void* message, long* result)
-{
-    Q_UNUSED(result);
-
-    if (event_type == "windows_generic_MSG")
-    {
-        MSG *msg = static_cast<MSG*>(message);
-        if (m_input)
-        {
-            return !m_input->MessageHandler(msg->hwnd, msg->message, msg->wParam, msg->lParam);
-        }
-
-        return false;
-    }
-    return false;
-}
-
 bool RendererWrapper::ExternalNativeEvent(const QByteArray& event_type, void* message, long* result)
 {
     return nativeEvent(event_type, message, result);
 }
 
-void RendererWrapper::mousePressEvent(QMouseEvent* e)
-{
-    if (e->buttons().testFlag(Qt::MouseButton::LeftButton))
-    { }
-}
-
 RendererWrapper::~RendererWrapper()
 {
+}
+
+void RendererWrapper::mousePressEvent(QMouseEvent *event) {
+    m_input->onMouseDown(event->button());
+    QWidget::mouseReleaseEvent(event);
+}
+
+void RendererWrapper::mouseReleaseEvent(QMouseEvent *event) {
+    m_input->onMouseUp(event->button());
+    QWidget::mouseReleaseEvent(event);
+}
+
+void RendererWrapper::keyPressEvent(QKeyEvent *event) {
+    m_input->onKeyDown(event->key());
+    QWidget::keyPressEvent(event);
+}
+
+void RendererWrapper::keyReleaseEvent(QKeyEvent *event) {
+    m_input->onKeyUp(event->key());
+    QWidget::keyReleaseEvent(event);
 }

@@ -17,15 +17,15 @@ ModelLoaderUI::ModelLoaderUI(QWidget *parent)
 	connect(ui.btnOpenDDSFile_4, &QPushButton::clicked, [=](){OnDDSOpen(4); });
 }
 
-void ModelLoaderUI::SetAvailableShaders(const std::vector<const ShaderDesc*>& availShaders)
+void ModelLoaderUI::SetAvailableShaders(const std::vector<ShaderDesc>& availShaders)
 {
 	ui.cbxShaderType->clear();
 	m_DescsByIndexes.clear();
 	int i = 0;
 	for (auto desc : availShaders)
 	{
-		ui.cbxShaderType->addItem(QString::fromStdString(desc->name));
-		m_DescsByIndexes.insert(std::pair<int, ShaderDesc>(i, *desc));
+		ui.cbxShaderType->addItem(QString::fromStdString(desc.name));
+		m_DescsByIndexes.insert({i, desc});
 		i++;
 	}
 	OnShaderTypeChange();
@@ -136,23 +136,23 @@ void ModelLoaderUI::SetEnabledTextureElement4(bool set)
     ui.ledTex4->setEnabled(set);
 }
 
-void ModelLoaderUI::GetInitData(std::string &objFilename, std::vector<std::wstring> &ddsFilenames, int &ID)
+void ModelLoaderUI::GetInitData(std::string &objFilename, std::vector<std::string> &ddsFilenames, int &ID)
 {
     if (ui.ledTex1->isEnabled())
     {
-		ddsFilenames.push_back(ui.ledTex1->text().toStdWString());
+		ddsFilenames.push_back(ui.ledTex1->text().toStdString());
     }
     if (ui.ledTex2->isEnabled())
     {
-		ddsFilenames.push_back(ui.ledTex2->text().toStdWString());
+		ddsFilenames.push_back(ui.ledTex2->text().toStdString());
     }
     if (ui.ledTex3->isEnabled())
     {
-		ddsFilenames.push_back(ui.ledTex3->text().toStdWString());
+		ddsFilenames.push_back(ui.ledTex3->text().toStdString());
     }
     if (ui.ledTex4->isEnabled())
     {
-		ddsFilenames.push_back(ui.ledTex4->text().toStdWString());
+		ddsFilenames.push_back(ui.ledTex4->text().toStdString());
     }
 
     objFilename = ui.lblMeshFile->text().toStdString();

@@ -11,6 +11,5 @@
         <file>minimizeButton/pressed.png</file>
         <file>separator.png</file>
         <file>title.png</file>
-        <file>UI.qml</file>
     </qresource>
 </RCC>

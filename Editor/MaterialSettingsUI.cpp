@@ -61,7 +61,7 @@ MaterialSettingsUI::MaterialSettingsUI(QWidget* parent, IExternalMaterial* mater
 		layout()->addWidget(paramUI);
 		connect(paramUI, &TextureParamUI::pathChange, [=](const QString& path)
 		{
-			material->LoadTexture(path.toStdWString().c_str(), info.Slot);
+			material->LoadTexture(path.toStdString(), info.Slot);
 		});
 	}
 	btnOK = new QPushButton(this);

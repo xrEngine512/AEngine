@@ -1,12 +1,12 @@
 #include "Editor.h"
-#include <QTreeWidget>
 #include <QStatusBar>
-#include <ShaderDesc.h>
 #include <IApproxShaderLabExternalControl.h>
 #include <IApproxShaderLabControl.h>
 #include "rendererwrapper.h"
-#include <qmenubar.h>
 #include "MaterialSettingsUI.h"
+
+#include <Promise.h>
+#include <ApproxSystemErrors.h>
 
 /*#define DECL_Q_OBJECT(className, memberClass) class className : public QObject\
 				{\
@@ -35,12 +35,12 @@ Editor::Editor(QWidget *parent)
 	m_statusBar = new QStatusBar(client);
 	m_rendererWrp->hide();
 	m_menuBar = new QMenuBar(client);
-	QMenu* subMenu1 = m_menuBar->addMenu(QStringLiteral("Äåéñòâèÿ"));
-	QMenu* subMenu2 = m_menuBar->addMenu(QStringLiteral("Èíñòðóìåíòû"));
+	QMenu* subMenu1 = m_menuBar->addMenu(QStringLiteral("Ð”ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ"));
+	QMenu* subMenu2 = m_menuBar->addMenu(QStringLiteral("Ð˜Ð½ÑÑ‚Ñ€ÑƒÐ¼ÐµÐ½Ñ‚Ñ‹"));
 
-	actRunEngine = subMenu1->addAction(QStringLiteral("Çàïóñòèòü ãðàôèêó"));
-	actLoadModel = subMenu1->addAction(QStringLiteral("Çàãðóçèòü ìîäåëü"));
-	actShaderLab = subMenu2->addAction(QStringLiteral("Ðåäàêòîð øåéäåðîâ"));
+	actRunEngine = subMenu1->addAction(QStringLiteral("Ð—Ð°Ð¿ÑƒÑÑ‚Ð¸Ñ‚ÑŒ Ð³Ñ€Ð°Ñ„Ð¸ÐºÑƒ"));
+	actLoadModel = subMenu1->addAction(QStringLiteral("Ð—Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ Ð¼Ð¾Ð´ÐµÐ»ÑŒ"));
+	actShaderLab = subMenu2->addAction(QStringLiteral("Ð ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€ ÑˆÐµÐ¹Ð´ÐµÑ€Ð¾Ð²"));
 
 	actLoadModel->setEnabled(false);
 
@@ -59,33 +59,49 @@ void Editor::sl_RunEngine()
 	m_rendererWrp->show();
 	m_rendererWrp->Initialize();
 	m_rendererWrp->Run();
-	update_thread = make_unique<std::thread>(&Editor::Update, this);
 	m_rendererWrp->move(0, 35);
+	start_update_thread();
 	resize(m_rendererWrp->width() + ui.treeWidget->width(), m_rendererWrp->height() + 100);
 	ui.tabWidget->move(m_rendererWrp->width(), 0);
-	m_rendererWrp->NativeInterface()->GetRendererEx()->GetScene()->SetASLInterface(dynamic_cast<ASL::IApproxShaderLabExternalControl*>(m_asl));
+    m_rendererWrp->NativeInterface()->GetRendererEx()->get_scene()->SetASLInterface(dynamic_cast<ASL::IApproxShaderLabExternalControl*>(m_asl));
 	actRunEngine->setEnabled(false);
 	actLoadModel->setEnabled(true);
 	m_modelLoader.SetAvailableShaders(m_rendererWrp->NativeInterface()->GetRendererEx()->AvailableShadersDesc());
+}
+
+
+void Editor::start_update_thread() {
+	done = false;
+	update_thread = make_unique<std::thread>(&Editor::Update, this);
+}
+
+void Editor::stop_update_thread() {
+	if (!update_thread)
+		return;
+
+	done = true;
+	if (update_thread->joinable())
+		update_thread->join();
+	update_thread = nullptr;
 }
 
 void Editor::sl_LoadModel()
 {
 	int ShaderID;
 	string objFile;
-	vector<wstring> ddsFiles;
+	vector<string> ddsFiles;
 	m_modelLoader.GetInitData(objFile, ddsFiles, ShaderID);
-	IExternalRenderObject* object = m_rendererWrp->LoadModel(objFile.c_str(), ShaderID);
-	for (unsigned short i = 0; i < ddsFiles.size(); i++)
-	{
-		object->GetMaterial()->LoadTexture(ddsFiles[i].c_str(), i);
-	}
-	m_objects.push_back(object);
-	QTreeWidgetItem *item = new QTreeWidgetItem();
-	item->setData(0, Qt::UserRole, QVariant::fromValue<IExternalRenderObject*>(object));
-	item->setText(0, QString("RenderObject"));
-	ui.treeWidget->addTopLevelItem(item);
-	return;
+	m_rendererWrp->LoadModel(objFile, ShaderID).then([&](IExternalRenderObject* object){
+		for (unsigned short i = 0; i < ddsFiles.size(); i++)
+		{
+			object->material(0).lock()->LoadTexture(ddsFiles[i].c_str(), i);
+		}
+		m_objects.push_back(object);
+		QTreeWidgetItem *item = new QTreeWidgetItem();
+		item->setData(0, Qt::UserRole, QVariant::fromValue<IExternalRenderObject*>(object));
+		item->setText(0, QString("RenderObject"));
+		ui.treeWidget->addTopLevelItem(item);
+	});
 }
 
 void Editor::sl_RunShaderLab()
@@ -98,7 +114,7 @@ void Editor::on_SceneItemClick(QTreeWidgetItem* item, int col)
 	if (!item->data(1, Qt::UserRole).value<MaterialSettingsUI*>())
 	{
 		auto object = item->data(0, Qt::UserRole).value<IExternalRenderObject*>();
-		MaterialSettingsUI* dialog = new MaterialSettingsUI(this, object->GetMaterial());
+		MaterialSettingsUI* dialog = new MaterialSettingsUI(this, object->material(0).lock().get());
 		item->setData(1, Qt::UserRole, QVariant::fromValue<MaterialSettingsUI*>(dialog));
 		connect(dialog, &MaterialSettingsUI::closed, [=]()
 		{
@@ -149,6 +165,9 @@ void Editor::closeEvent(QCloseEvent* event)
 		m_rendererWrp->Shutdown();
 	if (m_asl)
 		m_asl->Shutdown();
+
+	stop_update_thread();
+	QApplication::quit();
 }
 
 void Editor::resizeEvent(QResizeEvent* e)

@@ -1,0 +1,4 @@
+* {
+    font-family: Consolas, serif;
+    font-size: 15px;
+}

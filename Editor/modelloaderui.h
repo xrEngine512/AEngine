@@ -4,8 +4,8 @@
 #include <QDialog>
 #include "ui_modelloaderui.h"
 #include <unordered_map>
+#include <ShaderDesc.h>
 
-struct ShaderDesc;
 
 class ModelLoaderUI : public QDialog
 {
@@ -15,8 +15,8 @@ class ModelLoaderUI : public QDialog
 public:  
     ModelLoaderUI(QWidget *parent = 0);
     ~ModelLoaderUI();
-    void GetInitData(std::string &objFilename, std::vector<std::wstring> &ddsFilenames, int &type);
-	void SetAvailableShaders(const std::vector<const ShaderDesc*>& availShaders);
+    void GetInitData(std::string &objFilename, std::vector<std::string> &ddsFilenames, int &type);
+	void SetAvailableShaders(const std::vector<ShaderDesc>& availShaders);
 private slots:
     void OnObjOpen();
     void OnDDSOpen(int index);
