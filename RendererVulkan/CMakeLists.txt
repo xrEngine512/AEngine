@@ -17,6 +17,8 @@ include_directories(
         ../Sound/include
         ../GlobalServices/include
         ../Terminal/include
+        ../PlatformAbstraction/include
+        ../ShaderLab
         ${PLATFORM_DEPENDENT_HEADER_DIR}
 )
 

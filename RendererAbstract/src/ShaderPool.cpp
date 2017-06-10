@@ -12,7 +12,7 @@ using namespace ShaderSystem;
 
 void ShaderPool::Load(const std::string &dir) {
     int ID = 0;
-    for (auto name : OS::Files::list(dir, "*.acs*"))
+    for (auto name : OS::Files::list(dir, ".acs"))
     {
         auto path = dir + name;
         g_Statistics->IncNumOfShaders();
@@ -20,10 +20,11 @@ void ShaderPool::Load(const std::string &dir) {
         desc.ID = ID++;
         try {
             auto newShader = getObjectFactory()->createShader(path, desc);
-            m_ShaderCache.insert({newShader->GetDesc().name, newShader});
+            if (newShader)
+                m_ShaderCache.insert({newShader->GetDesc().name, newShader});
         }
-        catch (const ApproxException& reason) {
-            ApproxException("Could not create a shader object.", "ShaderPool").becauseOf(reason)();
+        catch (const approx_exception& reason) {
+            approx_exception("Could not create a shader object.", "ShaderPool").becauseOf(reason)();
         }
     }
 }

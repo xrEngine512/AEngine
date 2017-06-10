@@ -18,6 +18,11 @@ namespace state_mixin_details {
     }
 
     template<typename Enum>
+    inline Enum operator|(Enum lhs, Enum rhs) {
+        return static_cast<Enum>(static_cast<int>(lhs) | static_cast<int>(rhs));
+    }
+
+    template<typename Enum>
     inline Enum operator~(Enum arg) {
         return static_cast<Enum>(static_cast<int>(arg));
     }
@@ -38,7 +43,7 @@ namespace state_mixin_details {
         }
 
         StateType add_state(StateType state) {
-            object_state = object_state.load() & state;
+            object_state = object_state.load() | state;
             return get_state();
         }
 

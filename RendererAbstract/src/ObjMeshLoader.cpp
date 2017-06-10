@@ -34,7 +34,7 @@ IGeometryBufferPtr ObjMeshLoader::Load(const string_view &meshFileName)
     auto file = ifstream(meshFileName.data());
 
     if (!file)
-        throw ApproxException("Error opening obj file", "ObjMeshLoader");
+        throw approx_exception("Error opening obj file", "ObjMeshLoader");
 
     //Создание временного хранилища входящих данных, как только данные будут
     //загружены в подходящий формат скопируем эти данные в вершинный и индексный буферы

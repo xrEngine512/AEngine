@@ -4,7 +4,9 @@ wnd::wnd(QWidget *parent)
     : QWidget(parent)
 {
     ui.setupUi(this);
-    ui.comboBox->setStyleSheet("QComboBox QAbstractItemView { selection-background-color: darkgray; background-color: lightgray;}");
+    auto style = "QComboBox QAbstractItemView { selection-background-color: darkgray; background-color: lightgray;}";
+    ui.shader_subsystem->setStyleSheet(style);
+    ui.shader_language->setStyleSheet(style);
 }
 
 wnd::~wnd()

@@ -154,14 +154,23 @@ std::vector<VkQueueFamilyProperties> VulkanAPI::enumerate_gpu_queue_families(VkP
     return families;
 }
 
-uint32_t VulkanAPI::find_graphics_queue_family(const std::vector<VkQueueFamilyProperties>& families) {
-    uint32_t family_index = 0;
+uint32_t VulkanAPI::find_queue_family(const std::vector<VkQueueFamilyProperties> &families, VkQueueFlags flags) {
+    uint32_t family_index = 0, best_family_index = 0;
+    bool found = false;
     for (auto family: families) {
-        if (family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-            return family_index;
-        ++family_index;
+        if (family.queueFlags & flags)
+            found = true;
+        if (family.queueFlags == flags)
+            return best_family_index;
+
+        if (!found)
+            ++family_index;
+        ++best_family_index;
     }
-    throw ApproxException("Couldn't find graphics family queue in given list", "VulkanAPI");
+    if (found)
+        return family_index;
+
+    throw approx_exception("Couldn't find graphics family queue in given list", "VulkanAPI");
 }
 
 VkClearColorValue VulkanAPI::convert(const Math::AVector &color) {
@@ -384,22 +393,42 @@ void VulkanAPI::initialize_device() {
                   "Device name: " << gpu_properties.deviceName << terminal_endl <<
                   "Driver version: " << gpu_properties.driverVersion << terminal_endl;
 
-    graphics_queue_family_index = find_graphics_queue_family(enumerate_gpu_queue_families(gpu));
-
+    auto gpu_queue_families = enumerate_gpu_queue_families(gpu);
+    graphics_queue_family_index = find_queue_family(gpu_queue_families, VK_QUEUE_GRAPHICS_BIT);
+    transfer_queue_family_index = find_queue_family(gpu_queue_families, VK_QUEUE_TRANSFER_BIT);
 
     float queue_priorities[] {1.0f};
 
-    VkDeviceQueueCreateInfo device_queue_info {
-        .sType              = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-        .queueFamilyIndex   = graphics_queue_family_index,
-        .queueCount         = 1,
-        .pQueuePriorities   = queue_priorities
-    };
+    vector<VkDeviceQueueCreateInfo> device_queue_infos;
+    if (graphics_queue_family_index != transfer_queue_family_index)
+        device_queue_infos = {
+            VkDeviceQueueCreateInfo {
+                .sType              = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+                .queueFamilyIndex   = graphics_queue_family_index,
+                .queueCount         = 1,
+                .pQueuePriorities   = queue_priorities
+            },
+            VkDeviceQueueCreateInfo {
+                .sType              = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+                .queueFamilyIndex   = transfer_queue_family_index,
+                .queueCount         = 1,
+                .pQueuePriorities   = queue_priorities
+            }
+        };
+    else
+        device_queue_infos = {
+            VkDeviceQueueCreateInfo {
+                .sType              = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+                .queueFamilyIndex   = graphics_queue_family_index,
+                .queueCount         = min(2u, gpu_queue_families[graphics_queue_family_index].queueCount),
+                .pQueuePriorities   = queue_priorities
+            }
+        };
 
     VkDeviceCreateInfo device_info {
         .sType                  = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .queueCreateInfoCount   = 1,
-        .pQueueCreateInfos      = &device_queue_info,
+        .queueCreateInfoCount   = (uint32_t)device_queue_infos.size(),
+        .pQueueCreateInfos      = device_queue_infos.data(),
         .enabledLayerCount      = (uint32_t)device_layers.size(),
         .ppEnabledLayerNames    = device_layers.data(),
         .enabledExtensionCount  = (uint32_t)device_extensions.size(),
@@ -408,6 +437,14 @@ void VulkanAPI::initialize_device() {
     HandleErrors(vkCreateDevice(gpu, &device_info, allocation_callback, &device))
 
     vkGetDeviceQueue(device, graphics_queue_family_index, 0, &queue);
+
+    /** if from same family - try use another queue **/
+    if (graphics_queue_family_index != transfer_queue_family_index)
+        vkGetDeviceQueue(device, transfer_queue_family_index, 0, &transfer_queue);
+    else {
+        uint32_t queue_index = min(1u, gpu_queue_families[transfer_queue_family_index].queueCount - 1);
+        vkGetDeviceQueue(device, transfer_queue_family_index, queue_index, &transfer_queue);
+    }
 }
 
 void VulkanAPI::destroy_device() {
@@ -430,8 +467,8 @@ void VulkanAPI::initialize(int screen_width, int screen_height, bool vSync, Wind
         initialize_synchronization();
         enumerate_instance_layers();
         enumerate_device_layers();
-        initialize_command_pool();
-        initialize_command_buffer();
+        initialize_command_pools();
+        initialize_command_buffers();
         initialize_surface(window);
         initialize_swapchain();
         initialize_swapchain_images();
@@ -439,8 +476,8 @@ void VulkanAPI::initialize(int screen_width, int screen_height, bool vSync, Wind
         initialize_render_pass();
         initialize_framebuffers();
     }
-    catch (ApproxException& exception) {
-        ApproxException("Couldn't initialize API", "VulkanAPI").becauseOf(exception)();
+    catch (approx_exception& exception) {
+        approx_exception("Couldn't initialize API", "VulkanAPI").becauseOf(exception)();
         shutdown();
     }
 
@@ -455,7 +492,7 @@ void VulkanAPI::shutdown() {
     destroy_swapchain_images();
     destroy_swapchain();
     destroy_surface();
-    destroy_command_pool();
+    destroy_command_pools();
     destroy_synchronization();
     destroy_device();
     deactivate_debug();
@@ -504,7 +541,7 @@ void VulkanAPI::activate_debug() {
         pfnVkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
 
     if (!pfnVkCreateDebugReportCallbackEXT || !pfnVkDestroyDebugReportCallbackEXT)
-        throw ApproxException("vkGetInstanceProcAddr returned null", "VulkanAPI");
+        throw approx_exception("vkGetInstanceProcAddr returned null", "VulkanAPI");
 
     pfnVkCreateDebugReportCallbackEXT(instance, &debug_report_callback_info, allocation_callback, &debug_report);
 }
@@ -514,7 +551,7 @@ void VulkanAPI::deactivate_debug() {
         pfnVkDestroyDebugReportCallbackEXT(instance, debug_report, allocation_callback);
 }
 
-void VulkanAPI::initialize_command_pool() {
+void VulkanAPI::initialize_command_pools() {
     // we will be resetting command buffers every frame
     VkCommandPoolCreateInfo command_pool_info {
         .sType              = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
@@ -522,16 +559,23 @@ void VulkanAPI::initialize_command_pool() {
         .flags              = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
     };
     HandleErrors(vkCreateCommandPool(device, &command_pool_info, allocation_callback, &command_pool))
+
+    command_pool_info.queueFamilyIndex = transfer_queue_family_index;
+    HandleErrors(vkCreateCommandPool(device, &command_pool_info, allocation_callback, &transfer_command_pool))
 }
 
-void VulkanAPI::destroy_command_pool() {
+void VulkanAPI::destroy_command_pools() {
     if (command_pool)
         vkDestroyCommandPool(device, command_pool, allocation_callback);
     command_pool = nullptr;
+
+    if (transfer_command_pool)
+        vkDestroyCommandPool(device, transfer_command_pool, allocation_callback);
+    transfer_command_pool = nullptr;
 }
 
 
-void VulkanAPI::initialize_command_buffer() {
+void VulkanAPI::initialize_command_buffers() {
     VkCommandBufferAllocateInfo command_buffer_info {
          .sType                 = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
          .commandPool           = command_pool,
@@ -539,6 +583,9 @@ void VulkanAPI::initialize_command_buffer() {
          .level                 = VK_COMMAND_BUFFER_LEVEL_PRIMARY
     };
     HandleErrors(vkAllocateCommandBuffers(device, &command_buffer_info, &command_buffer))
+
+    command_buffer_info.commandPool = transfer_command_pool;
+    HandleErrors(vkAllocateCommandBuffers(device, &command_buffer_info, &transfer_command_buffer))
 }
 
 void VulkanAPI::setup_viewport(int width, int height) {
@@ -557,11 +604,13 @@ void VulkanAPI::initialize_synchronization() {
         .sType  = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO
     };
     HandleErrors(vkCreateFence(device, &fence_info, allocation_callback, &queue_submit_fence))
+    HandleErrors(vkCreateFence(device, &fence_info, allocation_callback, &transfer_queue_submit_fence))
     HandleErrors(vkCreateFence(device, &fence_info, allocation_callback, &swapchain_image_fence))
 }
 
 void VulkanAPI::destroy_synchronization() {
     destroy_fence(swapchain_image_fence);
+    destroy_fence(transfer_queue_submit_fence);
     destroy_fence(queue_submit_fence);
 }
 
@@ -590,7 +639,7 @@ void VulkanAPI::initialize_surface(WindowHandle window) {
     VkBool32 wsi_supported = VK_FALSE;
     HandleErrors(vkGetPhysicalDeviceSurfaceSupportKHR(gpu, graphics_queue_family_index, surface, &wsi_supported))
     if (!wsi_supported)
-        throw ApproxException("WSI Extension is not supported", "VulkanAPI");
+        throw approx_exception("WSI Extension is not supported", "VulkanAPI");
     HandleErrors(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu, surface, &surface_capabilities))
     if(surface_capabilities.currentExtent.width < UINT32_MAX) {
         surface_width  = surface_capabilities.currentExtent.width;
@@ -600,7 +649,7 @@ void VulkanAPI::initialize_surface(WindowHandle window) {
         uint32_t format_count = 0;
         HandleErrors(vkGetPhysicalDeviceSurfaceFormatsKHR(gpu, surface, &format_count, nullptr))
         if (!format_count) {
-            throw ApproxException("No surface formats", "VulkanAPI");
+            throw approx_exception("No surface formats", "VulkanAPI");
         }
         vector<VkSurfaceFormatKHR> formats(format_count);
         HandleErrors(vkGetPhysicalDeviceSurfaceFormatsKHR(gpu, surface, &format_count, formats.data()))
@@ -627,7 +676,7 @@ void VulkanAPI::initialize_swapchain() {
     swapchain_images_count = max(swapchain_images_count, surface_capabilities.minImageCount);
 
     if (!swapchain_images_count)
-        throw ApproxException("Zero swapchain image count", "VulkanAPI");
+        throw approx_exception("Zero swapchain image count", "VulkanAPI");
 
     VkPresentModeKHR present_mode = VK_PRESENT_MODE_FIFO_KHR;
     {
@@ -729,7 +778,7 @@ void VulkanAPI::initialize_depth_stencil() {
         }
 
         if (depth_stencil_format == VK_FORMAT_UNDEFINED)
-            throw ApproxException("No applicable depth stencil format available");
+            throw approx_exception("No applicable depth stencil format available");
 
         switch (depth_stencil_format) {
             case VK_FORMAT_D32_SFLOAT_S8_UINT:
@@ -772,7 +821,7 @@ void VulkanAPI::initialize_depth_stencil() {
 
     uint32_t memory_index = find_memory_type_index(image_memory_requirements, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     if (memory_index == UINT32_MAX)
-        throw ApproxException("No applicable memory index found", "RendererVulkan");
+        throw approx_exception("No applicable memory index found", "RendererVulkan");
 
     VkMemoryAllocateInfo memory_allocate_info {
         .sType              = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
@@ -929,10 +978,36 @@ VkDevice VulkanAPI::get_device() const {
     return device;
 }
 
-uint32_t VulkanAPI::get_queue_family_index() const {
-    return graphics_queue_family_index;
+uint32_t VulkanAPI::get_queue_family_index(bool transfer) const {
+    return transfer ? transfer_queue_family_index : graphics_queue_family_index;
 }
 
 VkCommandBuffer VulkanAPI::get_main_command_buffer() const {
     return command_buffer;
+}
+
+VkCommandBuffer VulkanAPI::begin_transfer() {
+    VkCommandBufferBeginInfo command_buffer_begin_info {
+        .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+        .flags              = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+    };
+    HandleErrors(vkBeginCommandBuffer(transfer_command_buffer, &command_buffer_begin_info))
+    return transfer_command_buffer;
+}
+
+void VulkanAPI::end_transfer() {
+    HandleErrors(vkEndCommandBuffer(transfer_command_buffer))
+
+    VkSubmitInfo submit_info {
+        .sType                  = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+        .commandBufferCount     = 1,
+        .pCommandBuffers        = &transfer_command_buffer
+    };
+
+    /* submit compiled command buffer to GPU */
+    HandleErrors(vkQueueSubmit(transfer_queue, 1, &submit_info, transfer_queue_submit_fence))
+
+    /* wait for GPU to process command buffer submission */
+    HandleErrors(vkWaitForFences(device, 1, &transfer_queue_submit_fence, VK_TRUE, UINT64_MAX))
+    HandleErrors(vkResetFences(device, 1, &transfer_queue_submit_fence))
 }

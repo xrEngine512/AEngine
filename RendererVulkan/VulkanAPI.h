@@ -30,12 +30,16 @@ class VulkanAPI: public IGraphicsAPI, public MState {
     VkInstance                          instance                            = nullptr;
     VkPhysicalDevice                    gpu                                 = nullptr;
     VkDevice                            device                              = nullptr;
-    VkQueue                             queue                               = nullptr;
+    VkQueue                             queue                               = nullptr,
+                                        transfer_queue                      = nullptr;
     VkFence                             queue_submit_fence                  = nullptr,
+                                        transfer_queue_submit_fence         = nullptr,
                                         swapchain_image_fence               = nullptr;
     VkSemaphore                         semaphore                           = nullptr;
-    VkCommandPool                       command_pool                        = nullptr;
-    VkCommandBuffer                     command_buffer                      = nullptr;
+    VkCommandPool                       command_pool                        = nullptr,
+                                        transfer_command_pool               = nullptr;
+    VkCommandBuffer                     command_buffer                      = nullptr,
+                                        transfer_command_buffer             = nullptr;
     VkSurfaceKHR                        surface                             = nullptr;
     VkSwapchainKHR                      swapchain                           = nullptr;
     VkRenderPass                        render_pass                         = nullptr;
@@ -46,7 +50,8 @@ class VulkanAPI: public IGraphicsAPI, public MState {
     bool                                stencil_available                   = false;
 
     VkDebugReportCallbackEXT            debug_report                        = nullptr;
-    uint32_t                            graphics_queue_family_index         = 0;
+    uint32_t                            graphics_queue_family_index         = 0,
+                                        transfer_queue_family_index         = 0;
     uint32_t                            swapchain_images_count              = 2;
     uint32_t                            surface_width                       = 0,
                                         surface_height                      = 0;
@@ -70,10 +75,9 @@ class VulkanAPI: public IGraphicsAPI, public MState {
     VulkanAPI();
 
     static std::vector<VkQueueFamilyProperties> enumerate_gpu_queue_families(VkPhysicalDevice gpu);
-    static uint32_t find_graphics_queue_family(const std::vector<VkQueueFamilyProperties>&);
+    static uint32_t find_queue_family(const std::vector<VkQueueFamilyProperties> &, VkQueueFlags);
 
     VkClearColorValue convert(const Math::AVector& color);
-    uint32_t find_memory_type_index(const VkMemoryRequirements&, const VkMemoryPropertyFlags) const;
 
     void initialize_instance(const char* application_name);
     void destroy_instance ();
@@ -92,10 +96,10 @@ class VulkanAPI: public IGraphicsAPI, public MState {
     void initialize_semaphore();
     void destroy_semaphore();
 
-    void initialize_command_pool();
-    void destroy_command_pool();
+    void initialize_command_pools();
+    void destroy_command_pools();
 
-    void initialize_command_buffer();
+    void initialize_command_buffers();
 
     void setup_viewport(int width, int height);
 
@@ -144,9 +148,15 @@ public:
 
     VkDevice get_device() const;
 
-    uint32_t get_queue_family_index() const;
+    uint32_t get_queue_family_index(bool transfer = false) const;
 
     VkCommandBuffer get_main_command_buffer() const;
+
+    uint32_t find_memory_type_index(const VkMemoryRequirements&, const VkMemoryPropertyFlags) const;
+
+    VkCommandBuffer begin_transfer();
+
+    void end_transfer();
 };
 
 

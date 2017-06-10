@@ -1,43 +1,53 @@
-#include  "ApproxSystemErrors.h"
+#include "ApproxSystemErrors.h"
+
+#include <Logger.h>
+#include <QtThreadSafeProvider.h>
 #include <QMessageBox>
 
 using namespace std;
 using namespace experimental;
 
-ApproxException::ApproxException(const string_view& msg, Parameter param) :m_Param(param)
+approx_exception::approx_exception(const string_view& msg, Parameter param) :m_Param(param)
 {
 	_msg = msg.data();
 }
 
-ApproxException::ApproxException(const string_view& msg, const string_view& className, Parameter param) : m_Param(param)
+approx_exception::approx_exception(const string_view& msg, const string_view& className, Parameter param) : m_Param(param)
 {
 	_msg = msg.data();
 	_msg = _msg + "(In class: " + className.data() + ")";
 }
 
-void ApproxException::ShowMessage() const
+void approx_exception::ShowMessage() const
 {
-    QMessageBox(QMessageBox::Question, "Title", _msg.c_str(),  QMessageBox::Ok | QMessageBox::Cancel).exec();
+	Logger::instance().error(_msg);
+    QtThreadSafeProvider::instance().execute([message = _msg] {
+        QMessageBox(QMessageBox::Question, "ApproxEngine::Error", message.c_str(),  QMessageBox::Ok | QMessageBox::Cancel).exec();
+    });
 }
 
-void ApproxException::operator()()
+void approx_exception::operator()()
 {
 	if (m_Param == DEFAULT_MSG_DISPLAY)
 		ShowMessage();
 }
 
-const string& ApproxException::Message() const
+const string& approx_exception::Message() const
 {
 	return _msg;
 }
 
-ApproxException ApproxException::becauseOf(const ApproxException& reason)
+approx_exception approx_exception::becauseOf(const approx_exception& reason)
 {
-    ApproxException res(_msg + " because " + reason._msg);
+    approx_exception res(_msg + " because " + reason._msg);
     return res;
 }
 
-void ApproxException::operator+=(ApproxException& reason)
+void approx_exception::operator+=(const approx_exception& reason)
 {
     _msg += " because " + reason._msg;
+}
+
+const char *approx_exception::what() const noexcept {
+	return _msg.c_str();
 }

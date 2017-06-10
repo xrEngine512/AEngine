@@ -3,9 +3,12 @@
 // Created by islam on 11.03.17.
 //
 
+#include <ThreadSafe.h>
+
 #include <QTextEdit>
 
 #include <experimental/string_view>
+#include <memory>
 
 
 namespace TerminalColors {

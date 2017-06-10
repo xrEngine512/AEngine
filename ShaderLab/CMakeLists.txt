@@ -14,14 +14,25 @@ find_package(Qt5Widgets REQUIRED)
 
 qt5_add_resources(SHADER_LAB_RCC_SRC Resources/resources.qrc)
 
-include_directories(../CommonSystem ../RendererAbstract/include ../PlatformAbstraction/include ../GUI_Library)
+include_directories(../CommonSystem ../RendererAbstract/include ../PlatformAbstraction/include ../GUI_Library ../GlobalServices/include ../external_local/glslang)
 
 add_library(ApproxShaderLab SHARED ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_LAB_RCC_SRC})
 
-set(LINK_LIBRARIES Qt5::Widgets ApproxGUILibrary)
+set(LINK_LIBRARIES
+        Qt5::Widgets
+        ApproxGUILibrary
+        ApproxGlobalServices
+        glslang
+        SPIRV
+        HLSL
+        OGLCompiler
+        OSDependent)
 
 if(WIN32)
     target_link_libraries(ApproxShaderLab ${LINK_LIBRARIES})
+    add_definitions(-D__D3D11__)
+    add_definitions(-D__VULKAN__)
 elseif(UNIX)
     target_link_libraries(ApproxShaderLab ${LINK_LIBRARIES})
+    add_definitions(-D__VULKAN__)
 endif()

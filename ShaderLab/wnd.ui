@@ -192,49 +192,37 @@
     <string>Точка входа</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QComboBox" name="shader_language">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
+     <y>180</y>
      <width>151</width>
      <height>22</height>
     </rect>
    </property>
-   <item>
-    <property name="text">
-     <string>5.0</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>4.1</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>4.0</string>
-    </property>
-   </item>
+   <property name="currentText">
+    <string/>
+   </property>
   </widget>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>110</y>
+     <y>160</y>
      <width>191</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>Модель шейдера</string>
+    <string>Язык шейдера</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>160</y>
+     <y>210</y>
      <width>191</width>
      <height>16</height>
     </rect>
@@ -247,13 +235,39 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>180</y>
+     <y>230</y>
      <width>191</width>
      <height>21</height>
     </rect>
    </property>
    <property name="text">
     <string>../</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>110</y>
+     <width>191</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Подсистема</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="shader_subsystem">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>151</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="currentText">
+    <string/>
    </property>
   </widget>
  </widget>

@@ -1,8 +1,10 @@
 #pragma once
+
+#include <exception>
 #include <string>
 #include <experimental/string_view>
 
-class ApproxException
+class approx_exception: public std::exception
 {
 public:
 	enum Parameter{ DEFAULT_MSG_DISPLAY, INSTANT_MSG_DISPLAY };
@@ -13,10 +15,13 @@ private:
 
 	void ShowMessage() const;
 public:
-	explicit ApproxException(const std::experimental::string_view& msg, Parameter param = DEFAULT_MSG_DISPLAY);
-	ApproxException(const std::experimental::string_view& msg, const std::experimental::string_view& className, Parameter param = DEFAULT_MSG_DISPLAY);
+	explicit approx_exception(const std::experimental::string_view& msg, Parameter param = DEFAULT_MSG_DISPLAY);
+	approx_exception(const std::experimental::string_view& msg, const std::experimental::string_view& className, Parameter param = DEFAULT_MSG_DISPLAY);
     void operator()();
-	ApproxException becauseOf(const ApproxException& reason);
-	void operator+=(ApproxException& reason);
+	approx_exception becauseOf(const approx_exception& reason);
+	void operator+=(const approx_exception& reason);
+
+	const char* what() const noexcept override;
+
 	const std::string& Message() const;
 };

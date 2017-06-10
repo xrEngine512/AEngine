@@ -1,12 +1,13 @@
 #include "Controller.h"
 #include <RendererCommonDefinitions.h>
-#include "ShaderCodeProcessing.h"
+#include "IShaderCodeProcessor.h"
 #include "Session.h"
 #include "ShaderPart.h"
 #include "ViewSessionInfo.h"
 #include <qvector.h>
 #include "ShaderParamInfo.h"
 #include "TextureInfo.h"
+#include "ShaderCodeProcessorEnumerator.h"
 
 using namespace MatInterface;
 
@@ -19,7 +20,11 @@ namespace ASL
 			throw std::runtime_error("Wrong Session ID (class Controller in ApproxShaderLab)");
 
 		Session* session = res->second;
-		session->setShaderModel(visSession.m_SM);
+        auto shader_language = visSession.shader_language.toStdString();
+        auto shader_subsystem = visSession.shader_subsystem.toStdString();
+
+        session->setShaderProcessor(get_processor(shader_subsystem));
+        session->setShaderVersion(shader_language);
 		session->setShaderName(visSession.m_shaderName.toStdString());
 		session->setShaderParams(visSession.m_Params.toStdVector());
 		session->setShaderTextures(visSession.m_Textures.toStdVector());
@@ -44,8 +49,9 @@ namespace ASL
 
 	inline void ReadSession(const Session& In, ViewSessionInfo& Out)
 	{
-		Out.m_shaderName = QString(In.ShaderName());
-		Out.m_SM = In.ShaderModel();
+		Out.m_shaderName = QString::fromStdString(In.ShaderName());
+        Out.shader_language = QString::fromStdString(In.get_shader_language());
+        Out.shader_subsystem = QString::fromStdString(In.get_shader_subsystem());
 		Out.m_ShaderParts.clear();
 		Out.m_Params = fromStdVector(In.ShaderParameters());
 		Out.m_Textures = fromStdVector(In.ShaderTextures());
@@ -76,9 +82,11 @@ namespace ASL
 		return number;
 	}
 
-	Errors Controller::Compile(const ViewSessionInfo& info)
+	void Controller::compile(const ViewSessionInfo &info)
 	{
-		return ShaderCodeProcessing::Compile(UpdateDataAndGetSession(info));
+        auto session = UpdateDataAndGetSession(info);
+
+		session->compile();
 	}
 
 	void Controller::SetParentWidget(QWidget* parent)
@@ -166,6 +174,7 @@ namespace ASL
 	Controller::Controller()
 	{
 		m_view = new ShaderLabGUI(this);
+        available_processors = enumerate_available_processors();
 	}
 
 
@@ -174,7 +183,20 @@ namespace ASL
 		Shutdown();
 	}
 
-	IApproxShaderLabControl* GetASLControl()
+    vector<IShaderCodeProcessorPtr> Controller::get_available_shader_processors() const {
+        return available_processors;
+    }
+
+    IShaderCodeProcessorPtr Controller::get_processor(const std::string &name) {
+        for (auto processor : available_processors) {
+            if (processor->name() == name) {
+                return processor;
+            }
+        }
+        return nullptr;
+    }
+
+    IApproxShaderLabControl* GetASLControl()
 	{
 		static Controller singleton;
 		return &singleton;

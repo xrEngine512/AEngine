@@ -10,6 +10,7 @@
  *@brief: interface to 2D texture, should be implemented at the end renderer
  */
 interface ITexture2D {
+    virtual void render(uint32_t slot) = 0;
     virtual ~ITexture2D(void) {};
 };
 

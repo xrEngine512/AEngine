@@ -21,6 +21,7 @@ file(COPY Resources/editor.qss DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Resources
 
 set(COMMON_LINK_LIBRARIES
         Qt5::Widgets
+        boost_locale
         ApproxShaderLab
         ApproxGUILibrary
         ApproxSystem

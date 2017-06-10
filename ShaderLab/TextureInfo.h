@@ -8,16 +8,16 @@ namespace ASL
 	{
 		uint8_t Slot;
 		std::string Name;
-		const void* Serialize(int& size) override
+		const void* Serialize(uint64_t& size) override
 		{
 			size = Serialization(Slot, Name);
 			return SerializedBuf();
 		}
-		void Deserialize(const void* buf, size_t size)override
+		void Deserialize(const void* buf, uint64_t size)override
 		{
 			Deserialization(buf,size, Slot, Name);
 		}
-		int SerializedSize()const override
+		uint64_t SerializedSize()const override
 		{
 			return CalculateSize(Slot, Name);
 		}

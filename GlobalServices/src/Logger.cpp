@@ -20,7 +20,7 @@ void Logger::out(const string_view &prefix, const string_view &message) {
 
 void Logger::log(const string_view &message) {
     terminal().set_color(TerminalColors::Gray);
-    out("log", message);
+    out("лог", message);
 }
 
 void Logger::debug(const string_view &message) {

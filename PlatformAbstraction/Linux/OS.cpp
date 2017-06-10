@@ -5,6 +5,7 @@
 #include <OS.h>
 
 #include <ApproxSystemErrors.h>
+#include <StringUtils.h>
 
 #include <zconf.h>
 #include <thread>
@@ -26,11 +27,12 @@ namespace OS {
             DIR *dp;
             dirent *dirp;
             if((dp  = opendir(path.data())) == NULL) {
-                throw ApproxException(string("Не удалось открыть путь ") + path.data() + " для обхода файлов.");
+                throw approx_exception(string("Не удалось открыть путь ") + path.data() + " для обхода файлов.");
             }
 
             while ((dirp = readdir(dp)) != NULL) {
-                files.push_back(string(dirp->d_name));
+                if (ends_with(dirp->d_name, filter.data()))
+                    files.push_back(string(dirp->d_name));
             }
             closedir(dp);
             return files;

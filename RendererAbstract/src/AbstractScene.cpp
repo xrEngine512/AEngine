@@ -94,7 +94,7 @@ RenderObjectPromise AbstractScene::AddRenderObject(const std::string &modelFileN
     }
 
     auto promise_pair = make_promise<IExternalRenderObject*>();
-    m_ModelLoadingThread = new thread(&AbstractScene::LoadThread, this, promise_pair.second, ref(modelFileName), ref(position), ref(orientation));
+    m_ModelLoadingThread = new thread(&AbstractScene::LoadThread, this, promise_pair.second, modelFileName, position, orientation);
     return move(promise_pair.first);
 }
 
@@ -106,8 +106,8 @@ bool AbstractScene::LoadThread(Promise<IExternalRenderObject *>::Fulfill_ptr_t f
         (*fulfill)(newRenderObject);
         m_NewRenderObjects.push(move(newRenderObject));
     }
-    catch (ApproxException &e) {
-        ApproxException ex("Could not initialize RenderObject");
+    catch (approx_exception &e) {
+        approx_exception ex("Could not initialize RenderObject");
         ex+=e;
         ex();
         return false;               
@@ -274,7 +274,7 @@ bool AbstractScene::Render()
 
     render_queue_2d.render(m_materialInterface);
 
-    //m_StatDisplay->Render();
+    //m_StatDisplay->render();
     g_Statistics->ResDrawCalls();
     graphics_api->set_alpha_blending_enabled(false);
     graphics_api->set_zbuffer_enabled(true);

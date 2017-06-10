@@ -36,9 +36,6 @@ namespace ASL
 		m_settings->setGeometry(0, 25, m_settings->width(), client->height() - 50);
 		m_settings->hide();
 
-		ShaderEditor* newView = new ShaderEditor(m_ctrl, client);
-		m_Views.insert(std::pair<QString, ShaderEditor*>(generateViewName(), newView));
-
 		for (auto elem : m_Views)
 		{
 			elem.second->show();

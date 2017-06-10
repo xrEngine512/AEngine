@@ -9,34 +9,34 @@
 #include <cstring>
 #include <functional>
 
-size_t count_size(const std::string& arg) {
+static inline size_t count_size(const std::string& arg) {
     return arg.size();
 }
 
-size_t count_size(std::string& arg) {
+static inline size_t count_size(std::string& arg) {
     return arg.size();
 }
 
-size_t count_size(const char* arg) {
+static inline size_t count_size(const char* arg) {
     return strlen(arg);
 }
 
-size_t count_size(char* arg) {
+static inline size_t count_size(char* arg) {
     return strlen(arg);
 }
 
 template <class T>
-size_t count_size(T arg) {
+static inline size_t count_size(const T& arg) {
     return count_size(std::to_string(arg));
 }
 
 template <class Head, class ... Tail>
-size_t count_size(Head arg, Tail... args) {
+static inline size_t count_size(const Head& arg, const Tail&... args) {
     return count_size(arg) + count_size(args...);
 }
 
 template <class ... Args>
-std::string format(const std::string& template_string, Args... args) {
+static inline std::string format(const std::string& template_string, const Args&... args) {
     std::vector<char> res;
     res.reserve(template_string.size() + count_size(args...) + 1);
     sprintf(res.data(), template_string.c_str(), args...);
@@ -56,3 +56,13 @@ static inline std::string replace_substrings(const std::string& str, const std::
     replace_substrings(res, what, to);
     return res;
 }
+
+static inline bool ends_with(std::experimental::string_view const &fullString, std::experimental::string_view const &ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
+

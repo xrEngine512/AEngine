@@ -36,4 +36,4 @@ public:
 
 ObjectFactory* getLocalObjectFactory();
 
-#define vulkan getLocalObjectFactory()->getLocalGraphicsAPI()
+#define using_vulkan auto vulkan = getLocalObjectFactory()->getLocalGraphicsAPI();

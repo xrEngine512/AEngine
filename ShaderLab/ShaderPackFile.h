@@ -14,14 +14,16 @@
 #include "AbstractSaveData.h"
 
 #include <OS.h>
+#include <StringUtils.h>
 
 enum ShaderPackElementID : unsigned short {
     ID_NONE, COMPILED_VS, COMPILED_PS, COMPILED_GS, COMPILED_CS, COMPILED_DS, COMPILED_HS, SAMPLER_DESC,
-    INPUT_LAYOUT_ELEMENT, IL_SEMANTIC_NAME, SHADER_NAME, RUNTIME_BUFFER_INFO, TEXTURE_DESC, PARAM_DESC, SHADER_SETS
+    INPUT_LAYOUT_ELEMENT, IL_SEMANTIC_NAME, SHADER_NAME, RUNTIME_BUFFER_INFO, TEXTURE_DESC, PARAM_DESC, SHADER_SETS,
+    GLSLANG_REFLECTION
 };
 
 enum class ProjectPackElementID : unsigned short {
-    NONE, VS, PS, GS, CS, DS, HS, ENTRY_POINT, SHADER_MODEL, SHADER_NAME,
+    NONE, VS, PS, GS, CS, DS, HS, ENTRY_POINT, SHADER_VERSION, SHADER_NAME, SHADER_SUBSYSTEM,
     APPROX_VAR_BUFFER_INFO, PARAMETER, TEXTURE
 };
 
@@ -33,7 +35,7 @@ struct PackElement : DataOwnershipPolicy
     struct MetaData
     {
         ID_Type ID;
-        long long size = 0;
+        uint64_t size = 0;
         char  numOfChildren = 0;
         MetaData() :ID(static_cast<ID_Type>(0)) {};
     }m_MetaData;
@@ -72,7 +74,7 @@ struct PackElement : DataOwnershipPolicy
             }
         }
     }
-    static PackElement* fromMemory(ID_Type _ID, size_t _size, const void* pData)
+    static PackElement* fromMemory(ID_Type _ID, uint64_t _size, const void* pData)
     {
         auto res = new PackElement;
         DataOwnershipPolicy::Copy(res->Data, _size, pData);
@@ -111,7 +113,7 @@ struct PackElement : DataOwnershipPolicy
     static PackElement* fromSaveData(ID_Type _ID, ASL::AbstractSaveData* obj)
     {
         auto res = new PackElement;
-        int size;
+        uint64_t size;
         auto buf = obj->Serialize(size);
         DataOwnershipPolicy::Copy(res->Data, size, buf);
         res->m_MetaData.ID = _ID;
@@ -176,7 +178,7 @@ struct PackElement : DataOwnershipPolicy
         return;
     }
     template <class T>
-    size_t Get(T*& ptr)const
+    uint64_t Get(T*& ptr)const
     {
         ptr = static_cast<T*>(malloc(m_MetaData.size));
         memcpy((void*)ptr, Data, m_MetaData.size);
@@ -234,8 +236,8 @@ struct PackElement : DataOwnershipPolicy
     void operator>>(FILE* file)
     {
         //Write data to disk
-        fwrite(&m_MetaData, sizeof(m_MetaData), size_t(1), file);
-        fwrite(Data, m_MetaData.size, size_t(1), file);
+        fwrite(&m_MetaData, sizeof(m_MetaData), uint64_t(1), file);
+        fwrite(Data, m_MetaData.size, uint64_t(1), file);
 
         //Write children data to disk
         for (auto child : m_children)
@@ -310,13 +312,13 @@ public:
     void operator()(const char* fileName, bool addExtention = true)
     {
         if (m_file)
-            throw ApproxException(FILE_ALREADY_OPENED, ApproxException::INSTANT_MSG_DISPLAY);
+            throw approx_exception(FILE_ALREADY_OPENED, approx_exception::INSTANT_MSG_DISPLAY);
         OpenFile(fileName, addExtention);
     }
     void operator()(const wchar_t* fileName, bool addExtention = true)
     {
         if (m_file)
-            throw ApproxException(FILE_ALREADY_OPENED, ApproxException::INSTANT_MSG_DISPLAY);
+            throw approx_exception(FILE_ALREADY_OPENED, approx_exception::INSTANT_MSG_DISPLAY);
         OpenFile(fileName, addExtention);
     }
     virtual void ToDisk()
@@ -429,10 +431,13 @@ private:
     int counter = 0;
     void OpenFile(const std::experimental::string_view& file_name, bool write)
     {
-        m_file = OS::Files::open_file(file_name.data() + m_fileExtention, write ? "wb" : "rb");
+        if (!ends_with(file_name, m_fileExtention))
+            m_file = OS::Files::open_file(file_name.data() + m_fileExtention, write ? "wb" : "rb");
+        else
+            m_file = OS::Files::open_file(file_name.data(), write ? "wb" : "rb");
 
         if (m_file == nullptr)
-            throw ApproxException(OPEN_FILE_FAIL);
+            throw approx_exception(OPEN_FILE_FAIL);
     }
 };
 

@@ -3,6 +3,7 @@
 #include "Enums.h"
 #include <qvector.h>
 #include "RuntimeBufferInfo.h"
+#include "IShaderCodeProcessor.h"
 
 namespace ASL
 {
@@ -19,7 +20,8 @@ namespace ASL
 	struct ViewSessionInfo
 	{
 		int m_SessionID = 0;
-		ASL::Shader_Model m_SM = ASL::SM_NONE;
+        QString shader_subsystem;
+        QString shader_language;
 		QString m_shaderName;
 		QString m_shaderFilename;
 		QString m_projectFilename;

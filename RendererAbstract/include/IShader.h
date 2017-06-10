@@ -19,7 +19,7 @@ namespace ShaderSystem{
 		virtual bool UpdatePerFrameBuffers() = 0;
 		virtual const ShaderDesc& GetDesc() = 0;
 		virtual unsigned short GetNumberOfTextureSlots() = 0;
-		virtual bool Render(uint32_t indexCount, const std::vector<ITexture2DPtr>& textures, const GenericStruct&) = 0;
+		virtual bool render(uint32_t indexCount, const GenericStruct &) = 0;
 		virtual const ShaderSettings& GetSettings() = 0;
 		virtual ~IShader(){};
 	};

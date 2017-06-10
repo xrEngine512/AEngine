@@ -5,6 +5,7 @@
 #include "Terminal.h"
 
 #include <StringUtils.h>
+#include <QtThreadSafeProvider.h>
 #include <rlutil.h>
 
 #include <atomic>
@@ -32,7 +33,7 @@ Terminal& Terminal::operator<<(const string & text) {
     if (text == terminal_endl) {
         if (opened_tag)
             close_tag();
-        insertPlainText(terminal_endl);
+        QtThreadSafeProvider::instance().execute([=]{insertPlainText(terminal_endl);});
     }
     else {
         if (!opened_tag)
@@ -106,10 +107,12 @@ void Terminal::stdout_colored(const std::string& text) {
 }
 
 void Terminal::insert_html_at_end(const std::string &html) {
-    QTextCursor prev_cursor = textCursor();
-    moveCursor (QTextCursor::End);
-    insertHtml(QString::fromStdString(html));
-    setTextCursor(prev_cursor);
+    QtThreadSafeProvider::instance().execute([=]{
+        QTextCursor prev_cursor = textCursor();
+        moveCursor (QTextCursor::End);
+        insertHtml(QString::fromStdString(html));
+        setTextCursor(prev_cursor);
+    });
 }
 
 Terminal::~Terminal() {

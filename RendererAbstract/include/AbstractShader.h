@@ -37,7 +37,6 @@ namespace ShaderSystem
 		GenericStruct *m_ParamsData = nullptr;
 		ShaderSettings m_Settings;
 
-		AbstractShader(const std::string& acs_filename, const ShaderDesc& desc);
 		void parse_asc(const string& acs_filename);
 	public:
 		const GenericStruct& ShaderParams()const override final;
@@ -47,8 +46,10 @@ namespace ShaderSystem
 		virtual ~AbstractShader();
 
     protected:
+		AbstractShader(const std::string& acs_filename, const ShaderDesc& desc);
+
 		virtual void LoadShaderParams();
-        virtual AbstractShader::BufferDescription InitializeBuffer(const ASL::RuntimeBufferInfo& info, BufferPack& pack, short BufferNum, const vector<int>& ParamIDs) = 0;
+        virtual AbstractShader::BufferDescription InitializeBuffer(const ASL::RuntimeBufferInfo& info, BufferPack& pack, short BufferNum, const vector<int>& ParamIDs);
         virtual void handle_input_layout(const ShaderElement&) = 0;
         virtual void handle_compiled_shader(const ShaderElement&) = 0;
 	};

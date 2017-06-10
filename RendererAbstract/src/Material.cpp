@@ -26,7 +26,7 @@ Material::Material(const string& shader_name, const std::vector<std::string> &te
     m_Shader = ShaderPool::instance().get_shader(shader_name);
 
     if (m_Shader.expired()) {
-        throw ApproxException("Shader with name '" + shader_name + "' is not loaded.", "Material");
+        throw approx_exception("Shader with name '" + shader_name + "' is not loaded.", "Material");
     }
 
     auto shader = m_Shader.lock();
@@ -72,7 +72,9 @@ bool Material::render(uint32_t indexCount)
 {
 	UpdateTextures();
     // show_visible the model
-    return m_Shader.lock()->Render(indexCount, m_Textures, m_ParamsData);
+    for (uint32_t i = 0; i < m_Textures.size(); ++i)
+        m_Textures[i]->render(i);
+    return m_Shader.lock()->render(indexCount, m_ParamsData);
 }
 
 void Material::ChangeShaderAndSaveTextures(const ShaderDesc& type) {

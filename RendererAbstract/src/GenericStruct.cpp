@@ -74,7 +74,7 @@ namespace ShaderSystem
 	{
 		if (index < m_Vars.size())
 			return *m_Vars[index];
-		throw ApproxException("GenericStruct: index out of range");
+		throw approx_exception("GenericStruct: index out of range");
 	}
 
 	GenericVariable& GenericStruct::operator[](const string& name)

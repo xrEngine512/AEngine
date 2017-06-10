@@ -114,7 +114,7 @@ namespace ASL
 			painter->fillPath(path, QBrush(QColor(80, 80, 80)));
 		else
 			painter->fillPath(path, QBrush(QColor(40, 40, 40)));
-		if (m_type != SM_NONE)
+		if (m_type != ST_NONE)
 		{
 			painter->setFont(QFont("Verdana", 20));
 			painter->drawText(m_width - 52, m_height - 7, toStr(m_type));

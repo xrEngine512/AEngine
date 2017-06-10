@@ -5,6 +5,7 @@
 #include "ObjectFactory.h"
 #include "VulkanAPI.h"
 #include "GeometryBuffer.h"
+#include "Shader.h"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ IGraphicsAPI* ObjectFactory::getGraphicsAPI() {
 }
 
 ShaderSystem::IShaderPtr ObjectFactory::createShader(const std::string &acs_filename, const ShaderDesc &description) {
-    return nullptr;
+    return make_shared<Shader>(acs_filename, description);
 }
 
 ITexture2DPtr ObjectFactory::createTexture(const std::string &file_path) {

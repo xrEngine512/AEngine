@@ -156,5 +156,11 @@ void ModelLoaderUI::GetInitData(std::string &objFilename, std::vector<std::strin
     }
 
     objFilename = ui.lblMeshFile->text().toStdString();
-    ID = m_DescsByIndexes.find(ui.cbxShaderType->currentIndex())->second.ID;
+    auto it = m_DescsByIndexes.find(ui.cbxShaderType->currentIndex());
+    if(it != m_DescsByIndexes.end()) {
+        ID = it->second.ID;
+    }
+    else {
+        ID = 0;
+    }
 }

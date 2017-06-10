@@ -43,6 +43,7 @@ bool Renderer::initialize(const RendererParameters &p)
 {
     getObjectFactory()->getGraphicsAPI()->initialize(p.screen_width, p.screen_height, p.vSync, p.viewport, p.full_screen);
 
+    ShaderPool::instance().Load("../Shaders");
     m_Scene = new AbstractScene();
 
     auto error_code = m_Scene->Initialize(p.screen_width, p.screen_height);

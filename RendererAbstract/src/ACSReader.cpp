@@ -8,12 +8,13 @@ ACSReader::ACSReader(const std::string& filename)
 
 ShaderElement ACSReader::NextElement()
 {    
-    if (feof(m_file) != 0)
+    if (!m_file || feof(m_file) != 0)
         return ShaderElement();
     return ShaderElement(m_file);
 }
 
 ACSReader::~ACSReader()
 {
-	fclose(m_file);
+    if (m_file)
+	    fclose(m_file);
 }

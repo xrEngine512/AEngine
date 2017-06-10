@@ -16,6 +16,7 @@
 #define FILE_ALREADY_OPENED			"Файл уже открыт"
 #define COMPILATION_SUCCESS_QT		QStringLiteral("Скомпилировано успешно")
 #define COMPILATION_FAIL_QT			QStringLiteral("Ошибка во время компиляции")
+#define LINK_FAIL_QT			    QStringLiteral("Ошибка во время линковки")
 #define SPECIFY_WORK_DIR_QT			QStringLiteral("Пожалуйста, укажите рабочую папку проекта. (Настройки->Рабочая папка)")
 
 //Элементы управления

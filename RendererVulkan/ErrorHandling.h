@@ -23,7 +23,7 @@
 #define HandleErrors(x) {\
     auto error_code = x;\
     if (error_code != VK_SUCCESS) {\
-        throw ApproxException("#x error " + error_code_to_string(error_code));\
+        throw approx_exception("#x error " + error_code_to_string(error_code));\
     }\
 }
 

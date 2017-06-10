@@ -2,6 +2,7 @@
 #include "ShaderPart.h"
 #include "ShaderParamInfo.h"
 #include "TextureInfo.h"
+#include "ShaderCodeProcessorEnumerator.h"
 
 #include <OS.h>
 
@@ -11,7 +12,7 @@ using std::experimental::string_view;
 
 namespace ASL
 {
-	Session::Session() :m_SM(SM_NONE)
+	Session::Session() : processor()
 	{
 		m_file.AllowDuplicatesFor(INPUT_LAYOUT_ELEMENT);
 		m_file.AllowDuplicatesFor(TEXTURE_DESC);
@@ -47,6 +48,17 @@ namespace ASL
 			IDENTIFY(GS);
 		default: return ST_NONE;
 		}
+	}
+
+	void Session::setShaderProcessor(const IShaderCodeProcessorRef& processor) {
+        if (auto processor_ptr = processor.lock()) {
+            shader_subsystem = processor_ptr->name();
+            this->processor = processor;
+        }
+	}
+
+	void Session::setShaderName(const std::string& name) {
+		m_shaderName = name;
 	}
 
 	void Session::setShaderParams(const vector<ShaderParamInfo>& params)
@@ -92,8 +104,9 @@ namespace ASL
 	{
 		m_project.ClearElements();
 		m_project << ProjectElement::fromStdString(ProjectPackElementID::SHADER_NAME, m_shaderName);
-		m_project << ProjectElement::fromObj(ProjectPackElementID::SHADER_MODEL, m_SM);
-		
+		m_project << ProjectElement::fromStdString(ProjectPackElementID::SHADER_SUBSYSTEM, shader_subsystem);
+		m_project << ProjectElement::fromStdString(ProjectPackElementID::SHADER_VERSION, shader_language);
+
 		for (auto param : m_ShaderParams)
 		{
 			m_project << ProjectElement::fromSaveData(ProjectPackElementID::PARAMETER, param);
@@ -142,13 +155,10 @@ namespace ASL
 		m_project(filename,false);
 		m_project.FromDisk();
 		m_project.CloseFile();
-		ProjectElement* element = m_project.Find(ProjectPackElementID::SHADER_MODEL);
-		
-		element->Get(m_SM);
-		
-		element = m_project.Find(ProjectPackElementID::SHADER_NAME);
-		
-		element->Get(m_shaderName);
+
+        m_project.Find(ProjectPackElementID::SHADER_VERSION)->Get(shader_language);
+        m_project.Find(ProjectPackElementID::SHADER_SUBSYSTEM)->Get(shader_subsystem);
+		m_project.Find(ProjectPackElementID::SHADER_NAME)->Get(m_shaderName);
 
 		m_ShaderParams.clear();
 		m_ShaderTextures.clear();
@@ -168,6 +178,8 @@ namespace ASL
 		}
 
 		m_ShaderParts.clear();
+
+        ProjectElement* element = nullptr;
 
 		while (m_project >> element)
 		{
@@ -190,7 +202,7 @@ namespace ASL
 					m_ShaderParts.push_back(newPart);
 				}
 			}
-			catch (ApproxException&)
+			catch (approx_exception&)
 			{
 				m_project.Reset();
 				throw;
@@ -198,7 +210,7 @@ namespace ASL
 		}
 	}
 
-	void Session::writeElement(ShaderElement* element)
+	void Session::write_element(ShaderElement *element)
 	{
 		m_file << element;
 	}
@@ -211,4 +223,28 @@ namespace ASL
 	Session::~Session()
 	{
 	}
+
+	string Session::get_shader_language() const {
+		return shader_language;
+	}
+
+	string Session::get_shader_subsystem() const {
+		return shader_subsystem;
+	}
+
+	const std::string &Session::ShaderName() const {
+		return m_shaderName;
+	}
+
+	void Session::compile() {
+        auto processor = this->processor.lock();
+		if (!processor)
+			throw approx_exception("Shader code processor is not present in this session.", "ASL::Session::Compile");
+
+		processor->compile(this);
+	}
+
+    void Session::setShaderVersion(const std::string &version) {
+        shader_language = version;
+    }
 }

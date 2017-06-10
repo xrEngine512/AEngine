@@ -23,6 +23,7 @@
 #include "Link.h"
 #include "ShaderSettings.h"
 #include <qwindow.h>
+#include <assert.h>
 
 #define DEF_MENU_ITEM(menu,str,handler) connect(menu->addAction(str), SIGNAL(triggered()), SLOT(handler()))
 
@@ -61,6 +62,10 @@ namespace ASL
 		m_fadeAnim = new QPropertyAnimation(m_opacEffect, "opacity", this);
 		m_sizeGrip = new SizeGrip(this);
 
+        for (auto processor : sessionInterface->get_available_shader_processors()) {
+			m_wndSettings->ui.shader_subsystem->addItem(QString::fromStdString(processor->describe().subsystem_name));
+        }
+
 		m_btnCompile = new ApproxGUIMenuButton;
 		m_btnSettings = new ApproxGUIMenuButton;
 		m_btnSave = new ApproxGUIMenuButton;
@@ -83,6 +88,7 @@ namespace ASL
 		connect(&m_gView, SIGNAL(sceneMoved()), SLOT(UpdateLinks()));
 		connect(&m_gView, SIGNAL(viewChanged()), SLOT(UpdateLinks()));
 		connect(m_shaderSettings, &ShaderSettings::linkAttempt, this, &ShaderEditor::On_LinkAttemptSettings);
+		connect(m_wndSettings->ui.shader_subsystem, SIGNAL(currentIndexChanged(const QString&)), SLOT(On_SubsystemChange(const QString&)));
 
 		m_sizeGrip->snapTo(BOTTOM_RIGHT);
 		m_sizeGrip->raise();
@@ -148,6 +154,7 @@ namespace ASL
 		setStyleSheet("#ViewWnd{ border : 2px solid;}");
 
 		RendererOnline(false);
+		On_SubsystemChange(m_wndSettings->ui.shader_subsystem->currentText());
 	}
 
 	void ShaderEditor::UpdateLinks()
@@ -330,7 +337,8 @@ namespace ASL
 	void ShaderEditor::on_Compile()
 	{
 		info.m_shaderName = m_wndSettings->ui.txtShaderName->text();
-		info.m_SM = V5_0;
+		info.shader_subsystem = m_wndSettings->ui.shader_subsystem->currentText();
+		info.shader_language = m_wndSettings->ui.shader_language->currentText();
 		info.m_ShaderParts.clear();
 		for (int i = 0; i < 6; i++)
 		{
@@ -350,18 +358,17 @@ namespace ASL
 			}
 		}
 
-		if (m_sessionInterface->Compile(info) == ASL_NO_ERROR)
-		{
-			m_lblStatus->setText(COMPILATION_SUCCESS_QT);
-			m_lblStatus->setStyleSheet("QLabel{color : rgb(10,240,10);}");
-			m_btnSave->menu()->actions()[1]->setEnabled(true);
-		}
-		else
-		{
-			m_lblStatus->setText(COMPILATION_FAIL_QT);
-			m_lblStatus->setStyleSheet("QLabel{color : rgb(240,10,10);}");
-			m_btnSave->menu()->actions()[1]->setEnabled(false);
-		}
+        try {
+            m_sessionInterface->compile(info);
+            m_lblStatus->setText(COMPILATION_SUCCESS_QT);
+            m_lblStatus->setStyleSheet("QLabel{color : rgb(10,240,10);}");
+            m_btnSave->menu()->actions()[1]->setEnabled(true); // TODO: rely on session's state instead
+        }
+        catch (approx_exception& ex) {
+            m_lblStatus->setText(ex.what());
+            m_lblStatus->setStyleSheet("QLabel{color : rgb(240,10,10);}");
+            m_btnSave->menu()->actions()[1]->setEnabled(false); // TODO: rely on session's state instead
+        }
 	}
 
 	void ShaderEditor::on_Settings()
@@ -406,7 +413,12 @@ namespace ASL
 		else
 		{
 			info.m_shaderFilename = m_wndSettings->ui.txtWorkLib->text() + m_wndSettings->ui.txtShaderName->text();
-			m_sessionInterface->SaveShader(info);
+			try {
+                m_sessionInterface->SaveShader(info);
+            }
+            catch (approx_exception& e) {
+                e();
+            }
 		}
 	}
 
@@ -456,15 +468,14 @@ namespace ASL
 				}
 			}
 			info.m_shaderName = m_wndSettings->ui.txtShaderName->text();
-			info.m_SM = toSM(m_wndSettings->ui.comboBox->currentIndex());
+			info.shader_language = m_wndSettings->ui.shader_language->currentText();
 			info.m_projectFilename = m_wndSettings->ui.txtWorkLib->text() + m_wndSettings->ui.txtShaderName->text();
 			info.m_Params = m_shaderSettings->Parameters();
 			info.m_Textures = m_shaderSettings->Textures();
-			try
-			{
+			try {
 				m_sessionInterface->SaveProject(info);
 			}
-			catch (ApproxException& exc)
+			catch (approx_exception& exc)
 			{
 				MSG_BOX(exc.Message(), QMessageBox::Warning);
 			}
@@ -480,9 +491,9 @@ namespace ASL
 			{
 				m_sessionInterface->LoadProject(info);
 			}
-			catch (ApproxException& exc)
+			catch (approx_exception& exc)
 			{
-				ApproxException e("Не удалось открыть файл.");
+				approx_exception e("Не удалось открыть файл.");
 				e += exc;
 				e();
 				return;
@@ -675,6 +686,18 @@ namespace ASL
 		else
 		{
 			BaseClass::mouseReleaseEvent(event);
+		}
+	}
+
+	void ShaderEditor::On_SubsystemChange(const QString &name) {
+		m_wndSettings->ui.shader_language->clear();
+		for (auto processor : m_sessionInterface->get_available_shader_processors()) {
+			auto description = processor->describe();
+			if (QString::fromStdString(description.subsystem_name) == name) {
+				for (auto shader_language : description.available_languages) {
+					m_wndSettings->ui.shader_language->addItem(QString::fromStdString(shader_language));
+				}
+			}
 		}
 	}
 }

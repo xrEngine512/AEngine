@@ -12,12 +12,17 @@ namespace ASL
 	{
 		ShaderLabGUI *m_view;
 		std::map<int, ASL::Session*> m_Sessions;
+		std::vector<IShaderCodeProcessorPtr> available_processors;
 		Session* UpdateDataAndGetSession(const ViewSessionInfo&);
+        IShaderCodeProcessorPtr get_processor(const std::string &name);
 	public:
 		int OpenSession()override final;
-		Errors Compile(const ViewSessionInfo&) override final;
+		void compile(const ViewSessionInfo &) override final;
 		void SetParentWidget(QWidget*)override final;
-		void SaveShader(const ViewSessionInfo&)override final;
+
+        std::vector<IShaderCodeProcessorPtr> get_available_shader_processors() const override;
+
+        void SaveShader(const ViewSessionInfo&)override final;
 		void LoadProject(ViewSessionInfo&)override final;
 		void SaveProject(const ViewSessionInfo&)override final;
 		bool CheckFileExists(QString& fileName)override final;

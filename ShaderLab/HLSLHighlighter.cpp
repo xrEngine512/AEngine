@@ -20,7 +20,7 @@ namespace ASL
 						|Texture2DMS|Texture2DMSArray|Texture3D|TextureCube|TextureCubeArray|true|typedef|\
 						|triangle|triangleadj|TriangleStream|uint|uniform|unorm|unsigned|vector|vertexfragment|\
 						|VertexShader|void|volatile|while)\\b"),
-		m_regExpComments("\s*//[^\n]*(?=\n|$)"),
+		m_regExpComments("\\s*//[^\n]*(?=\n|$)"),
 		m_regExpNumLiterals("(^|\\s+|=|\\+|\\-|\\*|/)([0-9]+)(\\s+|$|;)|(^|\\s+|=|\\+|\\-|\\*|/)(([0-9]+\\.[0-9]+)|([0-9]+\\.[0-9]+f))(\\s+|$|;)"),
 		m_regExpSkipSymbols("=|\\+|\\-|\\+|\\*|/|;"),
 		m_regExpApproxVars(nullptr),

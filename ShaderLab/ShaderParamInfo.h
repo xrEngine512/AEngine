@@ -9,16 +9,16 @@ namespace ASL
 		int ID;
 		std::string Type;
 		std::string Name;
-		const void* Serialize(int& size) override
+		const void* Serialize(uint64_t& size) override
 		{
 			size = Serialization(ID, Type, Name);
 			return SerializedBuf();
 		}
-		void Deserialize(const void* buf, size_t size) override
+		void Deserialize(const void* buf, uint64_t size) override
 		{
 			Deserialization(buf, size, ID, Type, Name);
 		}
-		int SerializedSize()const override
+		uint64_t SerializedSize()const override
 		{
 			return CalculateSize(ID, Type, Name);
 		}

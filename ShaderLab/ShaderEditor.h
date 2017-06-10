@@ -49,6 +49,7 @@ namespace ASL
 		void UpdateLinks();
 		void On_LinkAttemptSettings(ShaderSettingsElement* sender, const QPoint& pos);
 		void On_LinkAttemptMatVars(MaterialVar* sender, const QPoint& pos);
+		void On_SubsystemChange(const QString& name);
 		void Raise(ShaderLabGUIElement*);
 	public slots:
 		void setShaderName(QString);
