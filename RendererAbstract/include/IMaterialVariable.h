@@ -1,5 +1,7 @@
 #pragma once
 
+#include <msgpack.hpp>
+
 namespace MatInterface
 {
 	enum VarGroup : char { SCENE_CONSTANT, SHADER_PARAMS, PER_FRAME, PER_OBJECT };
@@ -16,3 +18,5 @@ namespace MatInterface
 		virtual ~IMaterialVariable(){};
 	};
 }
+
+MSGPACK_ADD_ENUM(MatInterface::VarGroup);

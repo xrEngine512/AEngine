@@ -1,9 +1,9 @@
 #include "FloatParamUI.h"
-#include <ShaderParamInfo.h>
+#include <ShaderParameterInfo.h>
 #include <ShaderSystemTypes.h>
 using namespace ASL;
 
-FloatParamUI::FloatParamUI(QWidget *parent, const ShaderParamInfo& param)
+FloatParamUI::FloatParamUI(QWidget *parent, const ShaderParameterInfo& param)
 	: QWidget(parent)
 {
 	ui.setupUi(this);

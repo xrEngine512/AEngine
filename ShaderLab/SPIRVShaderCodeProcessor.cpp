@@ -3,6 +3,7 @@
 #include "ShaderPart.h"
 
 #include <Logger.h>
+#include <Utility.h>
 #include <SPIRV/GlslangToSpv.h>
 #include <boost/locale/conversion.hpp>
 
@@ -31,7 +32,7 @@ namespace ASL
 
     struct Configuration {
         EShMessages messages = EShMsgDefault;
-        bimap<Shader_Type, EShLanguage> shader_types;
+        bimap<ShaderType, EShLanguage> shader_types = {};
     };
 
     unordered_map<string, Configuration> available_configurations {
@@ -59,11 +60,7 @@ namespace ASL
         }
     };
 
-    bimap<Shader_Type, EShLanguage> shader_types {
-
-    };
-
-    map<Shader_Type, string> shader_types_description {
+    map<ShaderType, string> shader_types_description {
         {VS, "вершинный"},
         {PS, "пиксельный"},
         {GS, "геометрический"},
@@ -169,97 +166,74 @@ namespace ASL
         }
     };
 
+    void ASL::SPIRVShaderCodeProcessor::compile(const PipelineProject & project, PipelineCompiled & compiled) const {
 
-    inline ShaderPackElementID toID(Shader_Type type)
-    {
-        switch (type)
-        {
-            case VS: return COMPILED_VS;
-            case PS: return COMPILED_PS;
-            case GS: return COMPILED_GS;
-            case CS: return COMPILED_CS;
-            case DS: return COMPILED_DS;
-            case HS: return COMPILED_HS;
-            default: return ID_NONE;
-        }
-    }
-
-    void ASL::SPIRVShaderCodeProcessor::compile(Session *session) const {
-
-        auto config = available_configurations[session->get_shader_language()];
+        const auto & config = available_configurations[project.language];
+        const auto & source = project.source;
 
         glslang::InitializeProcess();
+        scope_exit( glslang::FinalizeProcess(); )
 
         TProgram program;
         auto resources = DefaultTBuiltInResource;
         EShMessages messages = config.messages;
         vector<shared_ptr<TShader>> shaders;
 
-        try {
-            int partIndex = 0;
-            ShaderPart *part = session->partByIndex(partIndex);
+        for (auto & shader: source.shaders) {
+            assert(shader.type != NONE);
+            auto stage = config.shader_types.at(shader.type);
 
-            while (part) {
-                assert(part->shader_type != ST_NONE);
-                auto stage = shader_types[part->shader_type];
-
-                if (stage == EShLangCount) {
-                    auto shader_type_name = shader_types_description[part->shader_type];
-                    throw approx_exception(
-                        format("%s тип шейдера не поддерживается", boost::locale::to_title(shader_type_name).c_str()));
-                }
-
-                auto shader = make_shared<TShader>(stage);
-                shaders.push_back(shader);
-
-                auto code = part->Str_code.c_str();
-                shader->setStrings(&code, 1);
-                if (!part->EntryPoint.empty())
-                    shader->setEntryPoint(part->EntryPoint.c_str());
-
-                if (!shader->parse(&resources, 110, false, messages)) {
-                    throw approx_exception("Ошибка при парсинге");
-                }
-
-                program.addShader(shader.get());
-
-                part = session->partByIndex(++partIndex);
+            if (stage == EShLangCount) {
+                auto shader_type_name = shader_types_description[shader.type];
+                throw approx_exception(
+                    format("%s тип шейдера не поддерживается", boost::locale::to_title(shader_type_name).c_str()));
             }
 
-//            if (!program.link(messages)) {
-//                throw approx_exception("Ошибка при линковке");
-//            }
+            auto shader_program = make_shared<TShader>(stage);
+            shaders.push_back(shader_program);
 
-            for (int stage = 0; stage < EShLangCount; ++stage) {
-                auto e_stage = static_cast<EShLanguage>(stage);
-                auto ir = program.getIntermediate(e_stage);
-                if (ir) {
-                    spv::SpvBuildLogger logger;
-                    vector<uint32_t> binary;
+            auto code = shader.code.c_str();
+            shader_program->setStrings(&code, 1);
+            if (!shader.entry_point.empty())
+                shader_program->setEntryPoint(shader.entry_point.c_str());
 
-                    GlslangToSpv(*ir, binary, &logger);
-                    Logger::instance().log(logger.getAllMessages());
-                    part = &session->partByType(shader_types[e_stage]);
+            if (!shader_program->parse(&resources, 110, false, messages)) {
+                throw approx_exception("Ошибка при парсинге");
+            }
 
-                    auto elem = ShaderElement::fromMemory(toID(part->shader_type), binary.size(), binary.data());
-                    elem->AllowDuplicatesFor(RUNTIME_BUFFER_INFO);
-                    for (auto buffer : part->BuffersInfo) {
-                        *elem << ShaderElement::fromSaveData(RUNTIME_BUFFER_INFO, buffer);
-                    }
+            program.addShader(shader_program.get());
+        }
 
-                    size_t size;
-                    auto ptr = AbstractSaveData::Serialize(size, part->ParamsIDs, part->TextureSlots);
-                    *elem << ShaderElement::fromMemory(SHADER_SETS, size, ptr);
+        program.link(messages);
 
-                    session->write_element(elem);
+        msgpack::sbuffer bytes;
+        for (int stage = 0; stage < EShLangCount; ++stage) {
+            auto e_stage = static_cast<EShLanguage>(stage);
+            auto ir = program.getIntermediate(e_stage);
+            if (ir) {
+                spv::SpvBuildLogger logger;
+                vector<uint32_t> binary;
+
+                GlslangToSpv(*ir, binary, &logger);
+                Logger::instance().log(logger.getAllMessages());
+                auto & shader = source.get_shader_by_type(config.shader_types.at(e_stage));
+
+                compiled.shaders.emplace_back();
+                auto compiled_shader = compiled.shaders.back();
+                *static_cast<ShaderCommon*>(&compiled_shader) = *static_cast<const ShaderCommon*>(&shader);
+                compiled_shader.bytes = move(binary);
+
+                compiled_shader.parameters_ids.reserve(shader.parameters.size());
+                for (const auto & parameter: shader.parameters) {
+                    compiled_shader.parameters_ids.push_back(parameter.id);
+                }
+
+                compiled_shader.texture_slots.reserve(shader.textures.size());
+                for (const auto & texture: shader.textures) {
+                    compiled_shader.texture_slots.push_back(texture.slot);
                 }
             }
         }
-        catch (approx_exception& ex) {
-            glslang::FinalizeProcess();
-            throw;
-        }
-        glslang::FinalizeProcess();
     }
 
     ShaderProcessorDescription SPIRVShaderCodeProcessor::describe() const {

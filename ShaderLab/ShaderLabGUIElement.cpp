@@ -11,17 +11,18 @@
 #include "MaterialVarInfo.h"
 #include <ApproxMemory.h>
 #include "LinkingPoint.h"
-#include "ShaderParamInfo.h"
-#include "TextureInfo.h"
 #include "ViewSessionInfo.h"
+
+#include "serialization/ShaderParameterInfo.h"
+#include "serialization/TextureInfo.h"
 
 const int rad = 50;
 const qreal slotSpacing = 5;
 namespace ASL
 {
-	ShaderLabGUIElement::ShaderLabGUIElement(QGraphicsItem *parent)
+	ShaderLabGUIElement::ShaderLabGUIElement(ShaderType type, QGraphicsItem *parent)
 		: BaseClass(parent), m_txtedit(nullptr), m_Settings(nullptr), 
-		m_width(100), m_height(70), m_type(ST_NONE), m_dragging(false), m_hasFocus(false), m_lastBufferCodeSize(0)
+		width(100), height(70), type(type), m_dragging(false), m_hasFocus(false), m_lastBufferCodeSize(0)
 	{
 		m_icon = g_ResManager->GetPic(":/ShaderEditor/background.png");
 		BaseClass::setZValue(9);
@@ -50,12 +51,7 @@ namespace ASL
 
 	QRectF ShaderLabGUIElement::boundingRect() const
 	{
-		return QRectF(0, 0, m_width, m_height);
-	}
-
-	void ShaderLabGUIElement::setShader_Type(Shader_Type t)
-	{
-		m_type = t;
+		return QRectF(0, 0, width, height);
 	}
 
 	const QString& ShaderLabGUIElement::EntryPoint()
@@ -72,7 +68,7 @@ namespace ASL
 	{
 		auto Info = lnk->GetLinkingObjects().first->Info();
 		
-		if (auto shaderParam = dynamic_cast<ShaderParamInfo*>(Info))
+		if (auto shaderParam = dynamic_cast<ShaderParameterInfo*>(Info))
 		{
 			auto& selectedBuffer = m_buffers[2];
 			if (!selectedBuffer)
@@ -98,7 +94,7 @@ namespace ASL
 	void ShaderLabGUIElement::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 	{
 		QPainterPath path;
-		path.addRoundRect(0, 0, m_width, m_height, rad);
+		path.addRoundRect(0, 0, width, height, rad);
 		QColor color;
 		if (m_txtedit)
 		{
@@ -114,10 +110,10 @@ namespace ASL
 			painter->fillPath(path, QBrush(QColor(80, 80, 80)));
 		else
 			painter->fillPath(path, QBrush(QColor(40, 40, 40)));
-		if (m_type != ST_NONE)
+		if (type != NONE)
 		{
 			painter->setFont(QFont("Verdana", 20));
-			painter->drawText(m_width - 52, m_height - 7, toStr(m_type));
+			painter->drawText(width - 52, height - 7, toStr(type));
 		}
 		if (m_txtedit)
 		{
@@ -136,14 +132,14 @@ namespace ASL
 		auto settings = m_Settings->getSettings();
 		settings.EntryPoint = info.entryPoint;
 		m_Settings->setSettings(settings);
-		m_type = info.Shader_Type;
+		type = info.Shader_Type;
 		m_txtedit->setPlainText(info.qStr_code);
 		
 	}
 
-	Shader_Type ShaderLabGUIElement::getShader_Type() const
+	ShaderType ShaderLabGUIElement::get_shader_type() const
 	{
-		return m_type;
+		return type;
 	}
 
 	int ShaderLabGUIElement::addLink(BufferLink* lnk)
@@ -236,7 +232,7 @@ namespace ASL
 	void ShaderLabGUIElement::deleteLink(const SettingsLink* lnk)
 	{
 		auto info = lnk->GetLinkingObjects().first->Info();
-		if (auto shaderParamInfo = dynamic_cast<ShaderParamInfo*>(info))
+		if (auto shaderParamInfo = dynamic_cast<ShaderParameterInfo*>(info))
 		{
 			if (m_buffers[2])
 			{
@@ -249,7 +245,7 @@ namespace ASL
 			for (auto variable = m_Textures.begin(); variable != m_Textures.end(); ++variable)
 			{
 				if (auto textureInfoVariable = dynamic_cast<TextureInfo*>((*variable)->Info()))
-					if (textureInfoVariable->Slot == textureInfo->Slot)
+					if (textureInfoVariable->slot == textureInfo->slot)
 					{
 						m_Textures.erase(variable);
 						UpdateGeneratedCode();
@@ -310,7 +306,7 @@ namespace ASL
 		}
 	}
 
-	QString ShaderLabGUIElement::toStr(Shader_Type type)
+	QString ShaderLabGUIElement::toStr(ShaderType type)
 	{
 		switch (type)
 		{
@@ -419,7 +415,7 @@ namespace ASL
 		{
 			for (auto param : m_buffers[2]->Params())
 			{
-				res.push_back(param->ID);
+				res.push_back(param->id);
 			}
 		}
 		return res;
@@ -430,7 +426,7 @@ namespace ASL
 		QVector<int> res;
 		for (auto texture : m_Textures)
 		{
-			res.push_back(dynamic_cast<TextureInfo*>(texture->Info())->Slot);
+			res.push_back(dynamic_cast<TextureInfo*>(texture->Info())->slot);
 		}
 		return res;
 	}
@@ -479,7 +475,7 @@ namespace ASL
 		}
 
 		QPointF sPos = scenePos();
-		QRect geom(sPos.x(), sPos.y(), m_width, m_height);
+		QRect geom(sPos.x(), sPos.y(), width, height);
 
 		if (event->buttons().testFlag(Qt::LeftButton))
 		{
@@ -499,7 +495,7 @@ namespace ASL
 		if (m_txtedit)
 		{
 			QPointF sPos = scenePos();
-			QRect geom(sPos.x(), sPos.y(), m_width, m_height);
+			QRect geom(sPos.x(), sPos.y(), width, height);
 
 			m_txtedit->HideAnimated(geom);
 		}
@@ -513,9 +509,9 @@ namespace ASL
 			setPos(event->scenePos().x() - m_xPrev, event->scenePos().y() - m_yPrev);
 			if (m_txtedit && !m_txtedit->isHidden())
 			{
-				m_txtedit->move(scenePos().x() + m_width, scenePos().y());
+				m_txtedit->move(scenePos().x() + width, scenePos().y());
 			}
-			m_Settings->move(scenePos().x() - (m_Settings->width() - m_width), scenePos().y()+m_height);
+			m_Settings->move(scenePos().x() - (m_Settings->width() - width), scenePos().y()+height);
 			for (auto link : m_allLinks)
 			{
 				link->Update();

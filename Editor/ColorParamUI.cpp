@@ -1,7 +1,7 @@
 #include "ColorParamUI.h"
 #include <qcolordialog.h>
 #include <ShaderSystemTypes.h>
-#include <ShaderParamInfo.h>
+#include <ShaderParameterInfo.h>
 
 using namespace ShaderSystem;
 
@@ -13,7 +13,7 @@ QString COLOR_QSS(const QColor& c)
 }
 
 
-ColorParamUI::ColorParamUI(QWidget *parent, const ASL::ShaderParamInfo& param)
+ColorParamUI::ColorParamUI(QWidget *parent, const ASL::ShaderParameterInfo& param)
 	: QWidget(parent)
 {
 	ui.setupUi(this);

@@ -14,7 +14,7 @@ void ShaderPool::Load(const std::string &dir) {
     int ID = 0;
     for (auto name : OS::Files::list(dir, ".acs"))
     {
-        auto path = dir + name;
+        auto path = dir + (dir.back() == '/' ? "" : "/") + name;
         g_Statistics->IncNumOfShaders();
         ShaderDesc desc;
         desc.ID = ID++;
@@ -55,14 +55,14 @@ IShaderRef ShaderPool::get_shader(const string &name)
 void ShaderPool::UpdatePerFrameBuffersForAll()
 {
 	for(auto shader : m_ShaderCache) {
-		shader.second->UpdatePerFrameBuffers();
+        shader.second->update_per_frame_buffers();
 	}
 }
 
 void ShaderPool::UpdateSceneConstantsBuffersForAll()
 {
 	for(auto shader : m_ShaderCache) {
-		shader.second->UpdateSceneConstantsBuffers();
+        shader.second->update_scene_constants_buffers();
 	}
 }
 

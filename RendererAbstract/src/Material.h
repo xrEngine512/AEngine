@@ -33,7 +33,7 @@ public:
 	const ShaderSystem::ShaderSettings& Settings()const override;
 	void SetParameter(const std::string& name, const ShaderSystem::floatVariant& value)override;
     bool LoadTexture(const std::string& texture_filename, unsigned short slot)override;
-    bool render(uint32_t indexCount) override;
+    void render(uint32_t indexCount) override;
 	uint32_t GetID() const;
 
     void ChangeShaderAndSaveTextures(const ShaderDesc& type)override;

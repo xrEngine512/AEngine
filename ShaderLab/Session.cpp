@@ -1,146 +1,46 @@
 #include "Session.h"
-#include "ShaderPart.h"
-#include "ShaderParamInfo.h"
-#include "TextureInfo.h"
-#include "ShaderCodeProcessorEnumerator.h"
-
-#include <OS.h>
-
-#define IDENTIFY(Type) case ProjectPackElementID::Type: return Type
+#include "serialization/Utils.h"
 
 using std::experimental::string_view;
+using namespace std;
 
 namespace ASL
 {
 	Session::Session() : processor()
 	{
-		m_file.AllowDuplicatesFor(INPUT_LAYOUT_ELEMENT);
-		m_file.AllowDuplicatesFor(TEXTURE_DESC);
-		m_file.AllowDuplicatesFor(PARAM_DESC);
-
-		m_project.AllowDuplicatesFor(ProjectPackElementID::PARAMETER);
-		m_project.AllowDuplicatesFor(ProjectPackElementID::TEXTURE);
 	}
 
-	inline ProjectPackElementID toID(Shader_Type type)
-	{
-		switch (type)
-		{
-		case ASL::ST_NONE:	return ProjectPackElementID::NONE;
-		case ASL::VS:		return ProjectPackElementID::VS;
-		case ASL::PS:		return ProjectPackElementID::PS;
-		case ASL::GS:		return ProjectPackElementID::GS;
-		case ASL::CS:		return ProjectPackElementID::CS;
-		case ASL::DS:		return ProjectPackElementID::DS;
-		case ASL::HS:		return ProjectPackElementID::HS;
-		}
-	}
-
-	inline Shader_Type toST(ProjectPackElementID ID)
-	{
-		switch (ID)
-		{
-			IDENTIFY(VS);
-			IDENTIFY(PS);
-			IDENTIFY(CS);
-			IDENTIFY(HS);
-			IDENTIFY(DS);
-			IDENTIFY(GS);
-		default: return ST_NONE;
-		}
-	}
-
-	void Session::setShaderProcessor(const IShaderCodeProcessorRef& processor) {
+	void Session::set_shader_processor(const IShaderCodeProcessorRef & processor) {
         if (auto processor_ptr = processor.lock()) {
-            shader_subsystem = processor_ptr->name();
+            pipeline_project.subsystem = processor_ptr->name();
             this->processor = processor;
         }
 	}
 
-	void Session::setShaderName(const std::string& name) {
-		m_shaderName = name;
+	void Session::set_pipeline_name(const std::string & name) {
+		pipeline_project.name = name;
 	}
 
-	void Session::setShaderParams(const vector<ShaderParamInfo>& params)
-	{
-		m_ShaderParams = params;
-	}
 
-	void Session::setShaderTextures(const vector<TextureInfo>& textures)
-	{
-		m_ShaderTextures = textures;
-	}
-
-	ShaderPart& Session::partByType(Shader_Type type)
-	{
-		for (auto& part : m_ShaderParts)
-		{
-			if (part.shader_type == type)
-			{
-				return part;
-			}
-		}
-		m_ShaderParts.push_back(ShaderPart());
-		ShaderPart& part = m_ShaderParts.back();
-		part.shader_type = type;
-		return part;
-	}
-
-	ShaderPart* Session::partByIndex(int index)
-	{
-		if (index >= m_ShaderParts.size())
-			return nullptr;
-		return &m_ShaderParts[index];
-	}
 
 	void Session::SaveShaderFile(const char* filename)
 	{
-		m_file(filename);
-		m_file.ToDisk();
-		m_file.CloseFile();
+        to_file_msg_pack(filename, compiled_pipeline);
 	}
 
-	void Session::SaveProjectFile(const char* filename)
+	void Session::SaveProjectFile(const string & file_name)
 	{
-		m_project.ClearElements();
-		m_project << ProjectElement::fromStdString(ProjectPackElementID::SHADER_NAME, m_shaderName);
-		m_project << ProjectElement::fromStdString(ProjectPackElementID::SHADER_SUBSYSTEM, shader_subsystem);
-		m_project << ProjectElement::fromStdString(ProjectPackElementID::SHADER_VERSION, shader_language);
 
-		for (auto param : m_ShaderParams)
-		{
-			m_project << ProjectElement::fromSaveData(ProjectPackElementID::PARAMETER, param);
-		}
-		for (auto texture : m_ShaderTextures)
-		{
-			m_project << ProjectElement::fromSaveData(ProjectPackElementID::TEXTURE, texture);
-		}
-		//Saving source code and entry points
-		for (auto part : m_ShaderParts)
-		{
-			ProjectElement* newElem = ProjectElement::fromSaveData(toID(part.shader_type), part);
-			/*newElem->AllowDuplicatesFor(ProjectPackElementID::APPROX_VAR_BUFFER_INFO);
-			*newElem << new ProjectElement(ProjectPackElementID::ENTRY_POINT, part.EntryPoint);
-			for (auto bufferInfo : part.BuffersInfo)
-			{
-				*newElem << new ProjectElement(ProjectPackElementID::APPROX_VAR_BUFFER_INFO, dynamic_cast<AbstractSaveData*>(&bufferInfo));
-			}*/
-			m_project << newElem;
-		}
-
-		m_project(filename);
-		m_project.ToDisk();
-		m_project.CloseFile();
 	}
 
-	const std::vector<ShaderPart>& Session::ShaderParts() const
+	const std::vector<ShaderSource> & Session::get_shaders() const
 	{
-		return m_ShaderParts;
+		return pipeline_project.source.shaders;
 	}
 
-	bool Session::CheckFileExists(const string_view& filename)
+	bool Session::CheckFileExists(const string & file_name)
 	{
-		auto file = OS::Files::open_file(filename, "rb");
+		auto file = OS::Files::open_file(file_name, "rb");
 		if (file)
 		{
 			fclose(file);
@@ -149,91 +49,35 @@ namespace ASL
 		return false;
 	}
 
-	void Session::OpenProjectFile(const char* filename)
+	void Session::OpenProjectFile(const string & file_name)
 	{
-		m_project.ClearElements();
-		m_project(filename,false);
-		m_project.FromDisk();
-		m_project.CloseFile();
-
-        m_project.Find(ProjectPackElementID::SHADER_VERSION)->Get(shader_language);
-        m_project.Find(ProjectPackElementID::SHADER_SUBSYSTEM)->Get(shader_subsystem);
-		m_project.Find(ProjectPackElementID::SHADER_NAME)->Get(m_shaderName);
-
-		m_ShaderParams.clear();
-		m_ShaderTextures.clear();
-
-		for (auto param : m_project.FindMany(ProjectPackElementID::PARAMETER))
-		{
-			ShaderParamInfo paramInfo;
-			param->Get(paramInfo);
-			m_ShaderParams.push_back(paramInfo);
-		}
-
-		for (auto texture : m_project.FindMany(ProjectPackElementID::TEXTURE))
-		{
-			TextureInfo texInfo;
-			texture->Get(texInfo);
-			m_ShaderTextures.push_back(texInfo);
-		}
-
-		m_ShaderParts.clear();
-
-        ProjectElement* element = nullptr;
-
-		while (m_project >> element)
-		{
-			try
-			{
-				Shader_Type ST = toST(element->m_MetaData.ID);
-				if (ST != ST_NONE)
-				{
-					ShaderPart newPart;
-
-					element->Get(newPart);
-					/*for (auto subElement : element->FindMany(ProjectPackElementID::APPROX_VAR_BUFFER_INFO))
-					{
-						RuntimeBufferInfo bufInfo;
-						subElement->Get(dynamic_cast<AbstractSaveData*>(&bufInfo));
-						newPart.BuffersInfo.push_back(bufInfo);
-					}*/
-					/*element->Get(newPart.Str_code);
-					newPart.Shader_Type = ST;*/
-					m_ShaderParts.push_back(newPart);
-				}
-			}
-			catch (approx_exception&)
-			{
-				m_project.Reset();
-				throw;
-			}
-		}
+		from_file_msg_pack(file_name, pipeline_project);
 	}
 
-	void Session::write_element(ShaderElement *element)
+	void Session::write_element(ShaderCompiled && shader)
 	{
-		m_file << element;
+		compiled_pipeline.shaders.push_back(move(shader));
 	}
 
-	void Session::clearCompiledElements()
+	void Session::clear_compiled_elements()
 	{
-		m_file.ClearElements();
+		compiled_pipeline.shaders.clear();
 	}
 
 	Session::~Session()
 	{
 	}
 
-	string Session::get_shader_language() const {
-		return shader_language;
+	const string & Session::get_pipeline_language() const {
+		return pipeline_project.language;
 	}
 
-	string Session::get_shader_subsystem() const {
-		return shader_subsystem;
+    const string & Session::get_pipeline_subsystem() const {
+		return pipeline_project.subsystem;
 	}
 
-	const std::string &Session::ShaderName() const {
-		return m_shaderName;
+	const std::string & Session::get_pipeline_name() const {
+		return pipeline_project.name;
 	}
 
 	void Session::compile() {
@@ -241,10 +85,10 @@ namespace ASL
 		if (!processor)
 			throw approx_exception("Shader code processor is not present in this session.", "ASL::Session::Compile");
 
-		processor->compile(this);
+		processor->compile(pipeline_project, compiled_pipeline);
 	}
 
-    void Session::setShaderVersion(const std::string &version) {
-        shader_language = version;
+    void Session::set_pipeline_language(const std::string & language) {
+        pipeline_project.language = language;
     }
 }

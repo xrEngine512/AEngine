@@ -14,12 +14,13 @@ namespace ShaderSystem{
 	class GenericStruct;
 	interface IShader
 	{
-		virtual const GenericStruct& ShaderParams()const = 0;
-		virtual bool UpdateSceneConstantsBuffers() = 0;
-		virtual bool UpdatePerFrameBuffers() = 0;
+		virtual const GenericStruct& ShaderParams() const = 0;
+		virtual bool update_scene_constants_buffers() = 0;
+		virtual bool update_per_frame_buffers() = 0;
+		virtual bool update_per_object_buffers() = 0;
 		virtual const ShaderDesc& GetDesc() = 0;
 		virtual unsigned short GetNumberOfTextureSlots() = 0;
-		virtual bool render(uint32_t indexCount, const GenericStruct &) = 0;
+		virtual void render(uint32_t index_count, const GenericStruct &) const = 0;
 		virtual const ShaderSettings& GetSettings() = 0;
 		virtual ~IShader(){};
 	};

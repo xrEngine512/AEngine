@@ -15,6 +15,8 @@
  */
 template <class K1, class K2>
 class bimap {
+    using self = bimap<K1, K2>;
+
     std::unordered_set<K1> keys1;
     std::unordered_set<K2> keys2;
     std::unordered_map<const K1*, const K2*> k1k2;
@@ -57,7 +59,7 @@ public:
         return find(key) != keys1.end();
     }
 
-    const K2& operator[](const K1& key) {
+    K2& operator[](const K1& key) {
         auto k1 = keys1.insert(key).first;
         {
             auto k2 = k1k2.find(&*k1);
@@ -71,7 +73,7 @@ public:
         return *k2;
     }
 
-    const K1& operator[](const K2& key) {
+    K1& operator[](const K2& key) {
         auto k2 = keys2.insert(key).first;
         {
             auto k1 = k2k1.find(&*k2);
@@ -83,5 +85,33 @@ public:
         k1k2[&*k1] = &*k2;
         k2k1[&*k2] = &*k1;
         return *k1;
+    }
+
+    const K2& at(const K1& key) const {
+        auto k1 = keys1.find(key);
+
+        if (k1 != keys1.end()) {
+            return *k1k2.at(&*k1);
+        }
+
+        throw std::out_of_range("no such key");
+    }
+
+    K2& at(const K1& key) {
+        return const_cast<K2&>(static_cast<const self &>(*this).at(key));
+    }
+
+    const K1& at(const K2& key) const {
+        auto k2 = keys2.find(key);
+
+        if (k2 != keys2.end()) {
+            return *k2k1.at(&*k2);
+        }
+
+        throw std::out_of_range("no such key");
+    }
+
+    K1& at(const K2& key) {
+        return const_cast<K1&>(static_cast<const self &>(*this).at(key));
     }
 };

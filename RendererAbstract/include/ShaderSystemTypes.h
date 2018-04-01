@@ -7,7 +7,7 @@ namespace ASL
 {
 	struct RuntimeBufferInfo;
 	struct TextureInfo;
-	struct ShaderParamInfo;
+	struct ShaderParameterInfo;
 }
 
 namespace ShaderSystem
@@ -25,7 +25,7 @@ namespace ShaderSystem
 
 	struct ShaderSettings{
 		vector<ASL::TextureInfo> TexturesInfo;
-		vector<ASL::ShaderParamInfo> ParamsInfo;
+		vector<ASL::ShaderParameterInfo> ParamsInfo;
 	};
 
 	inline GenericType ReadType(const string& type)

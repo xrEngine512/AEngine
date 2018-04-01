@@ -68,7 +68,7 @@ bool Material::LoadTexture(const string& texture_filename, unsigned short slot)
 	}
 }
 
-bool Material::render(uint32_t indexCount)
+void Material::render(uint32_t indexCount)
 {
 	UpdateTextures();
     // show_visible the model

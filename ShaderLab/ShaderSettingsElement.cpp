@@ -1,7 +1,7 @@
 #include "ShaderSettingsElement.h"
 #include "LinkingPoint.h"
 #include "TextureInfo.h"
-#include "ShaderParamInfo.h"
+#include "ShaderParameterInfo.h"
 #include <ApproxGuiResManager.h>
 #include <qlabel.h>
 #include <qpixmap.h>
@@ -29,13 +29,13 @@ namespace ASL
 		});
 	}
 
-	ShaderSettingsElement::ShaderSettingsElement(QWidget *parent, const ShaderParamInfo& info) : ShaderSettingsElement(parent)
+	ShaderSettingsElement::ShaderSettingsElement(QWidget *parent, const ShaderParameterInfo& info) : ShaderSettingsElement(parent)
 	{
 		m_Type = PARAMETER;
 		m_Name->setText(info.Name.c_str());
 		m_Icon->setPixmap(g_ResManager->GetPic(":/ShaderEditor/parameter.png")->scaled(m_Icon->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-		m_Data = new ShaderParamInfo;
-		*dynamic_cast<ShaderParamInfo*>(m_Data) = info;
+		m_Data = new ShaderParameterInfo;
+		*dynamic_cast<ShaderParameterInfo*>(m_Data) = info;
 	}
 
 	ShaderSettingsElement::ShaderSettingsElement(QWidget* parent, const TextureInfo& info) : ShaderSettingsElement(parent)

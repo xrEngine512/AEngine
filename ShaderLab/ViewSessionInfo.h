@@ -2,7 +2,7 @@
 #include <QString>
 #include "Enums.h"
 #include <qvector.h>
-#include "RuntimeBufferInfo.h"
+#include "serialization/RuntimeBufferInfo.h"
 #include "IShaderCodeProcessor.h"
 
 namespace ASL
@@ -11,7 +11,7 @@ namespace ASL
 	{
 		QString qStr_code;
 		QString entryPoint;
-		ASL::Shader_Type Shader_Type = ASL::ST_NONE;
+		ASL::ShaderType Shader_Type = ASL::NONE;
 		QVector<RuntimeBufferInfo> buffersInfo;
 		QVector<int> paramIDs;
 		QVector<int> textureSlots;
@@ -27,6 +27,6 @@ namespace ASL
 		QString m_projectFilename;
 		QVector<ViewShaderPartInfo> m_ShaderParts;
 		QVector<TextureInfo> m_Textures;
-		QVector<ShaderParamInfo> m_Params;
+		QVector<ShaderParameterInfo> m_Params;
 	};
 }

@@ -5,7 +5,7 @@
 #include "ui_ColorParamUI.h"
 
 namespace ASL{
-	struct ShaderParamInfo;
+	struct ShaderParameterInfo;
 }
 
 namespace ShaderSystem{
@@ -17,7 +17,7 @@ class ColorParamUI : public QWidget
 	Q_OBJECT
 
 public:
-	ColorParamUI(QWidget *parent, const ASL::ShaderParamInfo& param);
+	ColorParamUI(QWidget *parent, const ASL::ShaderParameterInfo& param);
 	~ColorParamUI();
 signals:
 	void valueChanged(const ShaderSystem::floatVariant&);

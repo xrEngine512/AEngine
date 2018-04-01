@@ -9,7 +9,7 @@
 
 interface IInternalMaterial
 {
-    virtual bool render(uint32_t indexCount) = 0;
+    virtual void render(uint32_t indexCount) = 0;
     virtual ~IInternalMaterial(){};
 };
 

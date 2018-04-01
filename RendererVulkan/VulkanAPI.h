@@ -40,6 +40,8 @@ class VulkanAPI: public IGraphicsAPI, public MState {
                                         transfer_command_pool               = nullptr;
     VkCommandBuffer                     command_buffer                      = nullptr,
                                         transfer_command_buffer             = nullptr;
+    VkDescriptorPool                    descriptor_pool                     = nullptr;
+    VkPipelineCache                     pipeline_cache                      = nullptr;
     VkSurfaceKHR                        surface                             = nullptr;
     VkSwapchainKHR                      swapchain                           = nullptr;
     VkRenderPass                        render_pass                         = nullptr;
@@ -101,6 +103,12 @@ class VulkanAPI: public IGraphicsAPI, public MState {
 
     void initialize_command_buffers();
 
+    void initialize_descriptor_pool();
+    void destroy_descriptor_pool();
+
+    void initialize_pipeline_cache();
+    void destroy_pipeline_cache();
+
     void setup_viewport(int width, int height);
 
     void initialize_surface(WindowHandle window);
@@ -150,13 +158,21 @@ public:
 
     uint32_t get_queue_family_index(bool transfer = false) const;
 
-    VkCommandBuffer get_main_command_buffer() const;
+    const VkCommandBuffer & get_main_command_buffer() const;
 
     uint32_t find_memory_type_index(const VkMemoryRequirements&, const VkMemoryPropertyFlags) const;
 
     VkCommandBuffer begin_transfer();
 
     void end_transfer();
+
+    VkDescriptorPool get_descriptor_pool() const;
+
+    VkRenderPass get_render_pass() const;
+
+    VkPipelineCache get_pipeline_cache() const;
+
+    VkPhysicalDeviceMemoryProperties get_device_memory_properties() const;
 };
 
 

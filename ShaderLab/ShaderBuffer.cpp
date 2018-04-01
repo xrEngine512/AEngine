@@ -1,6 +1,6 @@
 #include "ShaderBuffer.h"
 #include "MaterialVarInfo.h"
-#include "ShaderParamInfo.h"
+#include "serialization/ShaderParameterInfo.h"
 
 #include <algorithm>
 
@@ -61,10 +61,10 @@ namespace ASL
 		m_bufSize += SizeOf(var.type);
 	}
 
-	void ShaderBuffer::AddVariable(const ShaderParamInfo& var)
+	void ShaderBuffer::AddVariable(const ShaderParameterInfo& var)
 	{
 		m_params.push_back(&var);
-		std::sort(m_params.begin(), m_params.end(), [](const ShaderParamInfo* a, const ShaderParamInfo* b)
+		std::sort(m_params.begin(), m_params.end(), [](const ShaderParameterInfo* a, const ShaderParameterInfo* b)
 		{
 			return SizeOf(a->Type.c_str()) > SizeOf(b->Type.c_str());
 		});
@@ -84,11 +84,11 @@ namespace ASL
 		}
 	}
 
-	void ShaderBuffer::DeleteVariable(const ShaderParamInfo& var)
+	void ShaderBuffer::DeleteVariable(const ShaderParameterInfo& var)
 	{
 		for (auto variable = m_params.begin(); variable != m_params.end(); ++variable)
 		{
-			if ((*variable)->ID == var.ID)
+			if ((*variable)->id == var.id)
 			{
 				m_params.erase(variable);
 				m_bufSize -= SizeOf(var.Type.c_str());
@@ -129,7 +129,7 @@ namespace ASL
 		return m_info;
 	}
 
-	const std::vector<const ShaderParamInfo*>& ShaderBuffer::Params() const
+	const std::vector<const ShaderParameterInfo*>& ShaderBuffer::Params() const
 	{
 		return m_params;
 	}
@@ -202,7 +202,7 @@ namespace ASL
 		return '\t' + NormalizeType(var.type) + '\t' + var.name + ";\n";
 	}
 
-	inline QString ShaderBuffer::VarToCode(const ShaderParamInfo& var)const
+	inline QString ShaderBuffer::VarToCode(const ShaderParameterInfo& var)const
 	{
 		return QString('\t') + var.Type.c_str() + '\t' + var.Name.c_str() + ";\n";
 	}

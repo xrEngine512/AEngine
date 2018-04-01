@@ -68,7 +68,7 @@ GeometryBuffer::GeometryBuffer(std::vector<DefaultVertex> &&vertices, std::vecto
 }
 
 uint32_t GeometryBuffer::render() { using_vulkan
-    VkDeviceSize offsets[1] { 0 };
+    VkDeviceSize offsets[] { 0 };
     vkCmdBindVertexBuffers(vulkan->get_main_command_buffer(), 0, 1, &vertex_buffer, offsets);
     vkCmdBindIndexBuffer(vulkan->get_main_command_buffer(), index_buffer, 0, VK_INDEX_TYPE_UINT32);
     return index_count;

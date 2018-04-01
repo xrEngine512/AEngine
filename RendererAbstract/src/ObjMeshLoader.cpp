@@ -104,7 +104,7 @@ IGeometryBufferPtr ObjMeshLoader::Load(const string_view &meshFileName)
             for( uint32_t iFace = 0; iFace < 3; iFace++ )
             {
                 file >> iPosition;
-                vertex.position = positions[ iPosition - 1 ];
+                vertex.data.position = positions[ iPosition - 1 ];
 
                 if( '/' == file.peek() )
                 {
@@ -113,7 +113,7 @@ IGeometryBufferPtr ObjMeshLoader::Load(const string_view &meshFileName)
                     if( '/' != file.peek() )
                     {
                         file >> iTexCoord;
-                        vertex.texture = texCoords[ iTexCoord - 1 ];
+                        vertex.data.texture = texCoords[ iTexCoord - 1 ];
                     }
 
                     if( '/' == file.peek() )
@@ -121,7 +121,7 @@ IGeometryBufferPtr ObjMeshLoader::Load(const string_view &meshFileName)
                         file.ignore();
 
                         file >> iNormal;
-                        vertex.normal = normals[ iNormal - 1 ];
+                        vertex.data.normal = normals[ iNormal - 1 ];
                     }
                 }
 

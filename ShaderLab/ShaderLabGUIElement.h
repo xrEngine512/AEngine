@@ -5,6 +5,7 @@
 #include "Enums.h"
 #include "ShaderBuffer.h"
 #include <QtWidgets/QTextEdit>
+#include <serialization/ShaderCommon.h>
 
 namespace ASL
 {
@@ -27,16 +28,16 @@ namespace ASL
 	public:
 		typedef Link<MaterialVar, ShaderLabGUIElement, MatVarSaveData> BufferLink;
 		typedef Link<ShaderSettingsElement, ShaderLabGUIElement, MatVarSaveData> SettingsLink;
-		ShaderLabGUIElement(QGraphicsItem *parent = nullptr);
+		ShaderLabGUIElement(ShaderType type, QGraphicsItem *parent = nullptr);
 		~ShaderLabGUIElement();
 		QRectF boundingRect() const override;
 
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 			QWidget *widget)override;
-		void setShader_Type(Shader_Type);
+		void setShader_Type();
 		
 		void Init(const ViewShaderPartInfo& info);
-		Shader_Type getShader_Type()const;
+		ShaderType get_shader_type() const;
 		
 		const QString& EntryPoint();
 		void ShrinkCodeEditor();
@@ -58,8 +59,8 @@ namespace ASL
 	public slots:
 		void UpdateGeneratedCode();
 	private:
-		int m_width, m_height;
-		Shader_Type m_type;
+		int width, height;
+		ShaderType type;
 		CodeEditor* m_txtedit;
 		ShaderPartSettings* m_Settings;
 		QPixmap *m_icon;
@@ -73,7 +74,7 @@ namespace ASL
 		bool m_dragging, m_hasFocus;
 		int m_lastBufferCodeSize;
 
-		QString toStr(Shader_Type);
+		QString toStr(ShaderType);
 		void mousePressEvent(QGraphicsSceneMouseEvent*)override;
 		void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*)override;
 		void mouseMoveEvent(QGraphicsSceneMouseEvent*)override;

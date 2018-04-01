@@ -18,8 +18,8 @@ namespace ASL
 	struct MatVarSaveData
 	{
 		int32_t MatVarID;
-		Shader_Type ShaderType;
-		MatVarSaveData(int ID, Shader_Type type) :MatVarID(ID), ShaderType(type){}
+		ShaderType shader_type;
+		MatVarSaveData(int ID, ShaderType type) :MatVarID(ID), shader_type(type){}
 	};
 
 	interface ILink
@@ -112,7 +112,7 @@ namespace ASL
 		{}
 		MatVarSaveData GetSaveData()const
 		{
-			return MatVarSaveData(m_var->VarInfo().ID, m_item->getShader_Type());
+			return MatVarSaveData(m_var->VarInfo().ID, m_item->get_shader_type());
 		}
 		~Link(){}
 	};

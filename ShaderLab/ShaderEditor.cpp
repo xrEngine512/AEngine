@@ -350,7 +350,7 @@ namespace ASL
 				else
 					part_info.entryPoint = QString("main");
 				part_info.qStr_code = m_SP[i]->codeEditor()->getCode();
-				part_info.Shader_Type = m_SP[i]->getShader_Type();
+				part_info.Shader_Type = m_SP[i]->get_shader_type();
 				part_info.buffersInfo = m_SP[i]->BuffersInfo();
 				part_info.paramIDs = m_SP[i]->ParamIDs();
 				part_info.textureSlots = m_SP[i]->TextureSlots();
@@ -422,7 +422,7 @@ namespace ASL
 		}
 	}
 
-	inline Shader_Model toSM(int index)
+	inline ShaderModel toSM(int index)
 	{
 		switch (index)
 		{
@@ -433,7 +433,7 @@ namespace ASL
 		}
 	}
 
-	inline int fromSM(Shader_Model model)
+	inline int fromSM(ShaderModel model)
 	{
 		switch (model)
 		{
@@ -460,7 +460,7 @@ namespace ASL
 					ViewShaderPartInfo part_info;
 					part_info.entryPoint = m_SP[i]->EntryPoint();
 					part_info.qStr_code = m_SP[i]->codeEditor()->getCode();
-					part_info.Shader_Type = m_SP[i]->getShader_Type();
+					part_info.Shader_Type = m_SP[i]->get_shader_type();
 					part_info.buffersInfo = m_SP[i]->BuffersInfo();
 					part_info.paramIDs = m_SP[i]->ParamIDs();
 					part_info.textureSlots = m_SP[i]->TextureSlots();
@@ -527,7 +527,7 @@ namespace ASL
 			{
 				for (auto set : m_shaderSettings->AllSettings())
 				{
-					ShaderParamInfo* info = dynamic_cast<ShaderParamInfo*>(set->Info());
+					ShaderParameterInfo* info = dynamic_cast<ShaderParameterInfo*>(set->Info());
 					if (info)
 						for (auto ID : part.paramIDs)
 						{

@@ -15,9 +15,12 @@ struct DefaultVertex : public IVertexType
     DefaultVertex(float, float, float, float w = 0);
     DefaultVertex(const Math::AVector& position, const Math::AVector2& texture);
 	DefaultVertex(const DefaultVertex& vertex);
-	Math::AVector position = Math::AVector();
-	Math::AVector2 texture = Math::AVector2();
-	Math::AVector3 normal = Math::AVector3();
+
+	struct Data {
+		Math::AVector position = Math::AVector();
+		Math::AVector2 texture = Math::AVector2();
+		Math::AVector3 normal = Math::AVector3();
+	} data;
 
 	bool operator==(const DefaultVertex& lhr);
 	bool operator!=(const DefaultVertex& lhr);

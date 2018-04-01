@@ -8,6 +8,7 @@
 #include <Logger.h>
 #include <Terminal.h>
 #include <PlatformAbstraction.h>
+#include <Utility.h>
 
 using namespace std;
 using namespace Math;
@@ -302,7 +303,7 @@ uint32_t VulkanAPI::find_memory_type_index(const VkMemoryRequirements& memory_re
             }
         }
     }
-    return UINT32_MAX;
+    throw approx_exception("Couldn't find suitable memory type", "VulkanAPI");
 }
 
 void VulkanAPI::initialize_instance(const char *application_name) {
@@ -469,6 +470,8 @@ void VulkanAPI::initialize(int screen_width, int screen_height, bool vSync, Wind
         enumerate_device_layers();
         initialize_command_pools();
         initialize_command_buffers();
+        initialize_descriptor_pool();
+        initialize_pipeline_cache();
         initialize_surface(window);
         initialize_swapchain();
         initialize_swapchain_images();
@@ -492,6 +495,8 @@ void VulkanAPI::shutdown() {
     destroy_swapchain_images();
     destroy_swapchain();
     destroy_surface();
+    destroy_pipeline_cache();
+    destroy_descriptor_pool();
     destroy_command_pools();
     destroy_synchronization();
     destroy_device();
@@ -565,13 +570,15 @@ void VulkanAPI::initialize_command_pools() {
 }
 
 void VulkanAPI::destroy_command_pools() {
-    if (command_pool)
+    if (command_pool) {
         vkDestroyCommandPool(device, command_pool, allocation_callback);
-    command_pool = nullptr;
+        command_pool = nullptr;
+    }
 
-    if (transfer_command_pool)
+    if (transfer_command_pool) {
         vkDestroyCommandPool(device, transfer_command_pool, allocation_callback);
-    transfer_command_pool = nullptr;
+        transfer_command_pool = nullptr;
+    }
 }
 
 
@@ -586,6 +593,55 @@ void VulkanAPI::initialize_command_buffers() {
 
     command_buffer_info.commandPool = transfer_command_pool;
     HandleErrors(vkAllocateCommandBuffers(device, &command_buffer_info, &transfer_command_buffer))
+}
+
+void VulkanAPI::initialize_descriptor_pool() {
+    // We need to tell the API the number of max. requested descriptors per type
+    VkDescriptorPoolSize typeCounts[] {
+        // Descriptor type uniform buffer and only one descriptor of this type
+        {
+            .type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+            .descriptorCount = 1,
+        },
+    };
+    // For additional types you need to add new entries in the type count list
+    // E.g. for two combined image samplers :
+    // typeCounts[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    // typeCounts[1].descriptorCount = 2;
+
+    // Create the global descriptor pool
+    // All descriptors used in this example are allocated from this pool
+    VkDescriptorPoolCreateInfo descriptorPoolInfo {
+        .sType          = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+        .pNext          = nullptr,
+        .poolSizeCount  = static_size(typeCounts),
+        .pPoolSizes     = typeCounts,
+        // Set the max. number of descriptor sets that can be requested from this pool (requesting beyond this limit will result in an error)
+        .maxSets        = 10,
+    };
+
+    HandleErrors(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptor_pool));
+}
+
+void VulkanAPI::destroy_descriptor_pool() {
+    if (descriptor_pool) {
+        vkDestroyDescriptorPool(device, descriptor_pool, allocation_callback);
+        descriptor_pool = nullptr;
+    }
+}
+
+void VulkanAPI::initialize_pipeline_cache() {
+    VkPipelineCacheCreateInfo info {
+        .sType  = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO
+    };
+    HandleErrors(vkCreatePipelineCache(device, &info, nullptr, &pipeline_cache))
+}
+
+void VulkanAPI::destroy_pipeline_cache() {
+    if (pipeline_cache) {
+        vkDestroyPipelineCache(device, pipeline_cache, allocation_callback);
+        pipeline_cache = nullptr;
+    }
 }
 
 void VulkanAPI::setup_viewport(int width, int height) {
@@ -982,7 +1038,7 @@ uint32_t VulkanAPI::get_queue_family_index(bool transfer) const {
     return transfer ? transfer_queue_family_index : graphics_queue_family_index;
 }
 
-VkCommandBuffer VulkanAPI::get_main_command_buffer() const {
+const VkCommandBuffer & VulkanAPI::get_main_command_buffer() const {
     return command_buffer;
 }
 
@@ -1010,4 +1066,20 @@ void VulkanAPI::end_transfer() {
     /* wait for GPU to process command buffer submission */
     HandleErrors(vkWaitForFences(device, 1, &transfer_queue_submit_fence, VK_TRUE, UINT64_MAX))
     HandleErrors(vkResetFences(device, 1, &transfer_queue_submit_fence))
+}
+
+VkDescriptorPool VulkanAPI::get_descriptor_pool() const {
+    return descriptor_pool;
+}
+
+VkRenderPass VulkanAPI::get_render_pass() const {
+    return render_pass;
+}
+
+VkPipelineCache VulkanAPI::get_pipeline_cache() const {
+    return pipeline_cache;
+}
+
+VkPhysicalDeviceMemoryProperties VulkanAPI::get_device_memory_properties() const {
+    return gpu_memory_properties;
 }

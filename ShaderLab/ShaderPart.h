@@ -1,15 +1,15 @@
 #pragma once
 #include "Enums.h"
-#include "RuntimeBufferInfo.h"
+#include "serialization/RuntimeBufferInfo.h"
+#include "serialization/ShaderCommon.h"
 
 namespace ASL
 {
-	using std::string;
-	struct ShaderPart : AbstractSaveData
+	struct ShaderPart
 	{
-		string Str_code;
-		Shader_Type shader_type = ST_NONE;
-		string EntryPoint;
+		std::string Str_code;
+		ShaderType shader_type = NONE;
+		std::string EntryPoint;
 		vector<RuntimeBufferInfo> BuffersInfo;
 		vector<int> ParamsIDs;
 		vector<int> TextureSlots;
@@ -18,19 +18,7 @@ namespace ASL
 		void PosInc(){ pos++; }
 		int pos = 0;
 		bool PosInRange() const{ return pos < Str_code.size(); }
-		
-		const void* Serialize(uint64_t & size)override final
-		{
-			size = Serialization(Str_code, shader_type, EntryPoint, BuffersInfo, ParamsIDs, TextureSlots);
-			return SerializedBuf();
-		}
-		void Deserialize(const void* buf, uint64_t size)override final
-		{
-			Deserialization(buf, size, Str_code, shader_type, EntryPoint, BuffersInfo, ParamsIDs, TextureSlots);
-		}
-		uint64_t SerializedSize()const override final
-		{
-			return CalculateSize(Str_code, shader_type, EntryPoint, BuffersInfo, ParamsIDs, TextureSlots);
-		}
+
+		MSGPACK_DEFINE(Str_code, shader_type, EntryPoint, BuffersInfo, ParamsIDs, TextureSlots);
 	};
 }

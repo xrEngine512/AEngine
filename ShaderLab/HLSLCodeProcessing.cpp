@@ -5,12 +5,12 @@
 #include <d3d11.h>
 #include <string>
 #include "TextureInfo.h"
-#include "ShaderParamInfo.h"
+#include "ShaderParameterInfo.h"
 
 using namespace std;
 namespace ASL
 {
-    inline const char* addSM(Shader_Model sm)
+    inline const char* addSM(ShaderModel sm)
     {
         switch (sm)
         {
@@ -216,7 +216,7 @@ namespace ASL
 		return ASL_NO_ERROR;
 	}
 
-	const char* ShaderCodeProcessing::getTarget(Shader_Type type, Shader_Model sm)
+	const char* ShaderCodeProcessing::getTarget(Shader_Type type, ShaderModel sm)
 	{
 		const char* str_type;
 		const char* str_ver = addSM(sm);

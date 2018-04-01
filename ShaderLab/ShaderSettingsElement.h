@@ -9,7 +9,7 @@ namespace ASL
 {
 	struct AbstractSaveData;
 	class LinkingPoint;
-	struct ShaderParamInfo;
+	struct ShaderParameterInfo;
 	struct TextureInfo;
 
 	enum Elem_Type{ PARAMETER, TEXTURE };
@@ -19,7 +19,7 @@ namespace ASL
 		Q_OBJECT
 
 	public:
-		ShaderSettingsElement(QWidget *parent, const ShaderParamInfo& info);
+		ShaderSettingsElement(QWidget *parent, const ShaderParameterInfo& info);
 		ShaderSettingsElement(QWidget *parent, const TextureInfo& info);
 		LinkingPoint& Point()const;
 		~ShaderSettingsElement();

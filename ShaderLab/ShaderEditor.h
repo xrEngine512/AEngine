@@ -39,7 +39,7 @@ namespace ASL
 		void SetMaterialVariables(std::vector<MaterialVarInfo>&, const QString& ver);
 		void RendererOnline(bool online);
 	private slots:
-		ShaderLabGUIElement* GetOrCreateShaderElem(Shader_Type);
+		ShaderLabGUIElement* GetOrCreateShaderElem(ShaderType);
 		void on_Compile();
 		void on_Settings();
 		void on_SaveShader();
@@ -56,7 +56,7 @@ namespace ASL
 		void FadeIn();
 		void FadeOut();
 	private:
-		ShaderLabGUIElement* setSP(int index, Shader_Type type);
+		ShaderLabGUIElement* setSP(int index, ShaderType type);
 		void ClearElements();
 		void SetApproxVars();
 		void SetApproxVars(ShaderLabGUIElement*);

@@ -9,7 +9,7 @@ namespace ShaderSystem{
 }
 
 namespace ASL{
-	struct ShaderParamInfo;
+	struct ShaderParameterInfo;
 }
 
 class FloatParamUI : public QWidget
@@ -17,7 +17,7 @@ class FloatParamUI : public QWidget
 	Q_OBJECT
 
 public:
-	FloatParamUI(QWidget *parent, const ASL::ShaderParamInfo& param);
+	FloatParamUI(QWidget *parent, const ASL::ShaderParameterInfo& param);
 	~FloatParamUI();
 signals:
 	void valueChanged(const ShaderSystem::floatVariant&);

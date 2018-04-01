@@ -11,10 +11,10 @@
 #include <ApproxSystemErrors.h>
 #include <unordered_set>
 #include "Literals.h"
-#include "AbstractSaveData.h"
 
 #include <OS.h>
 #include <StringUtils.h>
+#include <msgpack.hpp>
 
 enum ShaderPackElementID : unsigned short {
     ID_NONE, COMPILED_VS, COMPILED_PS, COMPILED_GS, COMPILED_CS, COMPILED_DS, COMPILED_HS, SAMPLER_DESC,
@@ -93,6 +93,18 @@ struct PackElement : DataOwnershipPolicy
         return res;
     }
 
+    template<typename T>
+    static PackElement* fromMsgPack(ID_Type _ID, const T& obj)
+    {
+        msgpack::sbuffer bytes;
+        msgpack::pack(bytes, obj);
+        auto res = new PackElement;
+        res->m_MetaData.ID = _ID;
+        res->m_MetaData.size = bytes.size();
+        DataOwnershipPolicy::Copy(res->Data, bytes.size(), bytes.data());
+        return res;
+    }
+
     static PackElement* fromC_Str(ID_Type _ID, const char* c_str)
     {
         auto res = new PackElement;
@@ -108,24 +120,6 @@ struct PackElement : DataOwnershipPolicy
         res->m_MetaData.size = str.size() + 1;
         DataOwnershipPolicy::Copy(res->Data, res->m_MetaData.size, str.c_str());
         return res;
-    }
-
-    static PackElement* fromSaveData(ID_Type _ID, ASL::AbstractSaveData* obj)
-    {
-        auto res = new PackElement;
-        uint64_t size;
-        auto buf = obj->Serialize(size);
-        DataOwnershipPolicy::Copy(res->Data, size, buf);
-        res->m_MetaData.ID = _ID;
-        res->m_MetaData.size = size;
-        obj->CleanSerializedBuffer();
-        return res;
-    }
-
-    template<typename T>
-    static typename std::enable_if<std::is_base_of<ASL::AbstractSaveData, T>::value, PackElement*>::type fromSaveData(ID_Type _ID, T& obj)
-    {
-        return fromSaveData(_ID, dynamic_cast<ASL::AbstractSaveData*>(&obj));
     }
 
     void operator=(PackElement const& arg)
@@ -153,29 +147,14 @@ struct PackElement : DataOwnershipPolicy
         return nullptr;
     }
     template <typename T>
-    typename std::enable_if<!std::is_base_of<ASL::AbstractSaveData, T>::value>::type Get(T& obj) const
-    {
-        if (m_MetaData.size != sizeof(T))
-            throw std::runtime_error("Sizes mismatch!");
-
-        memcpy(&obj, Data, m_MetaData.size);
-        return;
-    }
-    template <typename T>
-    typename std::enable_if<std::is_base_of<ASL::AbstractSaveData, T>::value>::type Get(T& obj) const
-    {
-        return obj.Deserialize(Data, m_MetaData.size);
-    }
 
     void Get (std::string& obj)const
     {
         obj = static_cast<const char*>(Data);
-        return;
     }
     void Get (std::wstring& obj)const
     {
         obj = static_cast<const wchar_t*>(Data);
-        return;
     }
     template <class T>
     uint64_t Get(T*& ptr)const
@@ -184,10 +163,7 @@ struct PackElement : DataOwnershipPolicy
         memcpy((void*)ptr, Data, m_MetaData.size);
         return m_MetaData.size;
     }
-    void Get(ASL::AbstractSaveData* obj)const
-    {
-        obj->Deserialize(Data, m_MetaData.size);
-    }
+
     void AllowDuplicatesFor(ID_Type ID, bool affectAllHierarchy = false)
     {
         m_allowedDuplicates.insert(ID);

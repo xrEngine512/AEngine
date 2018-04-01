@@ -1,6 +1,6 @@
 #include "MaterialSettingsUI.h"
 #include <ShaderSystemTypes.h>
-#include <ShaderParamInfo.h>
+#include <ShaderParameterInfo.h>
 #include <TextureInfo.h>
 #include <QVBoxLayout>
 #include <qpushbutton.h>

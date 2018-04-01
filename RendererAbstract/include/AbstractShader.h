@@ -18,39 +18,42 @@ namespace ShaderSystem
 	class AbstractShader : public IShader
 	{
 		friend class ShaderPool;
+
+    protected:
 		ShaderDesc m_desc;
 
 		struct BufferPack
 		{
 			struct Buffer{
-				short num = 0;
+				uint16_t num = 0;
+				MemoryMultiplexer * memory = nullptr;
+				uint64_t initialize(const std::vector<std::pair<void *, GenericType>> & data, short num);
 				~Buffer();
-			}m_sceneConstants, m_perFrameBuffer, m_perObjectBuffer;
-			MemoryMultiplexer *m_perObjectData = nullptr, *m_perFrameData = nullptr, *m_sceneConstantsData = nullptr;
+			} scene_constants_buffer, per_frame_buffer, per_object_buffer;
 			~BufferPack();
-		}VS_buffers, PS_buffers;
+		} VS_buffers, PS_buffers;
 
         struct BufferDescription {
-            int size = 0;
+            uint64_t size = 0;
         };
 
-		GenericStruct *m_ParamsData = nullptr;
-		ShaderSettings m_Settings;
+		GenericStruct * m_ParamsData = nullptr;
+		ShaderSettings  m_Settings;
 
-		void parse_asc(const string& acs_filename);
 	public:
-		const GenericStruct& ShaderParams()const override final;
-		const ShaderDesc& GetDesc()override final;
-		const ShaderSettings& GetSettings()override final;
-		unsigned short GetNumberOfTextureSlots()override final;
-		virtual ~AbstractShader();
+		const GenericStruct& ShaderParams()const final;
+		const ShaderDesc& GetDesc() final;
+		const ShaderSettings& GetSettings() final;
+		unsigned short GetNumberOfTextureSlots() final;
+		~AbstractShader() final;
 
     protected:
-		AbstractShader(const std::string& acs_filename, const ShaderDesc& desc);
+        explicit AbstractShader(const ShaderDesc& desc);
 
 		virtual void LoadShaderParams();
-        virtual AbstractShader::BufferDescription InitializeBuffer(const ASL::RuntimeBufferInfo& info, BufferPack& pack, short BufferNum, const vector<int>& ParamIDs);
-        virtual void handle_input_layout(const ShaderElement&) = 0;
-        virtual void handle_compiled_shader(const ShaderElement&) = 0;
+        AbstractShader::BufferDescription initialize_buffer_pack(const ASL::RuntimeBufferInfo & info,
+                                                                         BufferPack & pack, short buffer_num,
+                                                                         const vector<int> & ParamIDs);
+        void initialize_buffers(const ShaderElement& elem, BufferPack& pack);
 	};
 }

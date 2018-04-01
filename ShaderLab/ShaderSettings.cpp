@@ -25,7 +25,7 @@ namespace ASL
 		connect(m_btnAddTexture,	SIGNAL(clicked()), SLOT(AddTexture()));
 	}
 
-	void ShaderSettings::SetParameters(const QVector<ShaderParamInfo>& params)
+	void ShaderSettings::SetParameters(const QVector<ShaderParameterInfo>& params)
 	{
 		for (auto param : params)
 		{
@@ -54,7 +54,7 @@ namespace ASL
 		resize(size() + QSize(0, 20));
 	}
 
-	void ShaderSettings::AddParameter(const ShaderParamInfo& param)
+	void ShaderSettings::AddParameter(const ShaderParameterInfo& param)
 	{
 		m_params.push_back(param);
 		auto elem = new ShaderSettingsElement(this, param);
@@ -72,7 +72,7 @@ namespace ASL
 		return m_textures;
 	}
 
-	const QVector<ShaderParamInfo>& ShaderSettings::Parameters() const
+	const QVector<ShaderParameterInfo>& ShaderSettings::Parameters() const
 	{
 		return m_params;
 	}
@@ -106,7 +106,7 @@ namespace ASL
 			TextureInfo info;
 			auto data = dialog->Data();
 			info.Name = data[0].toStdString();
-			info.Slot = m_textures.size();
+			info.slot = m_textures.size();
 			AddTexture(info);
 		});		
 	}
@@ -126,11 +126,11 @@ namespace ASL
 		
 		connect(dialog, &ApproxGUI::PopupDialog::OK, [=]()
 		{
-			ShaderParamInfo info;
+			ShaderParameterInfo info;
 			auto data = dialog->Data();
 			info.Name = data[0].toStdString();
 			info.Type = data[1].toStdString();
-			info.ID = m_params.size();
+			info.id = m_params.size();
 			AddParameter(info);
 		});		
 	}

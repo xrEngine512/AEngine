@@ -7,12 +7,13 @@
 #include "IShaderCodeProcessor.h"
 
 #include <spirv-tools/libspirv.hpp>
+#include <serialization/PipelineProject.h>
 
 
 namespace ASL {
     class SPIRVShaderCodeProcessor : public IShaderCodeProcessor {
     public:
-        void compile(Session *session) const override;
+        void compile(const ASL::PipelineProject & project, PipelineCompiled & compiled) const override;
 
         ShaderProcessorDescription describe() const override;
 

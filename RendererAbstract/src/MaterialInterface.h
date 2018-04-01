@@ -39,7 +39,7 @@ namespace MatInterface
 		{
 			for (auto shader : m_Subscribers)
 			{
-				shader->UpdateSceneConstantsBuffers();
+                shader->update_scene_constants_buffers();
 			}
 		}
 	private:

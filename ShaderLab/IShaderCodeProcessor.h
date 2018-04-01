@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <serialization/PipelineCompiled.h>
+#include <serialization/PipelineProject.h>
 
 namespace ASL
 {
@@ -18,7 +20,7 @@ namespace ASL
 
 	interface IShaderCodeProcessor
     {
-        virtual void compile(Session *) const = 0;
+        virtual void compile(const ASL::PipelineProject & project, PipelineCompiled & compiled) const = 0;
         virtual ShaderProcessorDescription describe() const = 0;
         virtual bool has_version(const std::string &version) const = 0;
         virtual std::string name() const = 0;

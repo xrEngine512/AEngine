@@ -4,12 +4,15 @@
 #include "IShaderCodeProcessor.h"
 #include <vector>
 #include <experimental/string_view>
+#include <serialization/PipelineCompiled.h>
+#include <serialization/PipelineSource.h>
+#include <serialization/PipelineProject.h>
 
 
 namespace ASL
 {
 	struct ShaderPart;
-	struct ShaderParamInfo;
+	struct ShaderParameterInfo;
 	struct TextureInfo;
 	typedef ShaderPackFile<ApproxCommon::Memory::CopyDataOwnershipPolicy> ShaderFile;
 	typedef ShaderFile::LocalElement ShaderElement;
@@ -22,40 +25,30 @@ namespace ASL
 	public:
 		Session();
 
-		void setShaderProcessor(const IShaderCodeProcessorRef& processor);
-        void setShaderVersion(const std::string& version);
-		void setShaderName(const std::string& name);
-		void setShaderParams(const vector<ShaderParamInfo>& params);
-		void setShaderTextures(const vector<TextureInfo>& textures);
+		void set_shader_processor(const IShaderCodeProcessorRef & processor);
+        void set_pipeline_language(const std::string & version);
+		void set_pipeline_name(const std::string & name);
 
 		void compile();
 
-		std::string get_shader_language() const;
-		std::string get_shader_subsystem() const;
-		const std::string& ShaderName() const;
-		const vector<ShaderPart>& ShaderParts() const;
-		ShaderPart& partByType(Shader_Type);
-		ShaderPart* partByIndex(int);
-		const vector<ShaderParamInfo>& ShaderParameters() const{ return m_ShaderParams; }
-		const vector<TextureInfo>& ShaderTextures() const{ return m_ShaderTextures; }
-		static bool CheckFileExists(const std::experimental::string_view& filename);
+		const std::string & get_pipeline_language() const;
+		const std::string & get_pipeline_subsystem() const;
+		const std::string& get_pipeline_name() const;
+        const std::vector<ShaderSource> & get_shaders() const;
+		const ShaderSource & get_shader_by_type(ShaderType) const;
+		ShaderSource * get_shader_by_index(int);
+		static bool CheckFileExists(const std::string & file_name);
 		void SaveShaderFile(const char* filename);
-		void SaveProjectFile(const char* filename);
-		void OpenProjectFile(const char* filename);
-		void write_element(ShaderElement *);
-		void clearCompiledElements();
+		void SaveProjectFile(const std::string & file_name);
+		void OpenProjectFile(const std::string & file_name);
+		void write_element(ShaderCompiled && shader);
+		void clear_compiled_elements();
 		~Session();	
 
 	private:
         IShaderCodeProcessorRef processor;
-        std::string shader_subsystem;
-        std::string shader_language;
-		std::string m_shaderName;
-		ProjectFile m_project;
-		ShaderFile m_file;
-		vector<ShaderPart> m_ShaderParts;
-		vector<ShaderParamInfo> m_ShaderParams;
-		vector<TextureInfo> m_ShaderTextures;
+		PipelineProject pipeline_project;
+		PipelineCompiled compiled_pipeline;
 	};
 
 }

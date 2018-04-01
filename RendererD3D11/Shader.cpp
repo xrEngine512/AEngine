@@ -7,7 +7,7 @@
 #include "MemoryMultiplexer.h"
 #include <RuntimeBufferInfo.h>
 #include <TextureInfo.h>
-#include <ShaderParamInfo.h>
+#include <ShaderParameterInfo.h>
 #include "GenericStruct.h"
 #include "GenericVariable.h"
 #include <d3dcompiler.h>

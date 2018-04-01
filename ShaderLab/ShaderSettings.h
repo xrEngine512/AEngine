@@ -2,8 +2,8 @@
 #define SHADERPARAMETERS_H
 
 #include <QWidget>
-#include "TextureInfo.h"
-#include "ShaderParamInfo.h"
+#include "serialization/TextureInfo.h"
+#include "serialization/ShaderParameterInfo.h"
 
 class QPushButton;
 
@@ -21,19 +21,19 @@ namespace ASL
 		void linkAttempt(ShaderSettingsElement* sender, const QPoint& mouseGlobalPosEnd);
 	public:
 		ShaderSettings(QWidget *parent);
-		void SetParameters(const QVector<ShaderParamInfo>& params);
+		void SetParameters(const QVector<ShaderParameterInfo>& params);
 		void SetTextures(const QVector<TextureInfo>& textures);
 		void AddTexture(const TextureInfo& texture);
-		void AddParameter(const ShaderParamInfo& param);
+		void AddParameter(const ShaderParameterInfo& param);
 		const QVector<TextureInfo>& Textures()const;
-		const QVector<ShaderParamInfo>& Parameters()const;
+		const QVector<ShaderParameterInfo>& Parameters()const;
 		const QVector<ShaderSettingsElement*>& AllSettings()const;
 		void ClearElements();
 		~ShaderSettings();
 
 	private:
 		QVector<TextureInfo> m_textures;
-		QVector<ShaderParamInfo> m_params;
+		QVector<ShaderParameterInfo> m_params;
 
 		QPushButton* m_btnAddParameter, *m_btnAddTexture;
 

@@ -154,36 +154,23 @@ namespace ShaderSystem
 		}
 	}*/
 
-	void MemoryMultiplexer::process()
+	uint64_t MemoryMultiplexer::get_size() const
 	{
-		if (m_Data)
-		{
-			int i = 0;
-			for (auto ptr : m_ptrsToCopy)
-			{
-				memcpy(m_Data + m_shifts[i], ptr, m_sizes[i]);
-				i++;
-			}
-		}
+		return size;
 	}
 
-	int MemoryMultiplexer::size()
-	{
-		return m_size;
-	}
-
-	MemoryMultiplexer::MemoryMultiplexer() :m_Data(nullptr), m_size(0)
+	MemoryMultiplexer::MemoryMultiplexer(): size(0)
 	{
 	}
 
-	void MemoryMultiplexer::setInput(const vector<pair<void*, GenericType>>& data)
+	void MemoryMultiplexer::set_input(const vector<pair<void *, GenericType>> & data)
 	{
 		vector<int> sizes;
 		sizes.reserve(data.size());
-		m_shifts.reserve(data.size());
-		m_sizes.reserve(data.size());
+		shifts.reserve(data.size());
+		sizes.reserve(data.size());
 		int vector16 = 0;
-		int shift = 0;
+		uint32_t shift = 0;
 		for (auto type : data)
 		{
 			int size = type.second;
@@ -191,48 +178,58 @@ namespace ShaderSystem
 			if (vector16 >= size)
 			{
 				vector16 -= size;
-				m_shifts.push_back(shift);
-				m_sizes.push_back(size);
+				shifts.push_back(shift);
+				sizes.push_back(size);
 				shift += size;
 			}
 			else
 			{
 				if (vector16 == struct_alignment)
 				{
-					m_shifts.push_back(shift);
-					m_sizes.push_back(size);
+					shifts.push_back(shift);
+					sizes.push_back(size);
 					shift += size;
 				}
 				else if (vector16 == 0)
 				{
-					m_shifts.push_back(shift);
-					m_sizes.push_back(size);
+					shifts.push_back(shift);
+					sizes.push_back(size);
 					shift += size;
 					vector16 = struct_alignment - size;
 					if (vector16 < 0) vector16 = 0;
 				}
 				else
 				{
-					m_shifts.push_back(shift + vector16);
-					m_sizes.push_back(size + vector16);
+					shifts.push_back(shift + vector16);
+					sizes.push_back(size + vector16);
 					shift += size + vector16;
 					vector16 = struct_alignment;
 				}
 			}
-			m_ptrsToCopy.push_back(type.first);
+			pointers_to_copy.push_back(type.first);
 		}
-		m_size = (shift / struct_alignment) * struct_alignment;
-		if (shift > m_size) m_size += struct_alignment;
+		size = (shift / struct_alignment) * struct_alignment;
+		if (shift > size) size += struct_alignment;
 	}
 
-	void MemoryMultiplexer::setOutput(void* out)
+	void MemoryMultiplexer::write_to(void * out) const
 	{
-		m_Data = static_cast<byte*>(out);
+		auto data = static_cast<byte*>(out);
+
+        if (data)
+        {
+            int i = 0;
+            for (auto ptr : pointers_to_copy)
+            {
+                memcpy(data + shifts[i], ptr, sizes[i]);
+                i++;
+            }
+        }
 	}
 
-	void*& MemoryMultiplexer::Input(int index)
+	void*& MemoryMultiplexer::input(int index)
 	{
-		return m_ptrsToCopy[index];
+		return pointers_to_copy[index];
 	}
 
 	MemoryMultiplexer::~MemoryMultiplexer()

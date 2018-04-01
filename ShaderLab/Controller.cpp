@@ -4,9 +4,6 @@
 #include "Session.h"
 #include "ShaderPart.h"
 #include "ViewSessionInfo.h"
-#include <qvector.h>
-#include "ShaderParamInfo.h"
-#include "TextureInfo.h"
 #include "ShaderCodeProcessorEnumerator.h"
 
 using namespace MatInterface;
@@ -23,15 +20,15 @@ namespace ASL
         auto shader_language = visSession.shader_language.toStdString();
         auto shader_subsystem = visSession.shader_subsystem.toStdString();
 
-        session->setShaderProcessor(get_processor(shader_subsystem));
-        session->setShaderVersion(shader_language);
-		session->setShaderName(visSession.m_shaderName.toStdString());
-		session->setShaderParams(visSession.m_Params.toStdVector());
+        session->set_shader_processor(get_processor(shader_subsystem));
+		session->set_pipeline_language(shader_language);
+        session->set_pipeline_name(visSession.m_shaderName.toStdString());
+        session->set_shader_params(visSession.m_Params.toStdVector());
 		session->setShaderTextures(visSession.m_Textures.toStdVector());
 
 		for (auto part : visSession.m_ShaderParts)
 		{
-			ShaderPart& lpart = session->partByType(part.Shader_Type);
+			ShaderPart& lpart = session->get_shader_by_type(part.Shader_Type);
 			lpart.EntryPoint = part.entryPoint.toStdString();
 			lpart.Str_code = part.qStr_code.toStdString();
 			lpart.BuffersInfo = part.buffersInfo.toStdVector();
@@ -49,22 +46,31 @@ namespace ASL
 
 	inline void ReadSession(const Session& In, ViewSessionInfo& Out)
 	{
-		Out.m_shaderName = QString::fromStdString(In.ShaderName());
-        Out.shader_language = QString::fromStdString(In.get_shader_language());
-        Out.shader_subsystem = QString::fromStdString(In.get_shader_subsystem());
+		Out.m_shaderName = QString::fromStdString(In.get_pipeline_name());
+        Out.shader_language = QString::fromStdString(In.get_pipeline_language());
+        Out.shader_subsystem = QString::fromStdString(In.get_pipeline_subsystem());
 		Out.m_ShaderParts.clear();
-		Out.m_Params = fromStdVector(In.ShaderParameters());
-		Out.m_Textures = fromStdVector(In.ShaderTextures());
+		//Out.m_Params = fromStdVector(In.ShaderParameters());
+		//Out.m_Textures = fromStdVector(In.ShaderTextures());
 
-		for (auto part : In.ShaderParts())
+		for (auto shader : In.get_shaders())
 		{
 			ViewShaderPartInfo partInfo;
-			partInfo.entryPoint = QString(part.EntryPoint.c_str());
-			partInfo.qStr_code = QString(part.Str_code.c_str());
-			partInfo.Shader_Type = part.shader_type;
-			partInfo.buffersInfo = fromStdVector(part.BuffersInfo);	
-			partInfo.paramIDs = fromStdVector(part.ParamsIDs);
-			partInfo.textureSlots = fromStdVector(part.TextureSlots);
+			partInfo.entryPoint = QString(shader.entry_point.c_str());
+			partInfo.qStr_code = QString(shader.code.c_str());
+			partInfo.Shader_Type = shader.type;
+			partInfo.buffersInfo = fromStdVector(shader.buffers_info);
+
+            partInfo.paramIDs.reserve(shader.parameters.size());
+            for (const auto & parameter: shader.parameters) {
+                partInfo.paramIDs.push_back(parameter.id);
+            }
+
+            partInfo.textureSlots.reserve(shader.textures.size());
+            for (const auto & texture: shader.textures) {
+                partInfo.textureSlots.push_back(texture.slot);
+            }
+
 			Out.m_ShaderParts.push_back(partInfo);
 		}
 	}

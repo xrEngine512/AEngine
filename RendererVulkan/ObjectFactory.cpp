@@ -8,6 +8,7 @@
 #include "Shader.h"
 
 using namespace std;
+using namespace ShaderSystem;
 
 ITextEngine* ObjectFactory::getTextEngine() {
     return nullptr;
